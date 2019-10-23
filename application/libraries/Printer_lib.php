@@ -209,9 +209,17 @@ class Printer_lib
             $printer->text($header . "\n");
             $printer->setEmphasis(false);
 
-            foreach ($request['items'] as $key => $item) {
-                $myItem = sprintf("%-28s %-3s %-7s", substr($item['item_name'], 0, 25), $item['qty'], number_format($item['total'], 2));
-                $printer->text($myItem . "\n");
+            foreach ($request['items'] as $type => $items) {
+                foreach ($items as $item) {
+                    $myItem = sprintf("%-3s %-34s %-7s", $item['qty'], substr($item['item_name'], 0, 32).(strlen($item['item_name']) > 32 ? '..' : ''), number_format($item['total']));
+                    $printer->text($myItem . "\n");
+                }
+                $printer->setEmphasis(true);
+                $typeTotal = sprintf("%-3s %-34s %-7s", '', $type." Total", number_format($request['type_totals'][$type]));
+                $printer->text($typeTotal . "\n");
+                $printer->setEmphasis(false);
+                $printer->feed();
+
             }
             $printer->feed(1);
             $printer->text("------------------------------------------------\n");
@@ -292,7 +300,7 @@ class Printer_lib
             $printer->setJustification();
             $printer->feed(1);
 
-            $printer->cut();
+            $connector->write(chr(27) . chr(109));
             $printer->close();
 
             return true;
