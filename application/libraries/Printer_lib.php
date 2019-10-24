@@ -408,7 +408,7 @@ class Printer_lib
             $printer->setJustification();
             $printer->feed(1);
 
-            $printer->feed(1);
+            $printer->feed(3);
             $connector->write(chr(27) . chr(109));
             $printer -> close();
 
