@@ -112,7 +112,7 @@ class Printer_lib
             //set header
             //$printer->initialize();
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if ($companyName = /*$variables->where('key', 'company_name')->first()*/ $this->filter_array($variables, 'company_name')) {
+            if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
                 $printer->text($companyName['value'] . "\n");
@@ -209,24 +209,16 @@ class Printer_lib
             //uzapoint footer
             $printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if ($line1 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_1';
-            })) {
+            if ($line1 = $this->filter_array($variables, 'line_1')) {
                 $printer->text($line1['value'] . "\n");
             }
-            if ($line2 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_2';
-            })) {
+            if ($line2 = $this->filter_array($variables, 'line_2')) {
                 $printer->text($line2['value'] . "\n");
             }
-            if ($line3 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_3';
-            })) {
+            if ($line3 = $this->filter_array($variables, 'line_3')) {
                 $printer->text($line3['value'] . "\n");
             }
-            if ($line4 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_4';
-            })) {
+            if ($line4 = $this->filter_array($variables, 'line_4')) {
                 $printer->text($line4['value'] . "\n");
             }
             $printer->setJustification();
