@@ -32,124 +32,64 @@ class Printer_lib
 
     public function captain($request = array())
     {
-        if($request['LOCAL_PRINTER']['adapter'] === 'USB') {
-            $connector = new WindowsPrintConnector($request['LOCAL_PRINTER']['id']);
-        }else if($request['LOCAL_PRINTER']['adapter'] === 'NETWORK'){
-            $connector = new NetworkPrintConnector($request['LOCAL_PRINTER']['id']);
+        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }
 
         $printer = new Printer($connector);
-        $variables = collect($request['variables']);
 
-        try{
+        foreach ($request['receipts'] as $receipt) {
 
-            //set header
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if($companyName = $this->filter_array($variables, 'company_name')) {
-                $printer->setTextSize(1, 2);
+            try {
+
+                //date and time heading
+                /*$datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . Carbon::now()->toFormattedDateString(), ' ', "TIME: " . (\Carbon\Carbon::now())->format('h:i A'));
+                $printer->text($datetimeheading . "\n");
+                $printer->feed(1);*/
+
+                //set header
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $printer->setEmphasis(true);
-                $printer->text($companyName['value'] . "\n");
+
+                if (!empty($request['business_name'])) {
+                    $printer->text($request['business_name'] . "\n");
+                    $printer->setEmphasis(false);
+                    $printer->feed(1);
+                }
+
+
+                $printer->text($receipt['customer'] . "\n");
+                $printer->feed(1);
+                $printer->text($receipt['pos_user'] . "\n");
+                $printer->feed(2);
+                $printer->setJustification();
                 $printer->setEmphasis(false);
 
-                $printer->selectPrintMode();
+                foreach ($receipt['items'] as $item) {
+                    $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                    if (!empty($item['options']) && sizeof($item['options'])) {
+                        $printer->feed(1);
+                        $printer->selectPrintMode();
+                        foreach ($item['options'] as $option) {
+                            $printer->text('            -> ' . $option . "\n");
+                            $printer->feed(1);
+                        }
+                    }
+                    $printer->setTextSize(1, 2);
+                    $printer->feed(1);
+                }
+
+                $printer->feed(2);
+
+                $printer->cut();
+                $printer->close();
+
+            } catch (\Exception $exception) {
+                return false;
             }
 
-            if($heading1 = $this->filter_array($variables, 'contact_1')) {
-                $printer->text($heading1['value'] . "\n");
-            }
-
-            if($heading2 = $this->filter_array($variables, 'contact_2')) {
-                $printer->text($heading2['value'] . "\n");
-                $printer->feed(1);
-            }
-            $printer->setJustification();
-
-            $printer->setEmphasis(true);
-            $printer->text($request['entity']." No    :   ".$request['order_ref']."\n");
-            $printer->setEmphasis(false);
-
-            $printer->text("Served By   :   ".$request['pos_user']."\n");
-
-            $printer->selectPrintMode();
-            $printer->text("Customer    :   ".$request["customer"]."\n");
-            $date = Carbon::now()->toDayDateTimeString();
-            $printer->text($date."\n");
-            $printer->feed();
-
-
-            $header = sprintf("%-28s %-3s %-7s", "Item", "Qty", "Total");
-            $printer->setEmphasis(true);
-            $printer->text($header. "\n");
-            $printer->setEmphasis(false);
-
-            foreach ($request['items'] as $item) {
-                $myItem = sprintf("%-28s %-3s %-7s", substr($item['item_name'], 0, 25), $item['qty'], number_format($item['total'], 2));
-                $printer->text($myItem."\n");
-            }
-            $printer->feed(1);
-            $printer->text("------------------------------------------------\n");
-
-            $grandTotal = sprintf("%-28s %-3s %-7s", "Total", ' ', number_format((float)$request['grand_total']));
-            $discount = sprintf("%-28s %-3s %-7s", "Discount", ' ', number_format((float)$request['discount']));
-            $printer->text($grandTotal."\n");
-            $printer->text($discount."\n");
-
-            //total indicator
-            $printer->text("------------------------------------------------\n");
-            $orderDueText = sprintf("%-28s %-3s %-7s", "TOTAL (KES)", ' ', number_format((float)$request['amount_payable']));
-            $printer->setTextSize(1, 2);
-            $printer->setEmphasis(true);
-            $printer->text($orderDueText . "\n");
-            $printer->selectPrintMode();
-
-            $printer->text("------------------------------------------------\n");
-            $printer->feed(1);
-
-            if($tillNo = $this->filter_array($variables, 'till_no')) {
-                $printer->text("TILL NO.    :   " . $tillNo['value'] . "\n");
-            }
-
-            if($pinNo = $this->filter_array($variables, 'pin_no')) {
-                $printer->text("PIN NO.     :   " . $pinNo['value'] . "\n");
-            }
-
-            if($telephone = $this->filter_array($variables, 'telephone')) {
-                $printer->text("Telephone   :   " . $telephone['value'] . "\n");
-            }
-
-            if($email = $this->filter_array($variables, 'email')) {
-                $printer->text("Email       :   " . $email['value'] . "\n");
-            }
-
-            if($website = $this->filter_array($variables, 'website')) {
-                $printer->text("Website     :   " . $website['value'] . "\n");
-            }
-
-            $printer->text("------------------------------------------------\n");
-
-            //uzapoint footer
-            $printer->feed(1);
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if($line1 = $this->filter_array($variables, 'line_1')) {
-                $printer->text($line1['value']."\n");
-            }
-            if($line2 = $this->filter_array($variables, 'line_2')) {
-                $printer->text($line2['value']."\n");
-            }
-            if($line3 = $this->filter_array($variables, 'line_3')) {
-                $printer->text($line3['value']."\n");
-            }
-            if($line4 = $this->filter_array($variables, 'line_4')) {
-                $printer->text($line4['value']."\n");
-            }
-            $printer->setJustification();
-            $printer->feed(1);
-
-            $printer -> cut();
-            $printer -> close();
-
-        }catch (\Exception $exception){
-            return false;
         }
     }
 
