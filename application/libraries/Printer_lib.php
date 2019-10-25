@@ -2,6 +2,7 @@
 defined("BASEPATH") or exit("No direct script access allowed");
 
 require APPPATH . "third_party\\escpos-php\autoload.php";
+require 'Carbon/Carbon.php';
 
 //use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
@@ -32,6 +33,8 @@ class Printer_lib
 
     public function captain($request = array())
     {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
@@ -51,7 +54,7 @@ class Printer_lib
                 $printer->setEmphasis(true);
                 $printer->text("Order No: ". $receipt['order_ref']."\n");
                 $printer->setEmphasis(false);
-                //$printer->text(Carbon::now()->toDayDateTimeString()."\n");
+                $printer->text(\Carbon\Carbon::now()->toDayDateTimeString()."\n");
                 $printer->text("-------------------------------------\n");
 
 
@@ -65,12 +68,12 @@ class Printer_lib
                             $printer->feed(2);
                         }
                         foreach ($courseItems as $item) {
-                            $printer->text('        ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                            $printer->text($item['qty'] . " X " . $item['item_name'] . "\n");
                             if (isset($item['options']) && sizeof($item['options'])) {
                                 $printer->feed(2);
                                 //$printer->selectPrintMode();
                                 foreach ($item['options'] as $option) {
-                                    $printer->text('            -> ' . $option . "\n");
+                                    $printer->text('    -> ' . $option . "\n");
                                     $printer->feed(1);
                                 }
                             }
@@ -82,12 +85,12 @@ class Printer_lib
                 }else {
 
                     foreach ($receipt['items'][$receipt['last_course']] as $item) {
-                        $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                        $printer->text($item['qty'] . " X " . $item['item_name'] . "\n");
                         if (isset($item['options']) && sizeof($item['options'])) {
                             $printer->feed(1);
                             //$printer->selectPrintMode();
                             foreach ($item['options'] as $option) {
-                                $printer->text('            -> ' . $option . "\n");
+                                $printer->text('    -> ' . $option . "\n");
                                 //$printer->feed(1);
                             }
                         }
@@ -119,6 +122,9 @@ class Printer_lib
     {
         /*print_r($request['LOCAL_PRINTER']);
         exit();*/
+
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
@@ -161,8 +167,8 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Customer    :   " . $request["customer"] . "\n");
-            //$date = Carbon::now()->toDayDateTimeString();
-            //$printer->text($date . "\n");
+            $date = Carbon\Carbon::now()->toDayDateTimeString();
+            $printer->text($date . "\n");
             $printer->feed();
 
 
@@ -239,28 +245,20 @@ class Printer_lib
             //uzapoint footer
             $printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if ($line1 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_1';
-            })) {
+            if ($line1 = $this->filter_array($variables, 'line_1')) {
                 $printer->text($line1['value'] . "\n");
             }
-            if ($line2 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_2';
-            })) {
+            if ($line2 = $this->filter_array($variables, 'line_2')) {
                 $printer->text($line2['value'] . "\n");
             }
-            if ($line3 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_3';
-            })) {
+            if ($line3 = $this->filter_array($variables, 'line_3')) {
                 $printer->text($line3['value'] . "\n");
             }
-            if ($line4 = array_filter($variables, function ($element) {
-                return $element['key'] === 'line_4';
-            })) {
+            if ($line4 = $this->filter_array($variables, 'line_4')) {
                 $printer->text($line4['value'] . "\n");
             }
             $printer->setJustification();
-            $printer->feed(1);
+            $printer->feed(5);
 
             $connector->write(chr(27) . chr(109));
             $printer->close();
@@ -274,6 +272,8 @@ class Printer_lib
 
     public function etr($request = array())
     {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
@@ -314,8 +314,8 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Customer    :   ".$request["customer"]."\n");
-            //$date = Carbon::now()->toDayDateTimeString();
-            //$printer->text($date."\n");
+            $date = \Carbon\Carbon::now()->toDayDateTimeString();
+            $printer->text($date."\n");
             $printer->feed();
 
 
@@ -408,7 +408,7 @@ class Printer_lib
             $printer->setJustification();
             $printer->feed(1);
 
-            $printer->feed(3);
+            $printer->feed(5);
             $connector->write(chr(27) . chr(109));
             $printer -> close();
 
