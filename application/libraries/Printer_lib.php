@@ -2,6 +2,7 @@
 defined("BASEPATH") or exit("No direct script access allowed");
 
 require APPPATH . "third_party\\escpos-php\autoload.php";
+require 'Carbon\Carbon.php';
 
 //use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
@@ -32,6 +33,7 @@ class Printer_lib
 
     public function captain($request = array())
     {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
@@ -45,9 +47,9 @@ class Printer_lib
             try {
 
                 //date and time heading
-                /*$datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . Carbon::now()->toFormattedDateString(), ' ', "TIME: " . (\Carbon\Carbon::now())->format('h:i A'));
+                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . \Carbon\Carbon::now()->toFormattedDateString(), ' ', "TIME: " . (\Carbon\Carbon::now())->format('h:i A'));
                 $printer->text($datetimeheading . "\n");
-                $printer->feed(1);*/
+                $printer->feed(1);
 
                 //set header
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -83,7 +85,7 @@ class Printer_lib
 
                 $printer->feed(2);
 
-                $printer->cut();
+                $connector->write(chr(27) . chr(109));
                 $printer->close();
 
             } catch (\Exception $exception) {
@@ -95,6 +97,7 @@ class Printer_lib
 
     public function bill($request = array())
     {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         /*print_r($request['LOCAL_PRINTER']);
         exit();*/
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
@@ -139,8 +142,8 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Customer    :   " . $request["customer"] . "\n");
-            //$date = Carbon::now()->toDayDateTimeString();
-            //$printer->text($date . "\n");
+            $date = \Carbon\Carbon::now()->toDayDateTimeString();
+            $printer->text($date . "\n");
             $printer->feed();
 
 
@@ -222,9 +225,9 @@ class Printer_lib
                 $printer->text($line4['value'] . "\n");
             }
             $printer->setJustification();
-            $printer->feed(1);
+            $printer->feed(5);
 
-            $printer->cut();
+            $connector->write(chr(27) . chr(109));
             $printer->close();
 
             return true;
