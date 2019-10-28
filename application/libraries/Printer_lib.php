@@ -54,7 +54,7 @@ class Printer_lib
                 $printer->setEmphasis(true);
                 $printer->text("Order No: ". $receipt['order_ref']."\n");
                 $printer->setEmphasis(false);
-                $printer->text(\Carbon\Carbon::now()->toDayDateTimeString()."\n");
+                $printer->text(!empty($receipt['date']) ? $receipt['date'] : \Carbon\Carbon::now()->toDayDateTimeString()."\n");
                 $printer->text("-------------------------------------\n");
 
 
@@ -167,7 +167,7 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Customer    :   " . $request["customer"] . "\n");
-            $date = Carbon\Carbon::now()->toDayDateTimeString();
+            $date = !empty($request['date']) ? $request['date'] : Carbon\Carbon::now()->toDayDateTimeString();
             $printer->text($date . "\n");
             $printer->feed();
 
@@ -314,7 +314,7 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Customer    :   ".$request["customer"]."\n");
-            $date = \Carbon\Carbon::now()->toDayDateTimeString();
+            $date = !empty($request['date']) ? $request['date'] : \Carbon\Carbon::now()->toDayDateTimeString();
             $printer->text($date."\n");
             $printer->feed();
 
