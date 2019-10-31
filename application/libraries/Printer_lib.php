@@ -417,6 +417,85 @@ class Printer_lib
         }
     }
 
+    public function endShift($request = array())
+    {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }
+        $printer = new Printer($connector);
+
+        $variables = $request['variables'];
+
+        try{
+
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if($companyName = $this->filter_array($variables, 'company_name')) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($companyName['value'] . "\n");
+                $printer->setEmphasis(false);
+
+                $printer->selectPrintMode();
+            }
+
+            if($heading1 = $this->filter_array($variables, 'contact_1')) {
+                $printer->text($heading1['value'] . "\n");
+            }
+
+            if($heading2 = $this->filter_array($variables, 'contact_2')) {
+                $printer->text($heading2['value'] . "\n");
+                //$printer->feed(1);
+            }
+            $printer->text("------------------------------------------------\n");
+            $printer->setJustification();
+
+            $printer->feed();
+            $printer->setTextSize(1, 2);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text("END SHIFT REPORT \n");
+            $printer->selectPrintMode();
+            $printer->setJustification();
+            $printer->feed();
+
+            $printer->selectPrintMode();
+            $printer->text("Opened:   ".$request["opened_by"]."\n");
+            $printer->text("          ".$request["opened_at"]."\n");
+            $printer->feed();
+            $printer->text("Closed:   ".$request["closed_by"]."\n");
+            $printer->text("          ".$request["closed_at"]."\n");
+
+            $printer->feed(2);
+
+            $header = sprintf("%-13s %-10s %-10s %-10s", "", "Actual", "Expected", "Variance");
+            $printer->setEmphasis(true);
+            $printer->text($header. "\n");
+            $printer->setEmphasis(false);
+
+            foreach ($request['collections'] as $index => $collection) {
+                $myItem = sprintf("%-13s %-10s %-10s %-10s", $collection, $request['actual'][$index], $request['expected'][$index], $request['variance'][$index]);
+                if($index === (sizeof($request['collections']) -1)){
+                    $printer->setEmphasis(true);
+                }
+                $printer->text($myItem . "\n");
+                //$printer->feed();
+                $printer->setEmphasis(false);
+
+            }
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+            $printer -> close();
+
+        }catch (\Exception $exception){
+            return false;
+        }
+    }
+
     private function filter_array($array, $key)
     {
         foreach ($array as $array_key => $variable) {
