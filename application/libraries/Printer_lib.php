@@ -109,7 +109,10 @@ class Printer_lib
 
                 $printer->feed(1);
                 $connector->write(chr(27) . chr(109));
+
+                $printer->pulse();
                 $printer -> close();
+
 
             } catch (\Exception $exception) {
                 return false;
@@ -261,6 +264,7 @@ class Printer_lib
             $printer->feed(5);
 
             $connector->write(chr(27) . chr(109));
+            $printer->pulse();
             $printer->close();
 
             return true;
@@ -410,6 +414,7 @@ class Printer_lib
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
+            $printer->pulse();
             $printer -> close();
 
         }catch (\Exception $exception){
@@ -489,6 +494,7 @@ class Printer_lib
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
+            $printer->pulse();
             $printer -> close();
 
         }catch (\Exception $exception){
