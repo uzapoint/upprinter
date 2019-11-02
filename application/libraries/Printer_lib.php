@@ -54,7 +54,7 @@ class Printer_lib
                 $printer->setEmphasis(true);
                 $printer->text("Order No: ". $receipt['order_ref']."\n");
                 $printer->setEmphasis(false);
-                $printer->text(!empty($receipt['date']) ? $receipt['date'] : \Carbon\Carbon::now()->toDayDateTimeString()."\n");
+                $printer->text(!empty($receipt['date']) ? $receipt['date'].'\n' : \Carbon\Carbon::now()->toDayDateTimeString()."\n");
                 $printer->text("-------------------------------------\n");
 
 
@@ -210,7 +210,7 @@ class Printer_lib
 
             //total indicator
             $printer->text("-----------------------------------------------\n");
-            $orderDueText = sprintf("%-3s %-34s %-7s", ' ', "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-3s %-34s %-7s", ' ', "TOTAL ", number_format((float)$request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText . "\n");
@@ -359,7 +359,7 @@ class Printer_lib
 
             //total indicator
             $printer->text("------------------------------------------------\n");
-            $orderDueText = sprintf("%-35s %-8s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-35s %-8s", "TOTAL ".(!empty($request['payment_methods']) ? $request['payment_methods'] : ''), number_format((float)$request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText . "\n");
