@@ -54,7 +54,7 @@ class Printer_lib
                 $printer->setEmphasis(true);
                 $printer->text("Order No: ". $receipt['order_ref']."\n");
                 $printer->setEmphasis(false);
-                $printer->text(!empty($receipt['date']) ? $receipt['date'].'\n' : \Carbon\Carbon::now()->toDayDateTimeString()."\n");
+                $printer->text(!empty($receipt['date']) ? ($receipt['date']."\n") : \Carbon\Carbon::now()->toDayDateTimeString()."\n");
                 $printer->text("-------------------------------------\n");
 
 
