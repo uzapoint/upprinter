@@ -79,11 +79,10 @@ class Printer_lib
                             $printer->feed(1);
                         }
                     }
-                    $printer->setTextSize(1, 2);
-                    $printer->feed(1);
+                    //$printer->setTextSize(1, 2);
                 }
 
-                $printer->feed(2);
+                $printer->feed(5);
 
                 $connector->write(chr(27) . chr(109));
                 $printer->close();
