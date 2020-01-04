@@ -156,18 +156,28 @@ class Printer_lib
                 $myItem = '';
                 for($counter = 0; $counter < $sets; $counter++){
                     $startIndex = ($counter*30) +1;
-                    $endIndex = (($counter+1) *30) + 1;
-                    if($counter === 0){
-                        $startIndex = ($counter*30);
-                        $myItem .= sprintf("%-31s %-7s", substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), number_format($item['total'], 2)).'\n';
-                    }else{
-                        $myItem .= sprintf("%-31s %-7s", substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), '').'\n';
+                    $endIndex = (($counter+1) *30) - 1;
+
+                    if($counter > 1){
+                        $startIndex -= 2;
                     }
 
-                    //substr($string, $startIndex, ($endIndex - $startIndex));
+                    if($counter === 0){
+                        $startIndex = ($counter*30);
+                        $endIndex = (($counter+1) *30) + 1;
+                        $printer->text(
+                            sprintf("%-30s %-7s", substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), number_format($item['total'], 2))."\n"
+                        );
+                        /*if($counter > 0){
+                            $printer->text("\n");
+                        }*/
+                    }else{
+                        $printer->text(
+                            sprintf("%2 %-29s %-7s", ' ', substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), '')."\n"
+                        );
+                    }
                 }
-                //$myItem = sprintf("%-31s %-7s", substr($item['item_name'], 0, 30), number_format($item['total'], 2));
-                $printer->text($myItem . "\n");
+                $printer->text("\n");
             }
             $printer->feed(1);
             $printer->text("------------------------------------------------\n");

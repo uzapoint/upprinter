@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="IDE settings">
+    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/libraries/Printer_lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/libraries/Printer_lib.php" afterDir="false" />
     </list>
@@ -101,13 +101,18 @@
     <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="Printing changes" />
     <MESSAGE value="Captain order fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Captain order fixes" />
+    <MESSAGE value="Not truncate item name" />
+    <option name="LAST_COMMIT_MESSAGE" value="Not truncate item name" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1578141701561">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1578142142964">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1578141701561" />
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1578142142964" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1578142146346">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1578142146346" />
     <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1578142122394">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
