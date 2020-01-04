@@ -146,13 +146,27 @@ class Printer_lib
             $printer->feed();
 
 
-            $header = sprintf("%-28s %-3s %-7s", "Item", "Qty", "Total");
+            $header = sprintf("%-31s %-7s", "Item", "Total");
             $printer->setEmphasis(true);
             $printer->text($header . "\n");
             $printer->setEmphasis(false);
 
             foreach ($request['items'] as $key => $item) {
-                $myItem = sprintf("%-28s %-3s %-7s", substr($item['item_name'], 0, 25), $item['qty'], number_format($item['total'], 2));
+                $sets = (int)ceil((float)(strlen($item['item_name']) / 30));
+                $myItem = '';
+                for($counter = 0; $counter < $sets; $counter++){
+                    $startIndex = ($counter*30) +1;
+                    $endIndex = (($counter+1) *30) + 1;
+                    if($counter === 0){
+                        $startIndex = ($counter*30);
+                        $myItem .= sprintf("%-31s %-7s", substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), number_format($item['total'], 2)).'\n';
+                    }else{
+                        $myItem .= sprintf("%-31s %-7s", substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), '').'\n';
+                    }
+
+                    //substr($string, $startIndex, ($endIndex - $startIndex));
+                }
+                //$myItem = sprintf("%-31s %-7s", substr($item['item_name'], 0, 30), number_format($item['total'], 2));
                 $printer->text($myItem . "\n");
             }
             $printer->feed(1);
