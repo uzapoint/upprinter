@@ -47,7 +47,7 @@ class Printer_lib
             try {
 
                 //date and time heading
-                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . \Carbon\Carbon::now()->toFormattedDateString(), ' ', "TIME: " . (\Carbon\Carbon::now())->format('h:i A'));
+                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . \Carbon\Carbon::now()->toFormattedDateString(), ' ', "TIME: " . \Carbon\Carbon::now()->format('h:i A'));
                 $printer->text($datetimeheading . "\n");
                 $printer->feed(1);
 
