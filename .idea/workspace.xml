@@ -23,12 +23,6 @@
       </map>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="10" />
-    <option name="y" value="20" />
-    <option name="width" value="1346" />
-    <option name="height" value="698" />
-  </component>
   <component name="ProjectId" id="1SbM5BCf7O93T4NgALFXooTcHcH" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -102,20 +96,25 @@
     <MESSAGE value="Printing changes" />
     <MESSAGE value="Captain order fixes" />
     <MESSAGE value="Not truncate item name" />
-    <option name="LAST_COMMIT_MESSAGE" value="Not truncate item name" />
+    <MESSAGE value="- Fix bug with -&gt; notation for lower PHP versions" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Fix bug with -&gt; notation for lower PHP versions" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1578142142964">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1594293101031">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1578142142964" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1578142146346">
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1594293101031" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1594293106858">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1578142146346" />
-    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1578142122394">
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1594293106858" />
+    <state x="339" y="165" key="run.anything.popup" timestamp="1594623539748">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1578142122394" />
+    <state x="339" y="165" key="run.anything.popup/0.0.1366.738@0.0.1366.738" timestamp="1594623539748" />
+    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1594292360526">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1594292360526" />
   </component>
 </project>
