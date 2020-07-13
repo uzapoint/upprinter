@@ -47,7 +47,7 @@ class Printer_lib
             try {
 
                 //date and time heading
-                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_date']);
+                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
                 $printer->text($datetimeheading . "\n");
                 $printer->feed(1);
 

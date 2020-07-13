@@ -97,17 +97,18 @@
     <MESSAGE value="Captain order fixes" />
     <MESSAGE value="Not truncate item name" />
     <MESSAGE value="- Fix bug with -&gt; notation for lower PHP versions" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Fix bug with -&gt; notation for lower PHP versions" />
+    <MESSAGE value="- Fix bug with date" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Fix bug with date" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1594293101031">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1594624299607">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1594293101031" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1594293106858">
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1594624299607" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1594624316840">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1594293106858" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1594624316840" />
     <state x="339" y="165" key="run.anything.popup" timestamp="1594623539748">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
