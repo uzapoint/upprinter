@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="">
+    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="- Fix bug with date &amp; time">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/config/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/config/config.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/libraries/Printer_lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/libraries/Printer_lib.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -98,24 +99,29 @@
     <MESSAGE value="Not truncate item name" />
     <MESSAGE value="- Fix bug with -&gt; notation for lower PHP versions" />
     <MESSAGE value="- Fix bug with date" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Fix bug with date" />
+    <MESSAGE value="- Fix bug with date &amp; time" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Fix bug with date &amp; time" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1594624299607">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1594989986130">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1594624299607" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1594624316840">
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1594989986130" />
+    <state x="459" y="184" key="NewPhpClassDialog" timestamp="1594980226078">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1594624316840" />
-    <state x="339" y="165" key="run.anything.popup" timestamp="1594623539748">
+    <state x="459" y="184" key="NewPhpClassDialog/0.0.1366.738@0.0.1366.738" timestamp="1594980226078" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1594625133055">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="339" y="165" key="run.anything.popup/0.0.1366.738@0.0.1366.738" timestamp="1594623539748" />
-    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1594292360526">
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1594625133055" />
+    <state x="339" y="165" key="run.anything.popup" timestamp="1594978449805">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1594292360526" />
+    <state x="339" y="165" key="run.anything.popup/0.0.1366.738@0.0.1366.738" timestamp="1594978449805" />
+    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1594979863377">
+      <screen x="0" y="0" width="1366" height="738" />
+    </state>
+    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1594979863377" />
   </component>
 </project>

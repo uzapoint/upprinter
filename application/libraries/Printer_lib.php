@@ -33,64 +33,57 @@ class Printer_lib
 
     public function captain($request = array())
     {
+
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
-        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
-            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
-        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
-            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
-        }
 
-        $printer = new Printer($connector);
-
-        foreach ($request['receipts'] as $receipt) {
-
-            try {
-
-                //date and time heading
-                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
-                $printer->text($datetimeheading . "\n");
-                $printer->feed(1);
-
-                //set header
-                $printer->setJustification(Printer::JUSTIFY_CENTER);
-                $printer->setEmphasis(true);
-
-                if (!empty($request['business_name'])) {
-                    $printer->text($request['business_name'] . "\n");
-                    $printer->setEmphasis(false);
-                    $printer->feed(1);
-                }
-
-
-                $printer->text($receipt['customer'] . "\n");
-                $printer->feed(1);
-                $printer->text($receipt['pos_user'] . "\n");
-                $printer->feed(2);
-                $printer->setJustification();
-                $printer->setEmphasis(false);
-
-                foreach ($receipt['items'] as $item) {
-                    $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
-                    if (!empty($item['options']) && sizeof($item['options'])) {
-                        $printer->feed(1);
-                        $printer->selectPrintMode();
-                        foreach ($item['options'] as $option) {
-                            $printer->text('            -> ' . $option . "\n");
-                            $printer->feed(1);
-                        }
-                    }
-                    //$printer->setTextSize(1, 2);
-                }
-
-                $printer->feed(5);
-
-                $connector->write(chr(27) . chr(109));
-                $printer->close();
-
-            } catch (\Exception $exception) {
-                return false;
+        foreach ($request['receipts'] as $index => $receipt) {
+            if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+                $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+            }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+                $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
             }
 
+            $printer = new Printer($connector);
+
+            //date and time heading
+            $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
+            $printer->text($datetimeheading . "\n");
+            $printer->feed(1);
+
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setEmphasis(true);
+
+            if (!empty($request['business_name'])) {
+                $printer->text($request['business_name'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->feed(1);
+            }
+
+
+            $printer->text($receipt['customer'] . "\n");
+            $printer->feed(1);
+            $printer->text($receipt['pos_user'] . "\n");
+            $printer->feed(2);
+            $printer->setJustification();
+            $printer->setEmphasis(false);
+
+            foreach ($receipt['items'] as $item) {
+                $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                if (!empty($item['options']) && sizeof($item['options'])) {
+                    $printer->feed(1);
+                    $printer->selectPrintMode();
+                    foreach ($item['options'] as $option) {
+                        $printer->text('            -> ' . $option . "\n");
+                        $printer->feed(1);
+                    }
+                }
+                //$printer->setTextSize(1, 2);
+            }
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+            $printer->close();
         }
     }
 
