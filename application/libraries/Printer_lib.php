@@ -145,31 +145,10 @@ class Printer_lib
             $printer->setEmphasis(false);
 
             foreach ($request['items'] as $key => $item) {
-                $sets = (int)ceil((float)(strlen($item['item_name']) / 30));
-                $myItem = '';
-                for($counter = 0; $counter < $sets; $counter++){
-                    $startIndex = ($counter*30) +1;
-                    $endIndex = (($counter+1) *30) - 1;
-
-                    if($counter > 1){
-                        $startIndex -= 2;
-                    }
-
-                    if($counter === 0){
-                        $startIndex = ($counter*30);
-                        $endIndex = (($counter+1) *30) + 1;
-                        $printer->text(
-                            sprintf("%-30s %-7s", substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), number_format($item['total'], 2))."\n"
-                        );
-                        /*if($counter > 0){
-                            $printer->text("\n");
-                        }*/
-                    }else{
-                        $printer->text(
-                            sprintf("%2 %-29s %-7s", ' ', substr($item['item_name'], $startIndex, ($endIndex - $startIndex)), '')."\n"
-                        );
-                    }
-                }
+                $printer->text($item['item_name']."\n");
+                $printer->text(
+                    sprintf("%-30s %-7s", ($item['qty'].' x '.$item['item_price']), number_format((float)$item['total'], 2))."\n"
+                );
                 $printer->text("\n");
             }
             $printer->feed(1);
