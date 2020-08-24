@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/printer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/printer.iml" afterDir="false" />
+    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="- Changes for redesigning items on proforma receipt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/controllers/Printer.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Printer.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/libraries/Printer_lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/libraries/Printer_lib.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -107,28 +107,29 @@
     <MESSAGE value="- Fix bug with date" />
     <MESSAGE value="- Fix bug with date &amp; time" />
     <MESSAGE value="- Changes for printing more than one receipt" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Changes for printing more than one receipt" />
+    <MESSAGE value="- Changes for redesigning items on proforma receipt" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Changes for redesigning items on proforma receipt" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1594990159475">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1595584198261">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1594990159475" />
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1595584198261" />
     <state x="459" y="184" key="NewPhpClassDialog" timestamp="1594980226078">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="459" y="184" key="NewPhpClassDialog/0.0.1366.738@0.0.1366.738" timestamp="1594980226078" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1594990163868">
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1595584202082">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1594990163868" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1595584202082" />
     <state x="339" y="165" key="run.anything.popup" timestamp="1594978449805">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="339" y="165" key="run.anything.popup/0.0.1366.738@0.0.1366.738" timestamp="1594978449805" />
-    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1594979863377">
+    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup" timestamp="1598272183073">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1594979863377" />
+    <state x="346" y="59" width="672" height="678" key="search.everywhere.popup/0.0.1366.738@0.0.1366.738" timestamp="1598272183073" />
   </component>
 </project>
