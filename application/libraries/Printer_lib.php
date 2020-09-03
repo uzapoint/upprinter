@@ -165,6 +165,16 @@ class Printer_lib
             $printer->text($grandTotal . "\n");
             $printer->text($discount . "\n");
 
+            //add sale taxes
+            if(!empty($request['sale_tax_breakdown'])) {
+                $printer->text("------------------------------------------------\n");
+                $printer->feed();
+                foreach ($request['sale_tax_breakdown'] as $tax) {
+                    $taxEntry = sprintf("%-28s %-3s %-7s", $tax['tax_name'], ' ', $tax['tax_value_formatted']);
+                    $printer->text($taxEntry . "\n");
+                }
+            }
+
             //total indicator
             $printer->text("------------------------------------------------\n");
             $orderDueText = sprintf("%-28s %-3s %-7s", "TOTAL (KES)", ' ', number_format((float)$request['amount_payable']));
