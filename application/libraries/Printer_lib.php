@@ -212,6 +212,17 @@ class Printer_lib
 
             $printer->text("------------------------------------------------\n");
 
+            if(!empty($request['sale_notes'])){
+                $printer->feed();
+
+                foreach ($request['sale_notes'] as $sale_note) {
+                    $printer->text($sale_note['heading'].": " . $sale_note['content'] . "\n");
+                }
+
+                $printer->text("------------------------------------------------\n");
+                $printer->feed();
+            }
+
             //uzapoint footer
             $printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
