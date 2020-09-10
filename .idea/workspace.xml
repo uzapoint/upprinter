@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="- tax breakdown on proforma/bill receipt">
+    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/libraries/Printer_lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/libraries/Printer_lib.php" afterDir="false" />
     </list>
@@ -109,21 +109,22 @@
     <MESSAGE value="- Changes for redesigning items on proforma receipt" />
     <MESSAGE value="- Added function for printing end shift report" />
     <MESSAGE value="- tax breakdown on proforma/bill receipt" />
-    <option name="LAST_COMMIT_MESSAGE" value="- tax breakdown on proforma/bill receipt" />
+    <MESSAGE value="- print any sale additional notes given" />
+    <option name="LAST_COMMIT_MESSAGE" value="- print any sale additional notes given" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1599132326964">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1599637030521">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1599132326964" />
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1599637030521" />
     <state x="459" y="184" key="NewPhpClassDialog" timestamp="1594980226078">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="459" y="184" key="NewPhpClassDialog/0.0.1366.738@0.0.1366.738" timestamp="1594980226078" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1599132328962">
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1599637033552">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1599132328962" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1599637033552" />
     <state x="339" y="165" key="run.anything.popup" timestamp="1599131170983">
       <screen x="0" y="0" width="1366" height="738" />
     </state>

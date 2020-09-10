@@ -137,7 +137,7 @@ class Printer_lib
             $printer->feed();
 
 
-            $header = sprintf("%-31s %-7s", "Item", "Total");
+            $header = sprintf("%-30s %-7s", "Item", "Total");
             $printer->setEmphasis(true);
             $printer->text($header . "\n");
             $printer->setEmphasis(false);
@@ -160,8 +160,8 @@ class Printer_lib
             $printer->selectPrintMode();
             $printer->text("------------------------------------------------\n");*/
 
-            $grandTotal = sprintf("%-28s %-3s %-7s", "Total", ' ', number_format((float)$request['grand_total']));
-            $discount = sprintf("%-28s %-3s %-7s", "Discount", ' ', number_format((float)$request['discount']));
+            $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
+            $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
             $printer->text($grandTotal . "\n");
             $printer->text($discount . "\n");
 
@@ -170,14 +170,14 @@ class Printer_lib
                 $printer->text("------------------------------------------------\n");
                 $printer->feed();
                 foreach ($request['sale_tax_breakdown'] as $tax) {
-                    $taxEntry = sprintf("%-28s %-3s %-7s", $tax['tax_name'], ' ', $tax['tax_value_formatted']);
+                    $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
                     $printer->text($taxEntry . "\n");
                 }
             }
 
             //total indicator
             $printer->text("------------------------------------------------\n");
-            $orderDueText = sprintf("%-28s %-3s %-7s", "TOTAL (KES)", ' ', number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText . "\n");
@@ -189,6 +189,18 @@ class Printer_lib
             $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%\n");
             $printer->feed(1);
             $printer->text("------------------------------------------------\n");*/
+
+            if(!empty($request['sale_notes'])){
+                $printer->feed();
+
+                foreach ($request['sale_notes'] as $sale_note) {
+                    $printer->text($sale_note['heading'].": " . $sale_note['content'] . "\n");
+                }
+
+                $printer->text("------------------------------------------------\n");
+                $printer->feed();
+            }
+
 
             if ($tillNo = $this->filter_array($variables, 'till_no')) {
                 $printer->text("TILL NO.    :   " . $tillNo['value'] . "\n");
@@ -212,16 +224,6 @@ class Printer_lib
 
             $printer->text("------------------------------------------------\n");
 
-            if(!empty($request['sale_notes'])){
-                $printer->feed();
-
-                foreach ($request['sale_notes'] as $sale_note) {
-                    $printer->text($sale_note['heading'].": " . $sale_note['content'] . "\n");
-                }
-
-                $printer->text("------------------------------------------------\n");
-                $printer->feed();
-            }
 
             //uzapoint footer
             $printer->feed(1);
