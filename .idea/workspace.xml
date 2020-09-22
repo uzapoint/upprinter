@@ -110,21 +110,22 @@
     <MESSAGE value="- Added function for printing end shift report" />
     <MESSAGE value="- tax breakdown on proforma/bill receipt" />
     <MESSAGE value="- print any sale additional notes given" />
-    <option name="LAST_COMMIT_MESSAGE" value="- print any sale additional notes given" />
+    <MESSAGE value="- changes to proforma receipt design" />
+    <option name="LAST_COMMIT_MESSAGE" value="- changes to proforma receipt design" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1599637030521">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1599739295839">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1599637030521" />
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1599739295839" />
     <state x="459" y="184" key="NewPhpClassDialog" timestamp="1594980226078">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state x="459" y="184" key="NewPhpClassDialog/0.0.1366.738@0.0.1366.738" timestamp="1594980226078" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1599637033552">
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1599739298191">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1599637033552" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1599739298191" />
     <state x="339" y="165" key="run.anything.popup" timestamp="1599131170983">
       <screen x="0" y="0" width="1366" height="738" />
     </state>

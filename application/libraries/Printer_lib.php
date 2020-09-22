@@ -224,6 +224,20 @@ class Printer_lib
 
             $printer->text("------------------------------------------------\n");
 
+            //check if has receipt footer notes
+            if(!empty($request['footer_notes'])){
+                $printer->feed(2);
+                if($request['footer_notes']['footer_notes_alignment'] == 'center'){
+                    $printer->setJustification(Printer::JUSTIFY_CENTER);
+                }
+                foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
+                    $printer->text($footer_note."\n");
+                }
+                if($request['footer_notes']['footer_notes_alignment'] == 'center'){
+                    $printer->setJustification();
+                }
+                $printer->text("------------------------------------------------\n");
+            }
 
             //uzapoint footer
             $printer->feed(1);
