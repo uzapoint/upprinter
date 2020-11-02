@@ -178,17 +178,23 @@ class Printer_lib
             //total indicator
             $printer->text("------------------------------------------------\n");
             $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
-            $printer->setTextSize(1, 2);
+            //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText . "\n");
-            $printer->selectPrintMode();
+            //$printer->selectPrintMode();
 
             $printer->text("------------------------------------------------\n");
             $printer->feed(1);
-            /*$totalVat = 0.16 * (float)$request['grand_total'];
-            $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%\n");
+
+            $amountGiven = sprintf("%-30s %-7s", "Amount Given (".$request['payment_methods_string'].")", $request['amount_given']);
+            $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
+            $balance = sprintf("%-30s %-7s", $request['balance_name'], $request['balance']);
+            $printer->text($amountGiven . "\n");
+            $printer->text($amountToPay . "\n");
+            $printer->text($balance . "\n");
             $printer->feed(1);
-            $printer->text("------------------------------------------------\n");*/
+            $printer->selectPrintMode();
+            $printer->text("------------------------------------------------\n");
 
             if(!empty($request['sale_notes'])){
                 $printer->feed();
