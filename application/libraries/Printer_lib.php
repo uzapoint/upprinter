@@ -71,14 +71,18 @@ class Printer_lib
             foreach ($receipt['items'] as $item) {
                 $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
                 if (!empty($item['options']) && sizeof($item['options'])) {
-                    $printer->feed(1);
                     $printer->selectPrintMode();
-                    foreach ($item['options'] as $option) {
-                        $printer->text('            -> ' . $option . "\n");
-                        $printer->feed(1);
-                    }
+                    $printer->text('       ->' . implode(", ", $item['options']) . "\n");
                 }
+                $printer->feed(1);
                 //$printer->setTextSize(1, 2);
+            }
+
+            //add order options, if there is any
+            if(!empty($request['order_options']) && sizeof($request['order_options'])){
+                $printer->feed();
+                $printer->text("    ORDER OPTIONS\n");
+                $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
             }
 
             $printer->feed(5);
