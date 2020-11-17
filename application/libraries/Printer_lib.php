@@ -80,9 +80,21 @@ class Printer_lib
 
             //add order options, if there is any
             if(!empty($request['order_options']) && sizeof($request['order_options'])){
+                $printer->text("------------------------------------------------\n");
                 $printer->feed();
                 $printer->text("    ORDER OPTIONS\n");
                 $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+            }
+
+            if(!empty($request['order_delivery_method'])){
+                $printer->text("------------------------------------------------\n");
+                $printer->feed();
+                $printer->text("DELIVERY DETAILS\n\n");
+                $printer->text('Delivery: ' . ($request['order_delivery_method'] == 'pickup' ? 'Customer Pickup' : 'Delivery Order') . "\n");
+                if(!empty($request['order_delivery_location'])) $printer->text('Location: ' . $request['order_delivery_location'] . "\n");
+                if(!empty($request['order_delivery_address'])) $printer->text('Address: ' . $request['order_delivery_address'] . "\n");
+                if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost: ' . $request['order_delivery_location'] . "\n");
+                if(!empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
             }
 
             $printer->feed(5);

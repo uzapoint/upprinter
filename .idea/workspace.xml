@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="- added code for opening cash drawer after printing sale receipt">
+    <list default="true" id="0e615287-648e-41db-b6c2-9fbd3f1f1992" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/libraries/Printer_lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/libraries/Printer_lib.php" afterDir="false" />
     </list>
@@ -160,9 +160,17 @@
       <updated>1605352592276</updated>
       <workItem from="1605352593493" duration="1653000" />
       <workItem from="1605445671455" duration="18000" />
-      <workItem from="1605529332778" duration="4294000" />
+      <workItem from="1605529332778" duration="4351000" />
+      <workItem from="1605628768923" duration="2888000" />
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="- changes for printing item options &amp; order options on captain order receipts">
+      <created>1605551877872</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1605551877872</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -210,17 +218,18 @@
     <MESSAGE value="- print any sale additional notes given" />
     <MESSAGE value="- changes to proforma receipt design" />
     <MESSAGE value="- added code for opening cash drawer after printing sale receipt" />
-    <option name="LAST_COMMIT_MESSAGE" value="- added code for opening cash drawer after printing sale receipt" />
+    <MESSAGE value="- changes for printing item options &amp; order options on captain order receipts" />
+    <option name="LAST_COMMIT_MESSAGE" value="- changes for printing item options &amp; order options on captain order receipts" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1605273437771">
+    <state x="337" y="0" key="CommitChangelistDialog2" timestamp="1605551874920">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1605273437771" />
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1605272884593">
+    <state x="337" y="0" key="CommitChangelistDialog2/0.0.1366.738@0.0.1366.738" timestamp="1605551874920" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2" timestamp="1605551881730">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1605272884593" />
+    <state x="275" y="91" key="Vcs.Push.Dialog.v2/0.0.1366.738@0.0.1366.738" timestamp="1605551881730" />
     <state x="339" y="165" key="run.anything.popup" timestamp="1599131170983">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
