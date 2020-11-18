@@ -212,12 +212,14 @@ class Printer_lib
             $amountGiven = sprintf("%-30s %-7s", "Amount Given (".$request['payment_methods_string'].")", $request['amount_given']);
             $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
             $balance = sprintf("%-30s %-7s", $request['balance_name'], $request['balance']);
-            $printer->text($amountGiven . "\n");
-            $printer->text($amountToPay . "\n");
-            $printer->text($balance . "\n");
-            $printer->feed(1);
+            if(!empty($request['amount_given'])) $printer->text($amountGiven . "\n");
+            if(!empty($request['amount_to_pay'])) $printer->text($amountToPay . "\n");
+            if(!empty($request['balance_name'])) $printer->text($balance . "\n");
+
+            $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
+            if($shouldShowPaymentsSection) $printer->feed(1);
             $printer->selectPrintMode();
-            $printer->text("------------------------------------------------\n");
+            if($shouldShowPaymentsSection) $printer->text("------------------------------------------------\n");
 
             if(!empty($request['sale_notes'])){
                 $printer->feed();
