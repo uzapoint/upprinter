@@ -93,7 +93,7 @@ class Printer_lib
                 $printer->text('Delivery: ' . ($request['order_delivery_method'] == 'pickup' ? 'Pickup Order' : 'Delivery Order') . "\n");
                 if(!empty($request['order_delivery_location'])) $printer->text('Location: ' . $request['order_delivery_location'] . "\n");
                 if(!empty($request['order_delivery_address'])) $printer->text('Address: ' . $request['order_delivery_address'] . "\n");
-                if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost: ' . $request['order_delivery_cost'] . "\n");
+                //if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost: ' . $request['order_delivery_cost'] . "\n");
                 if(!empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
             }
 
