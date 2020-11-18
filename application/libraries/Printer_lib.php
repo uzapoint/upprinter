@@ -193,6 +193,13 @@ class Printer_lib
 
             //total indicator
             $printer->text("------------------------------------------------\n");
+
+            //check if should add delivery cost
+            if(!empty($request['delivery_cost'])){
+                $deliveryCostText = sprintf("%-30s %-7s", "Delivery", $request['delivery_cost']);
+                $printer->text($deliveryCostText . "\n\n");
+            }
+
             $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
             //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
