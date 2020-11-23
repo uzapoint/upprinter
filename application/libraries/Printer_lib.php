@@ -90,10 +90,11 @@ class Printer_lib
                 $printer->text("------------------------------------------------\n");
                 $printer->feed();
                 $printer->text("DELIVERY DETAILS\n\n");
+                if($request['order_delivery_method'] == 'delivery') $printer->text('Customer: ' . $receipt['customer'] . "\n");
+                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_customer_contact'])) $printer->text('Phone: ' . $request['order_customer_contact'] . "\n");
                 $printer->text('Delivery: ' . ($request['order_delivery_method'] == 'pickup' ? 'Pickup Order' : 'Delivery Order') . "\n");
                 if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_location'])) $printer->text('Location: ' . $request['order_delivery_location'] . "\n");
                 if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_address'])) $printer->text('Address: ' . $request['order_delivery_address'] . "\n");
-                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_customer_contact'])) $printer->text('Phone: ' . $request['order_customer_contact'] . "\n");
                 //if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost: ' . $request['order_delivery_cost'] . "\n");
                 if($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
             }
