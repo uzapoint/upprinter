@@ -177,6 +177,7 @@ class Printer_lib
                     sprintf("%-30s %-7s", ($item['qty'].' x '.$item['item_price']), number_format((float)$item['total'], 2))."\n"
                 );
                 $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
             }
             $connector->write(self::ESC."d".chr(1));
             $printer->text("------------------------------------------------");
