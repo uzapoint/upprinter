@@ -361,40 +361,50 @@ class Printer_lib
             if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
-                $printer->text($companyName['value'] . "\n");
+                $printer->text($companyName['value']);
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
                 $printer->setEmphasis(false);
 
                 $printer->selectPrintMode();
             }
 
             if ($heading1 = $this->filter_array($variables, 'contact_1')) {
-                $printer->text($heading1['value'] . "\n");
+                $printer->text($heading1['value']);
+                $connector->write(self::ESC."d".chr(1));
             }
 
             if ($heading2 = $this->filter_array($variables, 'contact_2')) {
-                $printer->text($heading2['value'] . "\n");
-                $printer->feed(1);
+                $printer->text($heading2['value']);
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
             }
 
             $printer->feed();
             $printer->setTextSize(1, 2);
-            $printer->text("END SHIFT REPORT \n");
+            $printer->text("END SHIFT REPORT");
+            $connector->write(self::ESC."d".chr(1));
             $printer->selectPrintMode();
             $printer->setJustification();
             $printer->feed();
 
             $printer->selectPrintMode();
-            $printer->text("Opened:   ".$request["opened_by"]."\n");
-            $printer->text("          ".$request["opened_at"]."\n");
+            $printer->text("Opened:   ".$request["opened_by"]);
+            $connector->write(self::ESC."d".chr(1));
+            $printer->text("          ".$request["opened_at"]);
+            $connector->write(self::ESC."d".chr(1));
             $printer->feed();
-            $printer->text("Closed:   ".$request["closed_by"]."\n");
-            $printer->text("          ".$request["closed_at"]."\n");
+            $printer->text("Closed:   ".$request["closed_by"]);
+            $connector->write(self::ESC."d".chr(1));
+            $printer->text("          ".$request["closed_at"]);
+            $connector->write(self::ESC."d".chr(1));
 
             $printer->feed(2);
 
             $header = sprintf("%-16s %-8s %-8s %-8s", "", "Actual", "Expected", "Variance");
             $printer->setEmphasis(true);
-            $printer->text($header. "\n");
+            $printer->text($header);
+            $connector->write(self::ESC."d".chr(1));
             $printer->setEmphasis(false);
 
             foreach ($request['collections'] as $index => $collection) {
@@ -402,7 +412,8 @@ class Printer_lib
                 if($index === (sizeof($request['collections']) -1)){
                     $printer->setEmphasis(true);
                 }
-                $printer->text($myItem . "\n");
+                $printer->text($myItem);
+                $connector->write(self::ESC."d".chr(1));
                 //$printer->feed();
                 $printer->setEmphasis(false);
 
