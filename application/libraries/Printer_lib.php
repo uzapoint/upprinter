@@ -48,56 +48,83 @@ class Printer_lib
 
             //date and time heading
             $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
-            $printer->text($datetimeheading . "\n");
-            $printer->feed(1);
+            $printer->text($datetimeheading);
+            $connector->write(self::ESC."d".chr(1));
+            $connector->write(self::ESC."d".chr(1));
 
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setEmphasis(true);
 
             if (!empty($request['business_name'])) {
-                $printer->text($request['business_name'] . "\n");
+                $printer->text($request['business_name']);
+                $connector->write(self::ESC."d".chr(1));
                 $printer->setEmphasis(false);
-                $printer->feed(1);
+                $connector->write(self::ESC."d".chr(1));
             }
 
 
-            $printer->text($receipt['customer'] . "\n");
-            $printer->feed(1);
-            $printer->text($receipt['pos_user'] . "\n");
+            $printer->text($receipt['customer']);
+            $connector->write(self::ESC."d".chr(1));
+            $connector->write(self::ESC."d".chr(1));
+            $printer->text($receipt['pos_user']);
+            $connector->write(self::ESC."d".chr(1));
             $printer->feed(2);
             $printer->setJustification();
             $printer->setEmphasis(false);
 
             foreach ($receipt['items'] as $item) {
-                $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                $printer->text('    ' . $item['qty'] . " X " . $item['item_name']);
+                $connector->write(self::ESC."d".chr(1));
                 if (!empty($item['options']) && sizeof($item['options'])) {
                     $printer->selectPrintMode();
-                    $printer->text('       ->' . implode(", ", $item['options']) . "\n");
+                    $printer->text('       ->' . implode(", ", $item['options']));
+                    $connector->write(self::ESC."d".chr(1));
                 }
-                $printer->feed(1);
+                $connector->write(self::ESC."d".chr(1));
                 //$printer->setTextSize(1, 2);
             }
 
             //add order options, if there is any
             if(!empty($request['order_options']) && sizeof($request['order_options'])){
-                $printer->text("------------------------------------------------\n");
-                $printer->feed();
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
                 $printer->text("    ORDER OPTIONS\n");
-                $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+                $printer->text('       ' . implode(", ", $request['order_options']));
+                $connector->write(self::ESC."d".chr(1));
             }
 
             if(!empty($request['order_delivery_method'])){
-                $printer->text("------------------------------------------------\n");
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC."d".chr(1));
                 $printer->feed();
-                $printer->text("DELIVERY DETAILS\n\n");
-                if($request['order_delivery_method'] == 'delivery') $printer->text('Customer: ' . $receipt['customer'] . "\n");
-                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_customer_contact'])) $printer->text('Phone: ' . $request['order_customer_contact'] . "\n");
-                $printer->text('Delivery: ' . ($request['order_delivery_method'] == 'pickup' ? 'Pickup Order' : 'Delivery Order') . "\n");
-                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_location'])) $printer->text('Location: ' . $request['order_delivery_location'] . "\n");
-                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_address'])) $printer->text('Address: ' . $request['order_delivery_address'] . "\n");
+                $printer->text("DELIVERY DETAILS");
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
+                if($request['order_delivery_method'] == 'delivery') {
+                    $printer->text('Customer: ' . $receipt['customer']);
+                    $connector->write(self::ESC."d".chr(1));
+                }
+                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_customer_contact'])) {
+                    $printer->text('Phone: ' . $request['order_customer_contact']);
+                    $connector->write(self::ESC."d".chr(1));
+                }
+                $printer->text('Delivery: ' . ($request['order_delivery_method'] == 'pickup' ? 'Pickup Order' : 'Delivery Order'));
+                $connector->write(self::ESC."d".chr(1));
+                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_location'])) {
+                    $printer->text('Location: ' . $request['order_delivery_location']);
+                    $connector->write(self::ESC."d".chr(1));
+                }
+                if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_address'])) {
+                    $printer->text('Address: ' . $request['order_delivery_address']);
+                    $connector->write(self::ESC."d".chr(1));
+                }
                 //if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost: ' . $request['order_delivery_cost'] . "\n");
-                if($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
+                if($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) {
+                    $printer->text('Other Details: ' . $request['order_pickup_details']);
+                    $connector->write(self::ESC."d".chr(1));
+                }
             }
 
             $printer->feed(5);
