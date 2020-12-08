@@ -129,6 +129,7 @@ class Printer_lib
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
+            $printer->cut();
             $printer->close();
         }
     }
@@ -358,6 +359,7 @@ class Printer_lib
             $printer->feed(5);
 
             $connector->write(chr(27) . chr(109));
+            $printer->cut();
             $printer->pulse();
             $printer->close();
 
@@ -595,6 +597,7 @@ class Printer_lib
             $printer->feed(5);
 
             $connector->write(chr(27) . chr(109));
+            $printer->cut();
             $printer->pulse();
             $printer->close();
 
@@ -685,6 +688,7 @@ class Printer_lib
             $printer->feed(5);
 
             $connector->write(chr(27) . chr(109));
+            $printer->cut();
             $printer->close();
 
             return true;
