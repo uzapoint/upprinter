@@ -300,6 +300,243 @@ class Printer_lib
             return false;
         }
     }
+    public function deliveryNote($request = array())
+    {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }
+        $printer = new Printer($connector);
+
+        $variables = $request['variables'];
+
+
+        try {
+
+            //put heading
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text("DELIVERY NOTE");
+            $connector->write(self::ESC."d".chr(1));
+            $connector->write(self::ESC."d".chr(1));
+
+            //set header
+            if ($companyName = $this->filter_array($variables, 'company_name')) {
+                $printer->text($companyName['value']);
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
+            }
+            $printer->setEmphasis(false);
+            $printer->selectPrintMode();
+
+            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
+                $printer->text($heading1['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+                $printer->text($heading2['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            $connector->write(self::ESC."d".chr(1));
+            $printer->setJustification();
+
+            /*$printer->setEmphasis(true);
+            $printer->text($request['entity'] . " No    :   " . $request['order_ref']);
+            $connector->write(self::ESC."d".chr(1));
+            $printer->setEmphasis(false);*/
+
+            $printer->text("Served By   :   " . $request['pos_user']);
+            $connector->write(self::ESC."d".chr(1));
+
+            $printer->selectPrintMode();
+            $printer->text("Customer    :   " . $request["customer"]);
+            $connector->write(self::ESC."d".chr(1));
+
+            $printer->text($request['receipt_date']);
+            $connector->write(self::ESC."d".chr(1));
+            $connector->write(self::ESC."d".chr(1));
+
+
+            $header = sprintf("%-30s %-7s", "Item", "Total");
+            $printer->setEmphasis(true);
+            $printer->text($header);
+            $connector->write(self::ESC."d".chr(1));
+            $printer->setEmphasis(false);
+
+            foreach ($request['items'] as $key => $item) {
+                $printer->text($item['item_name']);
+                $connector->write(self::ESC."d".chr(1));
+                $printer->text(
+                    sprintf("%-30s %-7s", ($item['qty'].' x '.$item['item_price']), number_format((float)$item['total'], 2))."\n"
+                );
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
+            }
+            $connector->write(self::ESC."d".chr(1));
+            $printer->text("------------------------------------------------");
+            $connector->write(self::ESC."d".chr(1));
+
+            $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
+            $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
+            $printer->text($grandTotal);
+            $connector->write(self::ESC."d".chr(1));
+            $printer->text($discount);
+            $connector->write(self::ESC."d".chr(1));
+
+            //add sale taxes
+            /*if(!empty($request['sale_tax_breakdown'])) {
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC."d".chr(1));
+                $printer->feed();
+                foreach ($request['sale_tax_breakdown'] as $tax) {
+                    $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
+                    $printer->text($taxEntry);
+                    $connector->write(self::ESC."d".chr(1));
+                }
+            }*/
+
+            //total indicator
+            $printer->text("------------------------------------------------");
+            $connector->write(self::ESC."d".chr(1));
+
+            //check if should add delivery cost
+            if(!empty($request['delivery_cost'])){
+                $deliveryCostText = sprintf("%-30s %-7s", "Delivery", $request['delivery_cost']);
+                $printer->text($deliveryCostText);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
+            //$printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($orderDueText);
+            $connector->write(self::ESC."d".chr(1));
+            //$printer->selectPrintMode();
+
+            $printer->text("------------------------------------------------");
+            $connector->write(self::ESC."d".chr(1));
+            $connector->write(self::ESC."d".chr(1));
+            //$printer->feed(1);
+
+            $amountGiven = sprintf("%-30s %-7s", "Amount Given (".$request['payment_methods_string'].")", $request['amount_given']);
+            $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
+            $balance = sprintf("%-30s %-7s", $request['balance_name'], $request['balance']);
+            if(!empty($request['amount_given'])) {
+                $printer->text($amountGiven);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            if(!empty($request['amount_to_pay'])) {
+                $printer->text($amountToPay);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            if(!empty($request['balance_name'])) {
+                $printer->text($balance);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
+            if($shouldShowPaymentsSection) $connector->write(self::ESC."d".chr(1));
+            $printer->selectPrintMode();
+            if($shouldShowPaymentsSection) {
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            if(!empty($request['sale_notes'])){
+                $printer->feed();
+
+                foreach ($request['sale_notes'] as $sale_note) {
+                    $printer->text($sale_note['heading'].": " . $sale_note['content']);
+                    $connector->write(self::ESC."d".chr(1));
+                }
+
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC."d".chr(1));
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+
+            if ($tillNo = $this->filter_array($variables, 'till_no')) {
+                $printer->text("TILL NO.    :   " . $tillNo['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            if ($pinNo = $this->filter_array($variables, 'pin_no')) {
+                $printer->text("PIN NO.     :   " . $pinNo['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            if ($telephone = $this->filter_array($variables, 'telephone')) {
+                $printer->text("Telephone   :   " . $telephone['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            if ($email = $this->filter_array($variables, 'email')) {
+                $printer->text("Email       :   " . $email['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            if ($website = $this->filter_array($variables, 'website')) {
+                $printer->text("Website     :   " . $website['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            $printer->text("------------------------------------------------");
+            $connector->write(self::ESC."d".chr(1));
+
+            //check if has receipt footer notes
+            if(!empty($request['footer_notes'])){
+                $printer->feed(2);
+                if($request['footer_notes']['footer_notes_alignment'] == 'center'){
+                    $printer->setJustification(Printer::JUSTIFY_CENTER);
+                }
+                foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
+                    $printer->text($footer_note);
+                    $connector->write(self::ESC."d".chr(1));
+                }
+                if($request['footer_notes']['footer_notes_alignment'] == 'center'){
+                    $printer->setJustification();
+                }
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC."d".chr(1));
+            }
+
+            //uzapoint footer
+            $printer->feed(1);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if ($line1 = $this->filter_array($variables, 'line_1')) {
+                $printer->text($line1['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            if ($line2 = $this->filter_array($variables, 'line_2')) {
+                $printer->text($line2['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            if ($line3 = $this->filter_array($variables, 'line_3')) {
+                $printer->text($line3['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            if ($line4 = $this->filter_array($variables, 'line_4')) {
+                $printer->text($line4['value']);
+                $connector->write(self::ESC."d".chr(1));
+            }
+            $printer->setJustification();
+            $printer->feed(5);
+
+            $connector->write(chr(27) . chr(109));
+            $printer->pulse();
+            $printer->close();
+
+            return true;
+        } catch (Exception $e) {
+            // echo 'Message: ' . $e->getMessage();
+            return false;
+        }
+    }
 
     public function shift($request = array()){
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);

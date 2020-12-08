@@ -29,4 +29,12 @@ class Printer extends CI_Controller
 
         $this->printer_lib->shift($request);
     }
+    public function deliveryNote()
+    {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->deliveryNote($request);
+    }
 }
