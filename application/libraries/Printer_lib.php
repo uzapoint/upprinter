@@ -220,8 +220,26 @@ class Printer_lib
 
             $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
             if ($shouldShowPaymentsSection) $printer->feed(1);
+
+            //check if has details about loyalty points that has to be displayed
+            $hasLoyaltyPointsDetails = !empty($request['loyalty_points_balance']) || !empty($request['gained_loyalty_points']) || !empty($request['redeemed_loyalty_points']);
+            if($hasLoyaltyPointsDetails){
+                if (!empty($request['redeemed_loyalty_points'])) {
+                    $pointsRedeemedText = sprintf("%-30s %-7s", "Loyalty points redeemed", $request['redeemed_loyalty_points']);
+                    $printer->text($pointsRedeemedText . "\n");
+                }
+                if (!empty($request['gained_loyalty_points'])) {
+                    $pointsGainedText = sprintf("%-30s %-7s", "Loyalty points gained", $request['gained_loyalty_points']);
+                    $printer->text($pointsGainedText . "\n");
+                }
+                if (!empty($request['loyalty_points_balance'])) {
+                    $pointsBalanceText = sprintf("%-30s %-7s", "Loyalty points balance", $request['loyalty_points_balance']);
+                    $printer->text($pointsBalanceText . "\n");
+                }
+            }
+
             $printer->selectPrintMode();
-            if ($shouldShowPaymentsSection) $printer->text("------------------------------------------------\n");
+            if ($hasLoyaltyPointsDetails) $printer->text("------------------------------------------------\n");
 
             if (!empty($request['sale_notes'])) {
                 $printer->feed();
