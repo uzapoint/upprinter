@@ -37,4 +37,12 @@ class Printer extends CI_Controller
 
         $this->printer_lib->deliveryNote($request);
     }
+    public function creditNote()
+    {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->creditNote($request);
+    }
 }
