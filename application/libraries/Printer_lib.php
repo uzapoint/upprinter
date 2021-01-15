@@ -648,6 +648,11 @@ class Printer_lib
             $connector->write(self::ESC . "d" . chr(1));
             $printer->setJustification();
 
+            $printer->setEmphasis(true);
+            $printer->text($request['entity'] . " No    :   " . $request['order_ref']);
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->setEmphasis(false);
+
             $printer->text("Served By   :   " . $request['pos_user']);
             $connector->write(self::ESC . "d" . chr(1));
 
