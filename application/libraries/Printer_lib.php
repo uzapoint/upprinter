@@ -101,7 +101,8 @@ class Printer_lib
                 if($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
             }
 
-            $printer->feed(5);
+            $printer->feed(7);
+            $printer->feed(2);
             $connector->write(chr(27) . chr(109));
             $printer->close();
         }
