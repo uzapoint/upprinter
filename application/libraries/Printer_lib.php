@@ -140,8 +140,8 @@ class Printer_lib
 
             if ($heading2 = $this->filter_array($variables, 'contact_2')) {
                 $printer->text($heading2['value'] . "\n");
-                $printer->feed(1);
             }
+            $printer->feed(1);
             $printer->setJustification();
 
             $printer->setEmphasis(true);
@@ -289,7 +289,7 @@ class Printer_lib
 
             //check if has receipt footer notes
             if (!empty($request['footer_notes'])) {
-                $printer->feed(2);
+                $printer->feed(7);
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification(Printer::JUSTIFY_CENTER);
                 }
@@ -319,6 +319,7 @@ class Printer_lib
             }
             $printer->setJustification();
             $printer->feed(5);
+            $printer->feed(2);
             $connector->write(chr(27) . chr(109));
         }
 
