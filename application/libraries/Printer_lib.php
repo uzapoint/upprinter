@@ -64,7 +64,8 @@ class Printer_lib
 
 
             $printer->text($receipt['customer'] . "\n");
-            $printer->feed(1);
+            $printer->text("\n");
+            //$printer->feed(1);
             $printer->text($receipt['pos_user'] . "\n");
             $printer->feed(2);
             $printer->setJustification();
