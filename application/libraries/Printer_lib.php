@@ -64,10 +64,11 @@ class Printer_lib
 
 
             $printer->text($receipt['customer'] . "\n");
-            $printer->text("\n");
-            //$printer->feed(1);
+            $printer->feed(1);
             $printer->text($receipt['pos_user'] . "\n");
-            $printer->feed(2);
+            //$printer->feed(7);
+            $printer->text("                                   \n");
+            $printer->text("                                   \n");
             $printer->setJustification();
             $printer->setEmphasis(false);
 
