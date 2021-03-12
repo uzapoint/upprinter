@@ -82,14 +82,14 @@ class Printer_lib
 
             //add order options, if there is any
             if(!empty($request['order_options']) && sizeof($request['order_options'])){
-                $printer->text("------------------------------------------------\n");
+                $printer->text("----------------------------------------\n");
                 $printer->feed();
                 $printer->text("    ORDER OPTIONS\n");
                 $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
             }
 
             if(!empty($request['order_delivery_method'])){
-                $printer->text("------------------------------------------------\n");
+                $printer->text("----------------------------------------\n");
                 $printer->feed();
                 $printer->text("DELIVERY DETAILS\n\n");
                 if($request['order_delivery_method'] == 'delivery') $printer->text('Customer: ' . $receipt['customer'] . "\n");
@@ -170,15 +170,14 @@ class Printer_lib
                 $printer->text("\n");
             }
             $printer->feed(1);
-            $printer->text("------------------------------------------------\n");
+            $printer->text("----------------------------------------\n");
 
 
             /*$orderDueText = sprintf("%-5s %20s %15s", " ", "TOTAL : KES.", number_format((float)$request['grand_total']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText . "\n");
-            $printer->selectPrintMode();
-            $printer->text("------------------------------------------------\n");*/
+            $printer->selectPrintMode();*/
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
@@ -187,7 +186,7 @@ class Printer_lib
 
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
-                $printer->text("------------------------------------------------\n");
+                $printer->text("----------------------------------------\n");
                 $printer->feed();
                 foreach ($request['sale_tax_breakdown'] as $tax) {
                     $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
@@ -196,7 +195,7 @@ class Printer_lib
             }
 
             //total indicator
-            $printer->text("------------------------------------------------\n");
+            $printer->text("----------------------------------------\n");
 
             //check if should add delivery cost
             if (!empty($request['delivery_cost'])) {
@@ -210,7 +209,7 @@ class Printer_lib
             $printer->text($orderDueText . "\n");
             //$printer->selectPrintMode();
 
-            $printer->text("------------------------------------------------\n");
+            $printer->text("----------------------------------------\n");
             $printer->feed(1);
 
             $amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
@@ -223,7 +222,7 @@ class Printer_lib
             $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
             if ($shouldShowPaymentsSection) {
                 $printer->feed(1);
-                $printer->text("------------------------------------------------\n");
+                $printer->text("----------------------------------------\n");
             }
 
             //check if has details about loyalty points that has to be displayed
@@ -251,7 +250,7 @@ class Printer_lib
             }
 
             $printer->selectPrintMode();
-            if ($hasLoyaltyPointsDetails) $printer->text("------------------------------------------------\n");
+            if ($hasLoyaltyPointsDetails) $printer->text("----------------------------------------\n");;
 
             if (!empty($request['sale_notes'])) {
                 $printer->feed();
@@ -260,7 +259,7 @@ class Printer_lib
                     $printer->text($sale_note['heading'] . ": " . $sale_note['content'] . "\n");
                 }
 
-                $printer->text("------------------------------------------------\n");
+                $printer->text("----------------------------------------\n");
                 $printer->feed();
             }
 
@@ -285,7 +284,7 @@ class Printer_lib
                 $printer->text("Website     :   " . $website['value'] . "\n");
             }
 
-            $printer->text("------------------------------------------------\n");
+            $printer->text("----------------------------------------\n");
 
             //check if has receipt footer notes
             if (!empty($request['footer_notes'])) {
@@ -299,7 +298,7 @@ class Printer_lib
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification();
                 }
-                $printer->text("------------------------------------------------\n");
+                $printer->text("----------------------------------------\n");
             }
 
             //uzapoint footer
@@ -372,11 +371,6 @@ class Printer_lib
             $connector->write(self::ESC . "d" . chr(1));
             $printer->setJustification();
 
-            /*$printer->setEmphasis(true);
-            $printer->text($request['entity'] . " No    :   " . $request['order_ref']);
-            $connector->write(self::ESC."d".chr(1));
-            $printer->setEmphasis(false);*/
-
             $printer->text("Served By   :   " . $request['pos_user']);
             $connector->write(self::ESC . "d" . chr(1));
 
@@ -405,7 +399,7 @@ class Printer_lib
                 $connector->write(self::ESC . "d" . chr(1));
             }
             $connector->write(self::ESC . "d" . chr(1));
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
@@ -428,7 +422,7 @@ class Printer_lib
             }*/
 
             //total indicator
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
 
             //check if should add delivery cost
@@ -445,7 +439,7 @@ class Printer_lib
             $connector->write(self::ESC . "d" . chr(1));
             //$printer->selectPrintMode();
 
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
             $connector->write(self::ESC . "d" . chr(1));
             //$printer->feed(1);
@@ -470,7 +464,7 @@ class Printer_lib
             if ($shouldShowPaymentsSection) $connector->write(self::ESC . "d" . chr(1));
             $printer->selectPrintMode();
             if ($shouldShowPaymentsSection) {
-                $printer->text("------------------------------------------------");
+                $printer->text("----------------------------------------\n");
                 $connector->write(self::ESC . "d" . chr(1));
             }
 
@@ -482,7 +476,7 @@ class Printer_lib
                     $connector->write(self::ESC . "d" . chr(1));
                 }
 
-                $printer->text("------------------------------------------------");
+                $printer->text("----------------------------------------\n");
                 $connector->write(self::ESC . "d" . chr(1));
                 $connector->write(self::ESC . "d" . chr(1));
             }
@@ -513,7 +507,7 @@ class Printer_lib
                 $connector->write(self::ESC . "d" . chr(1));
             }
 
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
 
             //check if has receipt footer notes
@@ -529,7 +523,7 @@ class Printer_lib
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification();
                 }
-                $printer->text("------------------------------------------------");
+                $printer->text("----------------------------------------\n");
                 $connector->write(self::ESC . "d" . chr(1));
             }
 
@@ -640,7 +634,7 @@ class Printer_lib
                 $connector->write(self::ESC . "d" . chr(1));
             }
             $connector->write(self::ESC . "d" . chr(1));
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
@@ -651,7 +645,7 @@ class Printer_lib
             $connector->write(self::ESC . "d" . chr(1));
 
             //total indicator
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
 
             $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
@@ -661,7 +655,7 @@ class Printer_lib
             $connector->write(self::ESC . "d" . chr(1));
             //$printer->selectPrintMode();
 
-            $printer->text("------------------------------------------------");
+            $printer->text("----------------------------------------\n");
             $connector->write(self::ESC . "d" . chr(1));
             $connector->write(self::ESC . "d" . chr(1));
             //$printer->feed(1);
@@ -679,7 +673,7 @@ class Printer_lib
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification();
                 }
-                $printer->text("------------------------------------------------");
+                $printer->text("----------------------------------------\n");
                 $connector->write(self::ESC . "d" . chr(1));
             }
 
