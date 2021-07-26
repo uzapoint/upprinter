@@ -169,7 +169,7 @@ class Printer_lib
                 );
                 $printer->text("\n");
             }
-            $printer->feed(1);
+            //$printer->feed(1);
             $printer->text("------------------------------------------------\n");
 
 
@@ -184,6 +184,11 @@ class Printer_lib
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
             $printer->text($grandTotal . "\n");
             $printer->text($discount . "\n");
+            //check if should add customer charge details
+            if (!empty($request['customer_charge'])) {
+                $customerChargeText = sprintf("%-30s %-7s", "Customer Charge", $request['customer_charge']);
+                $printer->text($customerChargeText . "\n\n");
+            }
 
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
@@ -211,11 +216,11 @@ class Printer_lib
             //$printer->selectPrintMode();
 
             $printer->text("------------------------------------------------\n");
-            $printer->feed(1);
+            //$printer->feed(1);
 
             //$amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
             $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
-            $balance = sprintf("%-30s %-7s", $request['balance_name'], $request['balance']);
+            $balance = sprintf("%-5s %-24s %-7s", "", $request['balance_name'], $request['balance']);
             if (!empty($request['amount_to_pay'])) $printer->text($amountToPay . "\n");
             if (!empty($request['amount_given'])) $printer->text("Amount Given\n");
             if(!empty($request['payments'])){
@@ -228,7 +233,7 @@ class Printer_lib
 
             $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
             if ($shouldShowPaymentsSection) {
-                $printer->feed(1);
+                //$printer->feed(1);
                 $printer->text("------------------------------------------------\n");
             }
 
@@ -260,14 +265,14 @@ class Printer_lib
             if ($hasLoyaltyPointsDetails) $printer->text("------------------------------------------------\n");
 
             if (!empty($request['sale_notes'])) {
-                $printer->feed();
+                //$printer->feed();
 
                 foreach ($request['sale_notes'] as $sale_note) {
                     $printer->text($sale_note['heading'] . ": " . $sale_note['content'] . "\n");
                 }
 
                 $printer->text("------------------------------------------------\n");
-                $printer->feed();
+                //$printer->feed();
             }
 
 
@@ -295,7 +300,7 @@ class Printer_lib
 
             //check if has receipt footer notes
             if (!empty($request['footer_notes'])) {
-                $printer->feed(2);
+                //$printer->feed(2);
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification(Printer::JUSTIFY_CENTER);
                 }
@@ -309,7 +314,7 @@ class Printer_lib
             }
 
             //uzapoint footer
-            $printer->feed(1);
+            //$printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             if ($line1 = $this->filter_array($variables, 'line_1')) {
                 $printer->text($line1['value'] . "\n");
