@@ -146,7 +146,9 @@ class Printer_lib
             //add receipt title
             if(!empty($request['receipt_name'])){
                 $printer->feed();
+                $printer->setTextSize(1, 2);
                 $printer->text($request['receipt_name']."\n");
+                $printer->selectPrintMode();
                 $printer->feed();
             }
 
@@ -172,6 +174,7 @@ class Printer_lib
 
             foreach ($request['items'] as $key => $item) {
                 $printer->text($item['item_name'] . "\n");
+                if(!empty($item['serial_number'])) $printer->text($item['serial_number'] . "\n");
                 $printer->text(
                     sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                 );
