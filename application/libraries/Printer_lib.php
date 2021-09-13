@@ -142,6 +142,14 @@ class Printer_lib
                 $printer->text($heading2['value'] . "\n");
                 $printer->feed(1);
             }
+
+            //add receipt title
+            if(!empty($request['receipt_name'])){
+                $printer->feed();
+                $printer->text($request['receipt_name']."\n");
+                $printer->feed();
+            }
+
             $printer->setJustification();
 
             $printer->setEmphasis(true);
