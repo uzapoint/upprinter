@@ -304,11 +304,10 @@ class Printer_lib
                 $printer->text("Website     :   " . $website['value'] . "\n");
             }
 
-            $printer->text("------------------------------------------------\n");
-
             //check if has receipt footer notes
             if (!empty($request['footer_notes'])) {
                 //$printer->feed(2);
+                $printer->text("------------------------------------------------\n");
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification(Printer::JUSTIFY_CENTER);
                 }
