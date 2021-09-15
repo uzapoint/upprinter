@@ -320,13 +320,13 @@ class Printer_lib
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification();
                 }
-                $printer->text("------------------------------------------------\n");
             }
 
             //uzapoint footer
             //$printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             if ($line1 = $this->filter_array($variables, 'line_1')) {
+                $printer->text("------------------------------------------------\n");
                 $printer->text($line1['value'] . "\n");
             }
             if ($line2 = $this->filter_array($variables, 'line_2')) {
