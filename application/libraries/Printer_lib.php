@@ -117,8 +117,16 @@ class Printer_lib
         }
         $printer = new Printer($connector);
 
-        $variables = $request['variables'];
+        /*
+         * FOR BUSINESSES WHICH USE ONE-SOURCE ESD, GENERATE THE ESD SIGNATURE
+         * */
+        $ESD_SIGNATURE = null;
+        if(!empty($request['CAN_ESD_SIGN']) && $this->generateOneSourceESDSignature($request['items'])){
+            sleep(2);
+            $ESD_SIGNATURE = $this->readOneSourceESDSignature();
+        }
 
+        $variables = $request['variables'];
         $receiptCopies = 1;
         if(!empty($request['sale_receipt_copies'])) $receiptCopies = (int)$request['sale_receipt_copies'];
         for($copy = 1; $copy <= $receiptCopies; $copy++) {
@@ -338,6 +346,15 @@ class Printer_lib
             if ($line4 = $this->filter_array($variables, 'line_4')) {
                 $printer->text($line4['value'] . "\n");
             }
+
+            /*
+             * CHECK IF ONE-SOURCE ESD SIGNATURE IS AVAILABLE AND ADD IT
+             * */
+            if(!empty($ESD_SIGNATURE)){
+                $printer->feed();
+                $printer->text($ESD_SIGNATURE . "\n");
+            }
+
             $printer->setJustification();
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
@@ -821,5 +838,47 @@ class Printer_lib
         }
 
         return null;
+    }
+
+    private function generateOneSourceESDSignature($receiptData)
+    {
+        /*
+         * THIS IS HOW WE GET A SIGNATURE FROM ONE-SOURCE ESD
+         * - WE CREATE A TEXT FILE IN THE SOURCE DIRECTORY, WHERE ESD LISTENS TO
+         * - THE ESD READS THE TEXT FILE, GENERATES A SIGNATURE AND WRITES THAT SIGNATURE IN TO THE FILE WE HAVE SPECIFIED
+         * */
+
+        try {
+            //in text file content
+            $fileContent = json_encode($receiptData);
+            //define the in file
+            $receiptName = "C:/xampp/htdocs/upprinter/application/assets/in/ONESOURCE_ESD_IN_FILE.txt";
+            //clear any previous file
+            @unlink($receiptName);
+            //create the same file afresh
+            $myfile = fopen($receiptName, "x+") or die("Unable to open file!");
+            fwrite($myfile, $fileContent);
+            fclose($myfile);
+            return true;
+        }catch (\Exception $exception){
+            return false;
+        }
+    }
+    private function readOneSourceESDSignature()
+    {
+        //DEFINE SIGNATURE FILE TO READ
+        //$filename = "C:/out/SIGNATURE.txt";
+        $filename = "C:/xampp/htdocs/upprinter/application/assets/out/ONESOURCE_SIGNATURE.txt";
+        //DEFINE VARIABLE TO HOLD SIGNATURE
+        $signature = "";
+        //READ SIGNATURE FROM THE FILE, IF IT EXISTS
+        if(file_exists($filename)) {
+            //READ THE SIGNATURE
+            $signature = trim(file_get_contents($filename));
+            //DELETE THE FILE FOR THE NEXT SIGNATURE
+            @unlink($filename);
+        }
+        //RETURN SIGNATURE
+        return $signature;
     }
 }
