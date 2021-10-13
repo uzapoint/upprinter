@@ -350,7 +350,7 @@ class Printer_lib
             $printer->text("-----------------------------------------------\n");
 
             //add taxes
-            foreach ($request['taxes'] as $tax => $taxValue) {
+            /*foreach ($request['taxes'] as $tax => $taxValue) {
                 //$taxRow = sprintf("%-23s %-8s", ucwords($tax), number_format((float)$data['taxes'][$tax]));
                 $taxRow = sprintf("%-35s %-8s", ucwords($tax), number_format((float)$request['taxes'][$tax]));
                 //$receiptDesign .= $taxRow."\r\n";
@@ -358,7 +358,7 @@ class Printer_lib
             }
 
             //total indicator
-            $printer->text("------------------------------------------------\n");
+            $printer->text("------------------------------------------------\n");*/
             $orderDueText = sprintf("%-35s %-8s", "TOTAL ".(!empty($request['payment_methods']) ? $request['payment_methods'] : ''), number_format((float)$request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
