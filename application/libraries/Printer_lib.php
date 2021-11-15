@@ -200,7 +200,7 @@ class Printer_lib
             $printer->text("------------------------------------------------\n");*/
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
-            $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
+            $discount = sprintf("%-30s %-7s", (!empty($request['discount_name']) ? $request['discount_name'] : "Discount"), number_format((float)$request['discount'], 2));
             $printer->text($grandTotal . "\n");
             $printer->text($discount . "\n");
             //check if should add customer charge details
