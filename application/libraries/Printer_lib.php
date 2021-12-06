@@ -106,6 +106,81 @@ class Printer_lib
             $printer->close();
         }
     }
+    public function ecommerceCaptain($request = array())
+    {
+
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }
+
+        $printer = new Printer($connector);
+
+        //date and time heading
+        $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
+        $printer->text($datetimeheading . "\n");
+        $printer->feed(1);
+
+        //set header
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->setEmphasis(true);
+
+        if (!empty($request['business_name'])) {
+            $printer->text($request['business_name'] . "\n");
+            $printer->setEmphasis(false);
+            $printer->feed(1);
+        }
+
+
+        $printer->text($request['customer'] . "\n");
+        //$printer->feed(1);
+        if(!empty($request['order_no'])) $printer->text("Order No : ".$request['order_no'] . "\n");
+        if(!empty($request['payment_method'])) {
+            $printer->text("Paid via " . $request['payment_method']
+                . (!empty($request['reference_code']) ? " (".$request["reference_code"].")" : "") . "\n");
+        }
+        $printer->feed(2);
+        $printer->setJustification();
+        $printer->setEmphasis(false);
+
+        foreach ($request['items'] as $item) {
+            $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+            if (!empty($item['options']) && sizeof($item['options'])) {
+                $printer->selectPrintMode();
+                $printer->text('       ->' . implode(", ", $item['options']) . "\n");
+            }
+            $printer->feed(1);
+            //$printer->setTextSize(1, 2);
+        }
+
+        //add order options, if there is any
+        if(!empty($request['order_options']) && sizeof($request['order_options'])){
+            $printer->text("------------------------------------------------\n");
+            $printer->feed();
+            $printer->text("    ORDER OPTIONS\n");
+            $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+        }
+
+        /*if(!empty($request['order_delivery_method'])){
+            $printer->text("------------------------------------------------\n");
+            $printer->feed();
+            $printer->text("DELIVERY DETAILS\n\n");
+            if($request['order_delivery_method'] == 'delivery') $printer->text('Customer: ' . $receipt['customer'] . "\n");
+            if($request['order_delivery_method'] == 'delivery' && !empty($request['order_customer_contact'])) $printer->text('Phone: ' . $request['order_customer_contact'] . "\n");
+            $printer->text('Delivery: ' . ($request['order_delivery_method'] == 'pickup' ? 'Pickup Order' : 'Delivery Order') . "\n");
+            if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_location'])) $printer->text('Location: ' . $request['order_delivery_location'] . "\n");
+            if($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_address'])) $printer->text('Address: ' . $request['order_delivery_address'] . "\n");
+            //if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost: ' . $request['order_delivery_cost'] . "\n");
+            if($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
+        }*/
+
+        $printer->feed(5);
+        $connector->write(chr(27) . chr(109));
+        $printer->close();
+    }
 
     public function bill($request = array())
     {
@@ -163,13 +238,14 @@ class Printer_lib
             $printer->setJustification();
 
             $printer->setEmphasis(true);
-            $printer->text($request['entity'] . " No    :   " . $request['order_ref'] . "\n");
+            $printer->text($request['entity'] . " No     :   " . $request['order_ref'] . "\n");
             $printer->setEmphasis(false);
 
             $printer->text("Served By   :   " . $request['pos_user'] . "\n");
 
             $printer->selectPrintMode();
             $printer->text("Customer    :   " . $request["customer"] . "\n");
+            if(!empty($request['customer_pin'])) $printer->text("PIN NO.     :   " . $request["customer_pin"] . "\n");
             //$date = \Carbon\Carbon::now()->toDayDateTimeString();
             $printer->text($request['receipt_date'] . "\n");
             $printer->feed();
