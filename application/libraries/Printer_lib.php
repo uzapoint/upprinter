@@ -222,7 +222,7 @@ class Printer_lib
             if (!empty($request['sale_tax_breakdown'])) {
                 $printer->text("------------------------------------------------");
                 $connector->write(self::ESC . "d" . chr(1));
-                $printer->feed();
+                //$printer->feed();
                 foreach ($request['sale_tax_breakdown'] as $tax) {
                     $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
                     $printer->text($taxEntry);
@@ -278,7 +278,7 @@ class Printer_lib
             }
 
             if (!empty($request['sale_notes'])) {
-                $printer->feed();
+                //$printer->feed();
 
                 foreach ($request['sale_notes'] as $sale_note) {
                     $printer->text($sale_note['heading'] . ": " . $sale_note['content']);
@@ -321,7 +321,7 @@ class Printer_lib
 
             //check if has receipt footer notes
             if (!empty($request['footer_notes'])) {
-                $printer->feed(2);
+                //$printer->feed(2);
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification(Printer::JUSTIFY_CENTER);
                 }
@@ -337,7 +337,7 @@ class Printer_lib
             }
 
             //uzapoint footer
-            $printer->feed(1);
+            //$printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             if ($line1 = $this->filter_array($variables, 'line_1')) {
                 $printer->text($line1['value']);
