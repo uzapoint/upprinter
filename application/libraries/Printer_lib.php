@@ -407,10 +407,9 @@ class Printer_lib
             }
 
             //uzapoint footer
-            //$printer->feed(1);
+            $printer->text("------------------------------------------\n");
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             if ($line1 = $this->filter_array($variables, 'line_1')) {
-                $printer->text("------------------------------------------\n");
                 $printer->text($line1['value'] . "\n");
             }
             if ($line2 = $this->filter_array($variables, 'line_2')) {
