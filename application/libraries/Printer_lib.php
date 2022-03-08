@@ -205,11 +205,8 @@ class Printer_lib
                     sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                 );
                 $connector->write(self::ESC . "d" . chr(1));
-                $connector->write(self::ESC . "d" . chr(1));
             }
-            $connector->write(self::ESC . "d" . chr(1));
             $printer->text("------------------------------------------------");
-            $connector->write(self::ESC . "d" . chr(1));
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
@@ -221,7 +218,6 @@ class Printer_lib
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
                 $printer->text("------------------------------------------------");
-                $connector->write(self::ESC . "d" . chr(1));
                 //$printer->feed();
                 foreach ($request['sale_tax_breakdown'] as $tax) {
                     $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
@@ -242,16 +238,12 @@ class Printer_lib
             }
 
             $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
-            //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
             $connector->write(self::ESC . "d" . chr(1));
-            //$printer->selectPrintMode();
 
             $printer->text("------------------------------------------------");
             $connector->write(self::ESC . "d" . chr(1));
-            $connector->write(self::ESC . "d" . chr(1));
-            //$printer->feed(1);
 
             $amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
             $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
@@ -270,7 +262,7 @@ class Printer_lib
             }
 
             $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
-            if ($shouldShowPaymentsSection) $connector->write(self::ESC . "d" . chr(1));
+            //if ($shouldShowPaymentsSection) $connector->write(self::ESC . "d" . chr(1));
             $printer->selectPrintMode();
             if ($shouldShowPaymentsSection) {
                 $printer->text("------------------------------------------------");
@@ -286,7 +278,6 @@ class Printer_lib
                 }
 
                 $printer->text("------------------------------------------------");
-                $connector->write(self::ESC . "d" . chr(1));
                 $connector->write(self::ESC . "d" . chr(1));
             }
 
