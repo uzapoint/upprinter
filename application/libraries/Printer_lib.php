@@ -237,17 +237,21 @@ class Printer_lib
 
             $printer->setJustification();
 
-            $printer->setEmphasis(true);
-            $printer->text($request['entity'] . " No     :   " . $request['order_ref'] . "\n");
-            $printer->setEmphasis(false);
+            if(empty($request['receipt_other_details']) || $request['receipt_other_details']['SALE_NO'] == "true") {
+                $printer->setEmphasis(true);
+                $printer->text($request['entity'] . " No     :   " . $request['order_ref'] . "\n");
+                $printer->setEmphasis(false);
+            }
 
-            $printer->text("Served By   :   " . $request['pos_user'] . "\n");
+            if(empty($request['receipt_other_details']) || $request['receipt_other_details']['SERVED_BY'] == "true") $printer->text("Served By   :   " . $request['pos_user'] . "\n");
 
             $printer->selectPrintMode();
-            $printer->text("Customer    :   " . $request["customer"] . "\n");
-            if(!empty($request['customer_pin'])) $printer->text("PIN NO.     :   " . $request["customer_pin"] . "\n");
-            //$date = \Carbon\Carbon::now()->toDayDateTimeString();
-            $printer->text($request['receipt_date'] . "\n");
+            if(empty($request['receipt_other_details']) || $request['receipt_other_details']['CUSTOMER_NAME'] == "true") {
+                $printer->text("Customer    :   " . $request["customer"] . "\n");
+                if (!empty($request['customer_pin'])) $printer->text("PIN NO.     :   " . $request["customer_pin"] . "\n");
+            }
+
+            if(empty($request['receipt_other_details']) || $request['receipt_other_details']['RECEIPT_DATE'] == "true") $printer->text($request['receipt_date'] . "\n");
             $printer->feed();
 
 
