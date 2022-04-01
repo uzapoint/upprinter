@@ -53,4 +53,12 @@ class Printer extends CI_Controller
 
         $this->printer_lib->ecommerceCaptain($request);
     }
+    public function onesourceEsdSignature()
+    {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->onesourceEsdSignature($request);
+    }
 }

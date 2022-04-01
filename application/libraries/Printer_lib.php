@@ -760,7 +760,6 @@ class Printer_lib
 
         return true;
     }
-
     public function shift($request = array()){
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
@@ -845,6 +844,21 @@ class Printer_lib
             // echo 'Message: ' . $e->getMessage();
             return false;
         }
+    }
+    public function onesourceEsdSignature($request = array()){
+        /*
+         * This method attempts to generate a signature from the OneSource ESD and send it back to the person requesting
+         * */
+        $ESD_SIGNATURE = null;
+        if($this->generateOneSourceESDSignature($request)){
+            sleep(2);
+            $ESD_SIGNATURE = $this->readOneSourceESDSignature();
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            "data" => $ESD_SIGNATURE
+        ]);
     }
 
     private function filter_array($array, $key)
