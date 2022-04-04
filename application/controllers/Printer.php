@@ -58,6 +58,7 @@ class Printer extends CI_Controller
         $this->load->library('printer_lib');
 
         $request = $this->input->post();
+        $request['request_method'] = $this->input->method();
 
         $this->printer_lib->onesourceEsdSignature($request);
     }

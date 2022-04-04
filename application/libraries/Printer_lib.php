@@ -850,9 +850,11 @@ class Printer_lib
          * This method attempts to generate a signature from the OneSource ESD and send it back to the person requesting
          * */
         $ESD_SIGNATURE = null;
-        if($this->generateOneSourceESDSignature($request)){
-            sleep(2);
-            $ESD_SIGNATURE = $this->readOneSourceESDSignature();
+        if(!empty($request['request_method']) && ($request['request_method'] == 'post' || $request['request_method'] == 'post')) {
+            if ($this->generateOneSourceESDSignature($request)) {
+                sleep(2);
+                $ESD_SIGNATURE = $this->readOneSourceESDSignature();
+            }
         }
 
         header('Content-Type: application/json; charset=utf-8');
@@ -863,7 +865,8 @@ class Printer_lib
         header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
 
         echo json_encode([
-            "data" => $ESD_SIGNATURE
+            "data" => $ESD_SIGNATURE,
+            "method" => $request['request_method']
         ]);
     }
 
