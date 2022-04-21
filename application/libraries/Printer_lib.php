@@ -175,7 +175,7 @@ class Printer_lib
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
-            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']), '9100');
         }
         $printer = new Printer($connector);
 
