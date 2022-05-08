@@ -8,6 +8,7 @@ require 'Carbon\Carbon.php';
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
 
 /**
  * Printer_lib
@@ -195,6 +196,15 @@ class Printer_lib
 
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            //check if a logo for this installation has been put in assets directory
+            $logoPath = getcwd()."/application/assets/receipt_logo.png";
+            if(file_exists($logoPath) && is_readable($logoPath)) {
+                $img = \Mike42\Escpos\EscposImage::load($logoPath);
+                $printer->graphics($img);
+                $printer->text("\n");
+            }
+
             if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
