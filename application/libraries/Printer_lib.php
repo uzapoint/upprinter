@@ -201,7 +201,7 @@ class Printer_lib
             $logoPath = getcwd()."/application/assets/receipt_logo.png";
             if(file_exists($logoPath) && is_readable($logoPath)) {
                 $img = \Mike42\Escpos\EscposImage::load($logoPath);
-                $printer->graphics($img);
+                $printer->bitImage($img);
                 $printer->text("\n");
             }
 
