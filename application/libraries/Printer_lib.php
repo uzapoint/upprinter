@@ -201,7 +201,7 @@ class Printer_lib
             if(file_exists($logoPath) && is_readable($logoPath)) {
                 $img = \Mike42\Escpos\EscposImage::load($logoPath, false);
                 $printer->bitImageColumnFormat($img, Printer::IMG_DEFAULT | Printer::IMG_DOUBLE_HEIGHT);
-
+                $printer->text("\n");
             }
 
             if ($companyName = $this->filter_array($variables, 'company_name')) {
