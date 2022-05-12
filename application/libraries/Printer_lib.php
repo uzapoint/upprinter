@@ -195,6 +195,15 @@ class Printer_lib
 
             //set header
             //$printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            //check if a logo for this installation has been put in assets directory
+            $logoPath = getcwd()."/application/assets/receipt_logo.png";
+            if(file_exists($logoPath) && is_readable($logoPath)) {
+                $img = \Mike42\Escpos\EscposImage::load($logoPath, false);
+                $printer->bitImageColumnFormat($img, Printer::IMG_DEFAULT | Printer::IMG_DOUBLE_HEIGHT);
+
+            }
+
             if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
