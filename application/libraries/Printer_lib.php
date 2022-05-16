@@ -71,10 +71,10 @@ class Printer_lib
             $printer->setEmphasis(false);
 
             foreach ($receipt['items'] as $item) {
-                $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                $printer->text(explode(" ", $item['qty'])[0] . " X " . $item['item_name'] . "\n");
                 if (!empty($item['options']) && sizeof($item['options'])) {
                     $printer->selectPrintMode();
-                    $printer->text('       ->' . implode(", ", $item['options']) . "\n");
+                    $printer->text('   ->' . implode(", ", $item['options']) . "\n");
                 }
                 $printer->feed(1);
                 //$printer->setTextSize(1, 2);
@@ -101,7 +101,7 @@ class Printer_lib
                 if($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
             }
 
-            $printer->feed(5);
+            $printer->feed(7);
             $connector->write(chr(27) . chr(109));
             $printer->close();
         }
