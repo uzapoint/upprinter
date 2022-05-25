@@ -257,14 +257,29 @@ class Printer_lib
             $printer->text($header . "\n");
             $printer->setEmphasis(false);
 
-            foreach ($request['items'] as $key => $item) {
+            foreach ($request['items'] as $type => $items) {
+                foreach ($items as $item) {
+                    $printer->text($item['item_name'] . "\n");
+                    $printer->text(
+                        sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
+                    );
+                    $printer->text("\n");
+                }
+                $printer->setEmphasis(true);
+                $typeTotal = sprintf("%-30s %-7s", $type . " Total", number_format($request['type_totals'][$type], 2));
+                $printer->text($typeTotal . "\n");
+                $printer->setEmphasis(false);
+                $printer->feed();
+
+            }
+            /*foreach ($request['items'] as $key => $item) {
                 $printer->text($item['item_name'] . "\n");
                 if(!empty($item['serial_number'])) $printer->text($item['serial_number'] . "\n");
                 $printer->text(
                     sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                 );
                 $printer->text("\n");
-            }
+            }*/
             //$printer->feed(1);
             $printer->text("------------------------------------------\n");
 
