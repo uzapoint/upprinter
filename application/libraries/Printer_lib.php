@@ -7,6 +7,7 @@ require 'Carbon\Carbon.php';
 //use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 
@@ -931,5 +932,19 @@ class Printer_lib
         }
         //RETURN SIGNATURE
         return $signature;
+    }
+
+    public function test($request=array()){
+
+        try {
+
+            $file="C:\Users\\thukuwanjiku\Documents\Rough\label_zpl_sample.zpl";
+            copy($file, "//192.168.1.222/xp330b");
+
+            return "Success";
+
+        } catch(Exception $e) {
+            throw new \Exception($e -> getMessage());
+        }
     }
 }
