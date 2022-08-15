@@ -173,6 +173,7 @@ class Printer_lib
 
     public function bill($request = array())
     {
+
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
@@ -230,8 +231,15 @@ class Printer_lib
                 $printer->setTextSize(1, 2);
                 $printer->text($request['receipt_name']."\n");
                 $printer->selectPrintMode();
+                // $printer->feed();
+            }
+             //Added receipt status 
+            if(!empty($request['receipt_status'])){
+                $printer->text($request['receipt_status']."\n");
+                $printer->selectPrintMode();
                 $printer->feed();
             }
+             $printer->feed();
 
             $printer->setJustification();
 
@@ -333,6 +341,14 @@ class Printer_lib
                 //$printer->feed(1);
                 $printer->text("------------------------------------------\n");
             }
+            //Added a check for customer balance
+             if ($request['show_customer_balance'] == "true" && !empty($request['customer_balance'])) {
+                $printer->setTextSize(1, 2);
+                $customer_balance = sprintf("%-30s %-7s", "Customer Balance", $request['customer_balance']);
+                $printer->text($customer_balance. "\n");
+                $printer->selectPrintMode();
+                $printer->text("------------------------------------------\n");
+            }
 
             //check if has details about loyalty points that has to be displayed
             $hasLoyaltyPointsDetails = !empty($request['loyalty_points_balance'])
@@ -371,10 +387,13 @@ class Printer_lib
                 $printer->text("------------------------------------------\n");
                 //$printer->feed();
             }
-
-
+            // Added A Setting to display Bold on Till No
             if ($tillNo = $this->filter_array($variables, 'till_no')) {
+                if($tillNo['is_bold'] ) $printer->setTextSize(1, 2);
+                if($tillNo['is_bold'] ) $printer->setEmphasis(true);
                 $printer->text("TILL NO.    :   " . $tillNo['value'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
             }
 
             if ($pinNo = $this->filter_array($variables, 'pin_no')) {
