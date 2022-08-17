@@ -291,8 +291,19 @@ class Printer_lib
             if (!empty($request['sale_tax_breakdown'])) {
                 $printer->text("------------------------------------------\n");
                 $printer->feed();
-                foreach ($request['sale_tax_breakdown'] as $tax) {
+                /*foreach ($request['sale_tax_breakdown'] as $tax) {
                     $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
+                    $printer->text($taxEntry . "\n");
+                }*/
+
+                //UPDATE 17TH AUGUST 2022 - SALE TAXES IN A TABULAR FORMAT
+                $taxHeader = sprintf("%-7s %-8s %-15s %-15s", "Code", "Rate", "Taxable", "Tax Amt");
+                $printer->setEmphasis(true);
+                $printer->text($taxHeader. "\n");
+                $printer->setEmphasis(false);
+
+                foreach ($request['sale_tax_breakdown'] as $tax) {
+                    $taxEntry = sprintf("%-7s %-8s %-15s %-15s", $tax['tax_label'], $tax["tax_percentage"], $tax['taxable_amount_formatted'], $tax['tax_value_formatted']);
                     $printer->text($taxEntry . "\n");
                 }
             }
