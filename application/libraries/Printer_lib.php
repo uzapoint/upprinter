@@ -333,9 +333,9 @@ class Printer_lib
 
             $printer->text("------------------------------------------\n");
 
-            // total items count
-             if (!empty($request['show_total_items'] && !empty($request['total_items']))) {
-                $printer->text("Total Items" . ": " . $request['total_items'] . "\n");
+            //Display sale items count, where necessary
+            if (!empty($request['sale_items_count'])) {
+                $printer->text("Total Items" . ": " . $request['sale_items_count'] . "\n");
                 $printer->feed();
 
             }
