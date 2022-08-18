@@ -231,12 +231,10 @@ class Printer_lib
                 $printer->setTextSize(1, 2);
                 $printer->text($request['receipt_name']."\n");
                 $printer->selectPrintMode();
-                // $printer->feed();
             }
              //Added receipt status 
-            if(!empty($request['receipt_status'])){
-                $printer->text($request['receipt_status']."\n");
-                $printer->selectPrintMode();
+            if(!empty($request['receipt_type'])){
+                $printer->text($request['receipt_type']."\n");
                 $printer->feed();
             }
              $printer->feed();
