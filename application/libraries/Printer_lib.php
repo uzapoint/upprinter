@@ -299,8 +299,19 @@ class Printer_lib
             if (!empty($request['sale_tax_breakdown'])) {
                 $printer->text("------------------------------------------\n");
                 $printer->feed();
-                foreach ($request['sale_tax_breakdown'] as $tax) {
+                /*foreach ($request['sale_tax_breakdown'] as $tax) {
                     $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
+                    $printer->text($taxEntry . "\n");
+                }*/
+
+                //UPDATE 17TH AUGUST 2022 - SALE TAXES IN A TABULAR FORMAT
+                $taxHeader = sprintf("%-7s %-8s %-15s %-15s", "Code", "Rate", "Taxable", "Tax Amt");
+                $printer->setEmphasis(true);
+                $printer->text($taxHeader. "\n");
+                $printer->setEmphasis(false);
+
+                foreach ($request['sale_tax_breakdown'] as $tax) {
+                    $taxEntry = sprintf("%-7s %-8s %-15s %-15s", $tax['tax_label'], $tax["tax_percentage"], $tax['taxable_amount_formatted'], $tax['tax_value_formatted']);
                     $printer->text($taxEntry . "\n");
                 }
             }
@@ -353,9 +364,9 @@ class Printer_lib
                 $printer->text("------------------------------------------\n");
             }
             //Added a check for customer balance
-             if ($request['show_customer_balance'] == "true" && !empty($request['customer_balance'])) {
+             if (!empty($request['customer_receivables_balance'])) {
                 $printer->setTextSize(1, 2);
-                $customer_balance = sprintf("%-30s %-7s", "Customer Balance", $request['customer_balance']);
+                $customer_balance = sprintf("%-30s %-7s", "Customer Balance", $request['customer_receivables_balance']);
                 $printer->text($customer_balance. "\n");
                 $printer->selectPrintMode();
                 $printer->text("------------------------------------------\n");
