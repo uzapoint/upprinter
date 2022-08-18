@@ -285,7 +285,7 @@ class Printer_lib
             $printer->selectPrintMode();
             $printer->text("------------------------------------------------\n");*/
 
-            $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
+            $grandTotal = sprintf("%-30s %-7s", "SubTotal", number_format((float)$request['grand_total'], 2));
             $discount = sprintf("%-30s %-7s", (!empty($request['discount_name']) ? $request['discount_name'] : "Discount"), number_format((float)$request['discount'], 2));
             $printer->text($grandTotal . "\n");
             $printer->text($discount . "\n");
@@ -321,6 +321,17 @@ class Printer_lib
             //$printer->selectPrintMode();
 
             $printer->text("------------------------------------------\n");
+
+            // total items count
+             if (!empty($request['show_total_items'] && !empty($request['total_items']))) {
+                $printer->text("Total Items" . ": " . $request['total_items'] . "\n");
+                $printer->feed();
+
+            }
+
+
+
+
             //$printer->feed(1);
 
             //$amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
