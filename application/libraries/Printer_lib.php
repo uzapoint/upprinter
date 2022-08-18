@@ -353,9 +353,9 @@ class Printer_lib
                 $printer->text("------------------------------------------\n");
             }
             //Added a check for customer balance
-             if (!empty($request['customer_balance'])) {
+             if (!empty($request['customer_receivables_balance'])) {
                 $printer->setTextSize(1, 2);
-                $customer_balance = sprintf("%-30s %-7s", "Customer Balance", $request['customer_balance']);
+                $customer_balance = sprintf("%-30s %-7s", "Customer Balance", $request['customer_receivables_balance']);
                 $printer->text($customer_balance. "\n");
                 $printer->selectPrintMode();
                 $printer->text("------------------------------------------\n");
