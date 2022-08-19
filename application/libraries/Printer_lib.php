@@ -339,10 +339,6 @@ class Printer_lib
             }
 
 
-
-
-            //$printer->feed(1);
-
             //$amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
             $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
             $balance = sprintf("%-5s %-24s %-7s", "", $request['balance_name'], $request['balance']);
@@ -354,7 +350,9 @@ class Printer_lib
                     $printer->text($paymentEntry."\n");
                 }
             }
-            if (!empty($request['balance_name'])) $printer->text($balance . "\n");
+            //display cash change
+            if(!empty($request['cash_change'])) $printer->text(sprintf("%-5s %-24s %-7s", "", "Change", $request['cash_change']) . "\n");
+            if(!empty($request['balance_name'])) $printer->text($balance . "\n");
 
             $shouldShowPaymentsSection = !empty($request['amount_given']) || !empty($request['amount_to_pay']) || !empty($request['balance_name']);
             if ($shouldShowPaymentsSection) {
