@@ -874,6 +874,21 @@ class Printer_lib
                 $printer->setEmphasis(false);
 
             }
+            /*
+             *  Display Expenses Incurred
+             */
+            $shiftExpenseEntry = sprintf("%-18s", "Expenses Incurred");
+            $printer->feed();
+            $printer->setEmphasis(true);
+            $printer->text($shiftExpenseEntry);
+            $printer->feed();
+            $printer->setEmphasis(false);
+            if(!empty($request['expenses'])) {
+                foreach ($request['expenses'] as $type => $amount) {
+                    $myExpense = sprintf("%-18s %-8s", $type, $amount);
+                    $printer->text($myExpense. "\n");
+                }
+            }
 
             //adding shift opening amount
             $shiftOpeningAmountEntry = sprintf("%-18s %-8s %-8s %-8s", "Opening Amount", "", $request['opening_amount'], "");
