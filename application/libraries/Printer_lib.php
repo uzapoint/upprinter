@@ -232,7 +232,7 @@ class Printer_lib
                 $printer->text($request['receipt_name']."\n");
                 $printer->selectPrintMode();
             }
-             //Added receipt status 
+             //Added receipt status
             if(!empty($request['receipt_type'])){
                 $printer->text($request['receipt_type']."\n");
                 $printer->feed();
@@ -916,6 +916,19 @@ class Printer_lib
             "data" => $ESD_SIGNATURE,
             "method" => $request['request_method']
         ]);
+    }
+    //added this method to download sale receipt as text file
+    public function saveTextReceipt($request = array()){
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        $path = $request['receipt_path_specified'];
+        $textFileName = $request['sale_text_file'];
+        $data = $request['text_file_receipt'];
+
+        $receiptName = $path.'/'.$textFileName;
+        $myfile = fopen($receiptName, "x+") or die("Unable to open file!");
+        fwrite($myfile, $data);
+        fclose($myfile);
+
     }
 
     private function filter_array($array, $key)
