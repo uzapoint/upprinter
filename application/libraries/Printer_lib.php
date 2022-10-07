@@ -5,6 +5,7 @@ require APPPATH . "third_party\\escpos-php\autoload.php";
 require 'Carbon\Carbon.php';
 
 //use Carbon\Carbon;
+//use App\DB\Pos\PosReceiptVariable;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
@@ -173,11 +174,8 @@ class Printer_lib
     public function bill($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
-        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
-            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
-        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
-            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']), '9100');
-        }
+
+        $connector = new WindowsPrintConnector("POSPRINTER");
         $printer = new Printer($connector);
 
         /*
@@ -205,21 +203,21 @@ class Printer_lib
                 $printer->text("\n");
             }
 
-            if ($companyName = $this->filter_array($variables, 'company_name')) {
+            if(!empty($request['company_name'])) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
-                $printer->text($companyName['value'] . "\n");
+                $printer->text($request['company_name'] . "\n");
                 $printer->setEmphasis(false);
 
                 $printer->selectPrintMode();
             }
 
-            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
-                $printer->text($heading1['value'] . "\n");
+            if(!empty($request['contact_1'])) {
+                $printer->text($request['contact_1'] . "\n");
             }
 
-            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
-                $printer->text($heading2['value'] . "\n");
+            if(!empty($request['contact_2'])) {
+                $printer->text($request['contact_2'] . "\n");
                 $printer->feed(1);
             }
 
@@ -787,36 +785,36 @@ class Printer_lib
     }
     public function shift($request = array()){
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
-        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
-            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
-        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
-            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
-        }
+
+        /*$this->receiptVariables = PosReceiptVariable::active()->where([
+            'business_code' => $request['business_code'],
+            'terminal_id' => $request['terminal_id']
+        ])->get();*/
+
+        //$connector = new NetworkPrintConnector($this->proformaPrinter, '9100');
+        $connector = new WindowsPrintConnector("POSPRINTER");
         $printer = new Printer($connector);
 
-        $variables = $request['variables'];
 
-
-        try {
+        try{
 
             //set header
-            //$printer->initialize();
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if ($companyName = $this->filter_array($variables, 'company_name')) {
+            if(!empty($request['company_name'])) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
-                $printer->text($companyName['value'] . "\n");
+                $printer->text($request['company_name'] . "\n");
                 $printer->setEmphasis(false);
 
                 $printer->selectPrintMode();
             }
 
-            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
-                $printer->text($heading1['value'] . "\n");
+            if(!empty($request['contact_1'])) {
+                $printer->text($request['contact_1'] . "\n");
             }
 
-            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
-                $printer->text($heading2['value'] . "\n");
+            if(!empty($request['contact_2'])) {
+                $printer->text($request['contact_2'] . "\n");
                 $printer->feed(1);
             }
 
@@ -852,24 +850,40 @@ class Printer_lib
 
             }
 
-            //adding shift opening amount
-            $shiftOpeningAmountEntry = sprintf("%-18s %-8s %-8s %-8s", "Opening Amount", "", $request['opening_amount'], "");
-            $printer->feed();
-            $printer->setEmphasis(true);
-            $printer->text($shiftOpeningAmountEntry . "\n");
-            $printer->setEmphasis(false);
+            //Print out Expenses section
+            if(!empty($request['shift_expenses'])){
+                $printer->feed(2);
+                $printer->setTextSize(1, 2);
+                $printer->text("SHIFT EXPENSES \n");
+                $printer->selectPrintMode();
+                $printer->setJustification();
+                $printer->feed();
+
+                foreach ($request['shift_expenses'] as $expense) {
+                    $myItem = sprintf("%-15s %-20s", $expense['method'].":", number_format((float)$expense['amount'], 2));
+                    $printer->text($myItem . "\n");
+                }
+                $printer->feed();
+            }
 
             $printer->feed(5);
-
             $connector->write(chr(27) . chr(109));
-            $printer->close();
 
-            return true;
-        } catch (Exception $e) {
-            // echo 'Message: ' . $e->getMessage();
-            return false;
+
+        }catch (\Exception $exception){
+            $printer->feed(2);
+            $printer->text("ERROR ENCOUNTERED WHILE PRINTING....\n\n");
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+
+
+        }finally{
+            $printer -> close();
         }
+
     }
+
     public function onesourceEsdSignature($request = array()){
         /*
          * This method attempts to generate a signature from the OneSource ESD and send it back to the person requesting
