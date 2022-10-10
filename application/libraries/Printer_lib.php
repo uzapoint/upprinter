@@ -917,18 +917,18 @@ class Printer_lib
             "method" => $request['request_method']
         ]);
     }
-    //added this method to download sale receipt as text file
+
+    //Method to download sale receipt as text file
     public function saveTextReceipt($request = array()){
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
-        $path = $request['receipt_path_specified'];
-        $textFileName = $request['sale_text_file'];
-        $data = $request['text_file_receipt'];
+        $path = $request['receipt_path'];
+        $textFileName = $request['receipt_filename'];
+        $data = $request['receipt_contents'];
 
         $receiptName = $path.'/'.$textFileName;
         $myfile = fopen($receiptName, "x+") or die("Unable to open file!");
         fwrite($myfile, $data);
         fclose($myfile);
-
     }
 
     private function filter_array($array, $key)
