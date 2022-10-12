@@ -10,7 +10,7 @@ class Printer extends CI_Controller
 
         $request = $this->input->post();
 
-        $this->printer_lib->bill($request);
+        $this->printer_lib->proforma($request);
     }
 
     public function captain()
@@ -20,6 +20,14 @@ class Printer extends CI_Controller
         $request = $this->input->post();
 
         $this->printer_lib->captain($request);
+    }
+    public function sale()
+    {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->sale($request);
     }
     public function shift()
     {
