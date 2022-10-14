@@ -55,20 +55,20 @@ class Printer_lib
         $printer->text("Captain Order:  " . $request["order_ref"] . "\n");
         $dateText = Carbon::now()->toFormattedDateString() . " " . (\Carbon\Carbon::now())->format('h:i A');
         $printer->text($dateText . "\n");
+        $printer->text("-------------------------------------------\n");
 
         //add items heading
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
-        $printer->text("-------------------------------------\n");
         $printer->text($header . "\n");
-        $printer->text("-------------------------------------\n");
+        // $printer->text("-------------------------------------\n");
         $printer->setEmphasis(false);
         //add the items
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             $printer->text($myItem . "\n");
         }
-        $printer->text("-------------------------------------\n");
+        $printer->text("-------------------------------------------\n");
 
         //add foooter
         $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -117,12 +117,12 @@ class Printer_lib
         $printer->feed(1);
 
         $printer->text($request['customer'] . "\n");
-        $printer->feed(1);
+        // $printer->feed(1);
         $printer->text($request['pos_user'] . "\n");
-        $printer->feed(2);
+        // $printer->feed(2);
         $printer->setJustification();
         $printer->setEmphasis(false);
-
+        $printer->feed(1);
         foreach ($request['items'] as $item) {
             $printer->setTextSize(1, 2);
             $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
@@ -136,7 +136,7 @@ class Printer_lib
 
         //add order options, if there is any
         if (!empty($request['order_options']) && sizeof($request['order_options'])) {
-            $printer->text("-------------------------------------\n");
+            $printer->text("-------------------------------------------\n");
             $printer->feed();
             $printer->text("    ORDER OPTIONS\n");
             $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
@@ -248,6 +248,7 @@ class Printer_lib
             if (!empty($request['telephone'])) {
                 $printer->text("TEL NO : " . $request['telephone'] . "\n");
             }
+            $printer->feed();
             $printer->setJustification();
 
             $printer->setEmphasis(true);
@@ -268,7 +269,8 @@ class Printer_lib
                 foreach ($items as $item) {
                     $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
                     $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty_raw'], number_format($item['total'], 2));
-                    $printer->text($myItem . "\n");
+                    // $printer->text($myItem . "\n");
+                    $printer->text($myItem );
                 }
             }
             $printer->text("-------------------------------------\n");
@@ -311,7 +313,7 @@ class Printer_lib
 
             if (!empty($request['till_no'])) {
                 $printer->text("TILL NO : " . $request['till_no'] . "\n");
-                $printer->feed(1);
+                // $printer->feed(1);
             }
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->feed();
