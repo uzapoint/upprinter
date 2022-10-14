@@ -61,6 +61,7 @@ class Printer_lib
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
         $printer->text($header . "\n");
+        $printer->selectPrintMode();
         $printer->text("-------------------------------------\n");
         $printer->setEmphasis(false);
         //add the items
@@ -119,7 +120,7 @@ class Printer_lib
         $printer->text($request['customer'] . "\n");
         // $printer->feed(1);
         $printer->text($request['pos_user'] . "\n");
-        // $printer->feed(2);
+        // $printer->feed(1);
         $printer->setJustification();
         $printer->setEmphasis(false);
         $printer->feed(1);
@@ -623,7 +624,7 @@ class Printer_lib
 
                 $taxHeader = sprintf("%-7s %-8s %-15s %-15s", "Code", "Rate", "Vatable", "VAT Amt");
                 $printer->setEmphasis(true);
-                $printer->text($taxHeader );
+                $printer->text($taxHeader . "\n");
                 $printer->setEmphasis(false);
 
                 foreach ($request['sale_tax_breakdown'] as $tax) {
