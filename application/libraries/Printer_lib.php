@@ -591,13 +591,13 @@ class Printer_lib
                     $printer->text(
                         sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                     );
-                    $printer->text("\n");
+                    // $printer->text("\n");
                 }
                 $printer->setEmphasis(true);
                 $typeTotal = sprintf("%-30s %-7s", $type . " Total", number_format($request['type_totals'][$type], 2));
                 $printer->text($typeTotal . "\n");
                 $printer->setEmphasis(false);
-                $printer->feed();
+                // $printer->feed();
 
             }
             $printer->text("-------------------------------------\n");
@@ -612,8 +612,8 @@ class Printer_lib
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total']));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount']));
-            $printer->text($grandTotal . "\n");
-            $printer->text($discount . "\n");
+            $printer->text($grandTotal );
+            $printer->text($discount );
 
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
@@ -622,7 +622,7 @@ class Printer_lib
 
                 $taxHeader = sprintf("%-7s %-8s %-15s %-15s", "Code", "Rate", "Vatable", "VAT Amt");
                 $printer->setEmphasis(true);
-                $printer->text($taxHeader . "\n");
+                $printer->text($taxHeader );
                 $printer->setEmphasis(false);
 
                 foreach ($request['sale_tax_breakdown'] as $tax) {
@@ -667,7 +667,7 @@ class Printer_lib
             }
 
             $printer->text("-------------------------------------\n");
-            $printer->feed(1);
+            // $printer->feed(1);
             /*$totalVat = 0.16 * (float)$request['grand_total'];
             $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%\n");
             $printer->feed(1);
