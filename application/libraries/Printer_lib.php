@@ -51,7 +51,6 @@ class Printer_lib
             $printer->text($request['business_name'] . "\n");
             $printer->setEmphasis(false);
             $printer->selectPrintMode();
-            $printer->text("------------------------------------------------\n");
         }
         $printer->text("Captain Order:  " . $request["order_ref"] . "\n");
         $dateText = Carbon::now()->toFormattedDateString() . " " . (\Carbon\Carbon::now())->format('h:i A');
@@ -60,16 +59,16 @@ class Printer_lib
         //add items heading
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
-        $printer->text("------------------------------------------------\n");
+        $printer->text("-------------------------------------\n");
         $printer->text($header . "\n");
-        $printer->text("------------------------------------------------\n");
+        $printer->text("-------------------------------------\n");
         $printer->setEmphasis(false);
         //add the items
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             $printer->text($myItem . "\n");
         }
-        $printer->text("------------------------------------------------\n");
+        $printer->text("-------------------------------------\n");
 
         //add foooter
         $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -137,7 +136,7 @@ class Printer_lib
 
         //add order options, if there is any
         if (!empty($request['order_options']) && sizeof($request['order_options'])) {
-            $printer->text("------------------------------------------------\n");
+            $printer->text("-------------------------------------\n");
             $printer->feed();
             $printer->text("    ORDER OPTIONS\n");
             $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
@@ -202,7 +201,7 @@ class Printer_lib
 
         //add order options, if there is any
         if (!empty($request['order_options']) && sizeof($request['order_options'])) {
-            $printer->text("------------------------------------------------\n");
+            $printer->text("-------------------------------------\n");
             $printer->feed();
             $printer->text("    ORDER OPTIONS\n");
             $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
@@ -272,7 +271,7 @@ class Printer_lib
                     $printer->text($myItem . "\n");
                 }
             }
-            $printer->text("------------------------------------------------\n");
+            $printer->text("-------------------------------------\n");
 
 
             $grandTotal = sprintf("%-34s %-7s", "Total", number_format((float)$request['grand_total']));
@@ -281,14 +280,14 @@ class Printer_lib
             $printer->text($discount . "\n");
 
             //total indicator
-            $printer->text("------------------------------------------------\n");
+            $printer->text("-------------------------------------\n");
             $orderDueText = sprintf("%-34s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText . "\n");
             $printer->selectPrintMode();
 
-            $printer->text("------------------------------------------------\n");
+            $printer->text("-------------------------------------\n");
 
             if (!empty($request['order_payment_details']) && $request['order_payment_details']['has_partial_payments']) {
                 $printer->setEmphasis(true);
@@ -301,7 +300,7 @@ class Printer_lib
                 $printer->text("\n");
                 $printer->text("Amount Paid: " . $request['order_payment_details']['amount_paid_display'] . "\n");
                 $printer->text("Balance: " . $request['order_payment_details']['amount_due_display'] . "\n");
-                $printer->text("------------------------------------------------\n");
+                $printer->text("-------------------------------------\n");
             }
 
 
@@ -479,16 +478,17 @@ class Printer_lib
 
             if (!empty($request['till_no'])) {
                 $printer->text("TILL NO : " . $request['till_no'] . "\n");
-                $printer->feed(1);
             }
 
             if (!empty($request['pin_no'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
                 $printer->text("PIN NO : " . $request['pin_no'] . "\n");
-                $printer->feed(1);
+                $printer->selectPrintMode();
+
             }
             if (!empty($request['telephone'])) {
                 $printer->text("TEL NO : " . $request['telephone'] . "\n");
-                $printer->feed(1);
             }
             if (!empty($request['email'])) {
                 $printer->text("Email : " . $request['email'] . "\n");
@@ -496,7 +496,6 @@ class Printer_lib
             }
             if (!empty($request['website'])) {
                 $printer->text("Website : " . $request['website'] . "\n");
-                $printer->feed(1);
             }
 
             $printer->text("----------------------------------\n");
@@ -616,7 +615,7 @@ class Printer_lib
 
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
-                $printer->text("------------------------------------------------\n");
+                $printer->text("-------------------------------------\n");
                 $printer->feed();
 
                 $taxHeader = sprintf("%-7s %-8s %-15s %-15s", "Code", "Rate", "Vatable", "VAT Amt");
@@ -673,25 +672,25 @@ class Printer_lib
             $printer->text("------------------------------------------------\n");*/
 
             if (!empty($request['till_no'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
                 $printer->text("TILL NO : " . $request['till_no'] . "\n");
-                $printer->feed(1);
+                $printer->selectPrintMode();
+
             }
 
             if (!empty($request['pin_no'])) {
                 $printer->text("PIN NO : " . $request['pin_no'] . "\n");
-                $printer->feed(1);
             }
             if (!empty($request['telephone'])) {
                 $printer->text("TEL NO : " . $request['telephone'] . "\n");
-                $printer->feed(1);
             }
             if (!empty($request['email'])) {
                 $printer->text("Email : " . $request['email'] . "\n");
-                $printer->feed(1);
+
             }
             if (!empty($request['website'])) {
                 $printer->text("Website : " . $request['website'] . "\n");
-                $printer->feed(1);
             }
 
             $printer->text("----------------------------------\n");
