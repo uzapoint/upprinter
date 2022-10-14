@@ -270,8 +270,7 @@ class Printer_lib
                 foreach ($items as $item) {
                     $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
                     $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty_raw'], number_format($item['total'], 2));
-                    // $printer->text($myItem . "\n");
-                    $printer->text($myItem );
+                    $printer->text($myItem . "\n");
                 }
             }
             $printer->text("-------------------------------------\n");
@@ -314,7 +313,11 @@ class Printer_lib
             }
 
             if (!empty($request['till_no'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
                 $printer->text("TILL NO : " . $request['till_no'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
                 // $printer->feed(1);
             }
             $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -405,7 +408,6 @@ class Printer_lib
                     $printer->text(
                         sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                     );
-                    $printer->text("\n");
                 }
                 $printer->setEmphasis(true);
                 $typeTotal = sprintf("%-30s %-7s", $type . " Total", number_format($request['type_totals'][$type], 2));
