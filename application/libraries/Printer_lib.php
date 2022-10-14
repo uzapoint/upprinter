@@ -55,20 +55,20 @@ class Printer_lib
         $printer->text("Captain Order:  " . $request["order_ref"] . "\n");
         $dateText = Carbon::now()->toFormattedDateString() . " " . (\Carbon\Carbon::now())->format('h:i A');
         $printer->text($dateText . "\n");
-        $printer->text("-------------------------------------------\n");
+        $printer->text("-------------------------------------\n");
 
         //add items heading
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
-        $printer->text($header . "\n");
-        // $printer->text("-------------------------------------\n");
+        $printer->text($header);
+        $printer->text("-------------------------------------\n");
         $printer->setEmphasis(false);
         //add the items
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             $printer->text($myItem . "\n");
         }
-        $printer->text("-------------------------------------------\n");
+        $printer->text("-------------------------------------\n");
 
         //add foooter
         $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -303,6 +303,7 @@ class Printer_lib
                 $printer->text("Amount Paid: " . $request['order_payment_details']['amount_paid_display'] . "\n");
                 $printer->text("Balance: " . $request['order_payment_details']['amount_due_display'] . "\n");
                 $printer->text("-------------------------------------\n");
+
             }
 
 
