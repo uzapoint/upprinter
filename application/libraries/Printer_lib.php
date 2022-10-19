@@ -64,10 +64,10 @@ class Printer_lib
 
         //add the items
         foreach ($request['items'] as $item) {
-            $printer->text('    ' . substr($item['item_name_only'], 0, 27), $item['qty'],number_format((float)$item['total'], 2) );
-            // $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-            // $printer->text($myItem ."\n");
-            // $printer->feed();
+            // $printer->text('    ' . substr($item['item_name_only'], 0, 27), $item['qty'],number_format((float)$item['total'], 2) );
+            //$myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+            $printer->text('something' ."\n");
+            $printer->feed();
 
 
         }
