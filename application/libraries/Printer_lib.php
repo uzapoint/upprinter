@@ -65,15 +65,13 @@ class Printer_lib
 
         //add the items
         foreach ($request['items'] as $item) {
-            //$myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-            $myItem = substr($item['item_name_only'], 0, 27).'          '.$item['qty'].'   '.number_format((float)$item['total'], 2);
+            $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+            // $myItem = substr($item['item_name_only'], 0, 27).'          '.$item['qty'].'   '.number_format((float)$item['total'], 2);
             $myItem = str_replace(PHP_EOL,'',$myItem);
             $printer->text($myItem);
             $printer->feed();
 
         }
-        $printer->text('123456789'."\n");
-        $printer->text('123456789101112131415161718192021222324252627282930');
         $printer->text("-------------------------------------\n");
 
         //add foooter
