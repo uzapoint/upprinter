@@ -76,7 +76,7 @@ class Printer_lib
             $format = "% ".$spc1."s   %s";
             $numbers = sprintf($format,$item['qty'], number_format((float )$item['total'], 2));
             $first = sprintf("%s                                                              ",$item['item_name_only']);
-            $myItem = sprintf("% s ".$format, substr($first, 0, ( 42- strlen($numbers)) ), $item['qty'], number_format((float)$item['total'], 2));
+            $myItem = sprintf("%s ".$format, substr($first, 0, ( 42- strlen($numbers)) ), $item['qty'], number_format((float)$item['total'], 2));
             //$myItem = sprintf("%s ".$format, substr($item['item_name_only'], 0, ( 42- strlen($numbers)) ), $item['qty'], number_format((float)$item['total'], 2));
             // $myItem = sprintf("%-29s %-3s %-6s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             $myItem = str_replace(PHP_EOL,'',$myItem);
