@@ -65,9 +65,8 @@ class Printer_lib
         //add the items
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-            $printer->text($myItem. "\n");
-            // echo "\n";
-            echo trim(" ");
+            $printer->text($myItem);
+            $connector->write(self::ESC."d".chr(1));
         }
         $printer->text("-------------------------------------\n");
 
