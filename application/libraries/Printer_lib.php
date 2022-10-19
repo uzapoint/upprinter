@@ -604,7 +604,7 @@ class Printer_lib
                     $printer->text(
                         sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                     );
-                    // $printer->text("\n");
+                    $printer->text("\n");
                 }
                 $printer->setEmphasis(true);
                 $typeTotal = sprintf("%-30s %-7s", $type . " Total", number_format($request['type_totals'][$type], 2));
