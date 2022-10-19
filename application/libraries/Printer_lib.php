@@ -59,15 +59,14 @@ class Printer_lib
 
         //add items heading
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
-        // $printer->setEmphasis(true);
         $printer->text($header );
-        // $printer->selectPrintMode();
         $printer->text("-------------------------------------\n");
-        // $printer->setEmphasis(false);
+
         //add the items
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-            $printer->text($myItem.rtrim("\n"));
+            $printer->text($myItem);
+            $printer->text("\n");
         }
         $printer->text("-------------------------------------\n");
 
