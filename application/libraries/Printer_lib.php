@@ -67,17 +67,13 @@ class Printer_lib
 
         //add the items
         foreach ($request['items'] as $item) {
-            // $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+            $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             // $myItem = substr($item['item_name_only'], 0, 27).'          '.$item['qty'].'   '.number_format((float)$item['total'], 2);
-            //
+
+            // $numbers = strlen(sprintf("    %-3s %-8s",$item['qty'], number_format((float)$item['total'], 2)));
+            // $myItem = sprintf("%-27s %-3s %-8s", substr($item['item_name_only'], 0, 42-($numbers)), $item['qty'], number_format((float)$item['total'], 2));
 
 
-            $spc1 = 10;
-            $format = "%s   %s";
-            $numbers = sprintf($format,$item['qty'], number_format((float )$item['total'], 2));
-            $first = sprintf("%s                                                                                   ",$item['item_name_only']);
-            $myItem = sprintf("%s".$format, substr($first, 0, ( 42- strlen($numbers)) ), $item['qty'], number_format((float)$item['total'], 2));
-            //$myItem = sprintf("%s ".$format, substr($item['item_name_only'], 0, ( 42- strlen($numbers)) ), $item['qty'], number_format((float)$item['total'], 2));
             // $myItem = sprintf("%-29s %-3s %-6s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             $myItem = str_replace(PHP_EOL,'',$myItem);
             $printer->text($myItem);
