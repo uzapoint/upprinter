@@ -58,8 +58,9 @@ class Printer_lib
         $printer->text("-------------------------------------\n");
 
         //add items heading
-        $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
-        $printer->text($header );
+        // $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
+        $printer->text('Item'.'   '.'Qty'.'   '.'Total');
+        // $printer->text($header );
         $printer->text("-------------------------------------\n");
 
         //add the items
