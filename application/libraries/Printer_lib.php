@@ -60,7 +60,7 @@ class Printer_lib
         //add items heading
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         // $printer->setEmphasis(true);
-        $printer->text($header . "\n");
+        $printer->text($header . "\r\n");
         // $printer->selectPrintMode();
         $printer->text("-------------------------------------\n");
         // $printer->setEmphasis(false);
