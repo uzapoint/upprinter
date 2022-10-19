@@ -71,6 +71,7 @@ class Printer_lib
             $printer->text($myItem);
             $printer->feed();
         }
+        $printer->text('123456789101112131415161718192021222324252627282930');
         $printer->text("-------------------------------------\n");
 
         //add foooter
