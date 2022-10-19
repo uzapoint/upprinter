@@ -70,7 +70,9 @@ class Printer_lib
             $myItem = str_replace(PHP_EOL,'',$myItem);
             $printer->text($myItem);
             $printer->feed();
+
         }
+        $printer->text('123456789'."\n");
         $printer->text('123456789101112131415161718192021222324252627282930');
         $printer->text("-------------------------------------\n");
 
