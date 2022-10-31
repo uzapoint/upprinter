@@ -53,6 +53,7 @@ class Printer_lib
             $printer->selectPrintMode();
             $printer->text("------------------------------------------------\n");
         }
+
         $printer->text("Captain Order:  " . $request["order_ref"] . "\n");
         $dateText = Carbon::now()->toFormattedDateString() . " " . (\Carbon\Carbon::now())->format('h:i A');
         $printer->text($dateText . "\n");
@@ -290,19 +291,19 @@ class Printer_lib
 
             $printer->text("------------------------------------------------\n");
 
-            if (!empty($request['order_payment_details']) && $request['order_payment_details']['has_partial_payments']) {
-                $printer->setEmphasis(true);
-                $printer->text("Order Payments\n");
-                $printer->selectPrintMode();
+            // if (!empty($request['order_payment_details']) && $request['order_payment_details']['has_partial_payments']) {
+            //     $printer->setEmphasis(true);
+            //     $printer->text("Order Payments\n");
+            //     $printer->selectPrintMode();
 
-                foreach ($request['order_payment_details']['payments'] as $payment) {
-                    $printer->text($payment['payment_method'] . ": " . $payment['amount_display'] . " (" . $payment['paid_at'] . ")\n");
-                }
-                $printer->text("\n");
-                $printer->text("Amount Paid: " . $request['order_payment_details']['amount_paid_display'] . "\n");
-                $printer->text("Balance: " . $request['order_payment_details']['amount_due_display'] . "\n");
-                $printer->text("------------------------------------------------\n");
-            }
+            //     foreach ($request['order_payment_details']['payments'] as $payment) {
+            //         $printer->text($payment['payment_method'] . ": " . $payment['amount_display'] . " (" . $payment['paid_at'] . ")\n");
+            //     }
+            //     $printer->text("\n");
+            //     $printer->text("Amount Paid: " . $request['order_payment_details']['amount_paid_display'] . "\n");
+            //     $printer->text("Balance: " . $request['order_payment_details']['amount_due_display'] . "\n");
+            //     $printer->text("------------------------------------------------\n");
+            // }
 
 
             $showBodySection = true;
@@ -652,12 +653,12 @@ class Printer_lib
                     $change = sprintf("%-30s %-7s", $request['balance_name'], number_format($request['balance']));
                     $printer->text($change . "\r\n");
                 }
-                if (!empty($request['overpayments'])) {
-                    foreach ($request['overpayments'] as $overpayment) {
-                        $change = sprintf("%-30s %-7s", $overpayment['balance_name'], number_format($overpayment['balance']));
-                        $printer->text($change . "\r\n");
-                    }
-                }
+                // if (!empty($request['overpayments'])) {
+                //     foreach ($request['overpayments'] as $overpayment) {
+                //         $change = sprintf("%-30s %-7s", $overpayment['balance_name'], number_format($overpayment['balance']));
+                //         $printer->text($change . "\r\n");
+                //     }
+                // }
 
                 if (!empty($request['tip'])) {
                     $tip = sprintf("%-30s %-7s", "Gratuity", number_format($request['tip']));
