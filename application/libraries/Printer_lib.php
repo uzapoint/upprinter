@@ -1266,6 +1266,91 @@ class Printer_lib
 
     }
 
+    public function allSalesReport($request = array()){
+
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        //print standard design
+        $printerID = "POSPRINTER";
+        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+
+        $connector = new WindowsPrintConnector($printerID);
+        $printer = new Printer($connector);
+
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        if (!empty($request['company_name'])) {
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($request['company_name'] . "\n");
+            $printer->setEmphasis(false);
+
+            $printer->selectPrintMode();
+        }
+        if (!empty($request['heading1'])) {
+            $printer->text($request['heading1'] . "\n");
+        }
+        if (!empty($request['heading2'])) {
+            $printer->text($request['heading2'] . "\n");
+        }
+        if (!empty($request['pin_no'])) {
+            $printer->text("PIN NO: " .$request['pin_no'] . "\n");
+        }
+
+
+        $printer->selectPrintMode();
+        $printer->setEmphasis(true);
+        $printer->text("CASHIER SALES REPORT\n");
+        $printer->setEmphasis(false);
+        $printer->feed();
+
+        //reset center justification
+        $printer->setJustification();
+
+        $printer->selectPrintMode();
+        $printer->text("Shift ID : " . $request["shift_id"] . "\n");
+        $printer->text($request["shift_period"] . "\n");
+
+        $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
+        $printer->setEmphasis(true);
+        $printer->text("------------------------------------------------\n");
+        $printer->text($header. "\n");
+        $printer->text("------------------------------------------------\n");
+        $printer->setEmphasis(false);
+
+        foreach ($request['items'] as $item) {
+            $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name'], 0, 26), $item['item_quantity'], $item['item_total']);
+            $printer->text($myItem . "\n");
+        }
+        $printer->feed(1);
+        $printer->text("------------------------------------------------\n");
+        //add the subtotal
+        $subTotal = sprintf("%-33s %-9s", "Sub Total", $request['subtotal']);
+        $printer->text($subTotal . "\n");
+        $printer->text("------------------------------------------------\n");
+
+        //add discount
+        if(!empty($request['discounts'])){
+            $discount = sprintf("%-33s %-9s", "Discounts", $request['discounts']);
+            $printer->text($discount . "\n");
+            $printer->text("------------------------------------------------\n");
+        }
+
+        //add total Row
+        $totalRow = sprintf("%-33s %-9s", "TOTAL", $request['total']);
+        $printer->text($totalRow . "\n");
+        $printer->text("------------------------------------------------\n");
+
+
+
+        $printer->text("Printed By : ".$request['printed_by'] . "\n");
+        $printer->text("Printed At : ".$request['printed_at'] . "\n");
+
+        $printer->feed(5);
+        $connector->write(chr(27) . chr(109));
+        $printer->close();
+
+    }
+
     private function filter_array($array, $key)
     {
         foreach ($array as $array_key => $variable) {

@@ -78,4 +78,12 @@ class Printer extends CI_Controller
 
         $this->printer_lib->userSalesReport($request);
     }
+    //this function prints all users sales receipt/report
+    public function allSalesReport(){
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->allSalesReport($request);
+    }
 }
