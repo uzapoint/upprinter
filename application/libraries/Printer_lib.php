@@ -55,7 +55,7 @@ class Printer_lib
         }
 
         $printer->text("Captain Order:  " . $request["order_ref"] . "\n");
-        $dateText = Carbon::now()->toFormattedDateString() . " " . (\Carbon\Carbon::now())->format('h:i A');
+        $dateText = $request['captain_date'] . " ". $request['captain_time'];
         $printer->text($dateText . "\n");
 
         //add items heading
