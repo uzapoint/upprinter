@@ -338,6 +338,7 @@ class Printer_lib
         return true;
 
     }
+
     public function proforma($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
@@ -528,10 +529,118 @@ class Printer_lib
 
         return true;
     }
+    public function saleMinifiedDesign($request = array()){
+        $printerID = "POSPRINTER";
+        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
 
+        $connector = new WindowsPrintConnector($printerID);
+        $printer = new Printer($connector);
+
+        $receiptCopies = 1;
+        if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
+        for ($copy = 1; $copy <= $receiptCopies; $copy++) {
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            if (!empty($request['company_name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($request['company_name'] . "\n");
+                $printer->setEmphasis(false);
+
+                $printer->selectPrintMode();
+            }
+
+            if (!empty($request['contact_1'])) {
+                $printer->text($request['contact_1'] . "\n");
+            }
+
+            if (!empty($request['contact_2'])) {
+                $printer->text($request['contact_2'] . "\n");
+            }
+            if (!empty($request['pin_no'])) {
+                $printer->text("PIN NO : " . $request['pin_no'] . "\n");
+            }
+            if (!empty($request['telephone'])) {
+                $printer->text("TEL NO : " . $request['telephone'] . "\n");
+            }
+            $printer->setJustification();
+
+            $printer->setEmphasis(true);
+            $printer->text($request['entity'] . " No    :   " . $request['order_ref'] . "\n");
+            $printer->text("Table: " . $request['customer'] . "\n");
+            $dateText = $request['receipt_date'] . " ". $request['receipt_time'];
+            $printer->text($dateText . "\n");
+            $printer->setEmphasis(false);
+
+            $printer->feed();
+
+            $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
+            $printer->setEmphasis(true);
+            $printer->text($header . "\n");
+            $printer->setEmphasis(false);
+
+            foreach ($request['items'] as $type => $items) {
+                foreach ($items as $item) {
+                    $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
+                    $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty_raw'], number_format($item['total'], 2));
+                    $printer->text($myItem . "\n");
+                }
+            }
+            $printer->text("------------------------------------------------\n");
+
+
+            $grandTotal = sprintf("%-34s %-7s", "Total", number_format((float)$request['grand_total']));
+            $discount = sprintf("%-34s %-7s", "Discount", number_format((float)$request['discount']));
+            $printer->text($grandTotal . "\n");
+            $printer->text($discount . "\n");
+
+            //total indicator
+            $printer->text("------------------------------------------------\n");
+            $orderDueText = sprintf("%-34s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($orderDueText . "\n");
+            $printer->selectPrintMode();
+
+            $printer->text("------------------------------------------------\n");
+
+
+            $showBodySection = true;
+            if (isset($request['hide_receipt_body'])) {
+                $showBodySection = !$request['hide_receipt_body'];
+            }
+
+            if (!empty($request['till_no'])) {
+                $printer->text("TILL NO : " . $request['till_no'] . "\n");
+                $printer->feed(1);
+            }
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->feed();
+            $printer->text("Served By  " . explode(" ", $request['pos_user'])[0] . "\n");
+
+            //uzapoint footer
+            $printer->feed(1);
+            if (!empty($request['line_1'])) {
+                $printer->text($request['line_1'] . "\n");
+            }
+            if (!empty($request['line_3'])) {
+                $printer->text($request['line_1'] . "\n");
+            }
+            $printer->setJustification();
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+
+        }
+        $printer->pulse();
+        $printer->close();
+
+        return true;
+    }
     public function sale($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        if ($request['receipt_design'] == "minified_items")
+            return $this->saleMinifiedDesign($request);
 
         //print standard design
         $printerID = "POSPRINTER";
@@ -568,8 +677,8 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Table    :   " . $request["customer"] . "\n");
-            $date = !empty($request['receipt_date']) ? $request['receipt_date'] : Carbon::now()->toDayDateTimeString();
-            $printer->text($date . "\n");
+            $dateText = $request['receipt_date'] . " ". $request['receipt_time'];
+            $printer->text($dateText . "\n");
             $printer->feed();
 
             $printer->text("Served By   :   " . $request['pos_user'] . "\n");
