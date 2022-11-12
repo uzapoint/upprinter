@@ -72,9 +72,14 @@ class Printer_lib
         }
         $printer->text("------------------------------------------------\n");
 
+        if(!empty($request['till_no'])){
+            $printer->text("TILL NO: " . $request["till_no"] . "\n");
+        }
+
         //add foooter
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->text("Served By: " . $request["pos_user"] . "\n");
+
 
         $printer->feed(5);
         $connector->write(chr(27) . chr(109));
