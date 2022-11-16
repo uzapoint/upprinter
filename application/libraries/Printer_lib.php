@@ -227,7 +227,7 @@ class Printer_lib
 
             //add receipt title
             if(!empty($request['receipt_name'])){
-                $printer->feed();
+                //$printer->feed();
                 $printer->setTextSize(1, 2);
                 $printer->text($request['receipt_name']."\n");
                 $printer->selectPrintMode();
@@ -235,7 +235,7 @@ class Printer_lib
              //Added receipt status
             if(!empty($request['receipt_type'])){
                 $printer->text($request['receipt_type']."\n");
-                $printer->feed();
+                //$printer->feed();
             }
              $printer->feed();
 
