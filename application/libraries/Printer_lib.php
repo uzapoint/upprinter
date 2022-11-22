@@ -2,12 +2,14 @@
 defined("BASEPATH") or exit("No direct script access allowed");
 
 require APPPATH . "third_party\\escpos-php\autoload.php";
+require APPPATH . "third_party\\mpdf\autoload.php";
 require 'Carbon/Carbon.php';
 
 //use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
+use Mpdf\Mpdf;
 
 /**
  * Printer_lib
@@ -420,6 +422,12 @@ class Printer_lib
         }catch (\Exception $exception){
             return false;
         }
+    }
+
+    public function timsEtrTypeB($request){
+        $pdfContent = file_get_contents("http://tgfc.test/pos_receipts/".$request['filename']);
+        return file_put_contents('C:\TevinFolders\In\Receipts'.DIRECTORY_SEPARATOR.$request["filename"].'.pdf', $pdfContent);
+        //return file_put_contents('C:\ETR'.DIRECTORY_SEPARATOR.$request["filename"].'.pdf', $pdfContent);
     }
 
     public function endShift($request = array())
