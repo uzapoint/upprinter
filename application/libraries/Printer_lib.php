@@ -44,7 +44,10 @@ class Printer_lib
             if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
                 $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
             }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
-                $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+                $networkPrinterIP = !empty($receipt['printer']) && !empty($receipt['printer']['ip']) ?
+                    trim($receipt['printer']['ip'])
+                    : trim($request['LOCAL_PRINTER']['id']);
+                $connector = new NetworkPrintConnector($networkPrinterIP, '9100');
             }
 
             $printer = new Printer($connector);
@@ -60,13 +63,18 @@ class Printer_lib
 
             if (!empty($request['business_name'])) {
                 $printer->text($request['business_name'] . "\n");
-                $printer->setEmphasis(false);
                 $printer->feed(1);
             }
 
 
-            $printer->text($receipt['customer'] . "\n");
-            $printer->feed(1);
+            //print Printer Name
+            if(!empty($receipt['order_ref'])){
+                $printer->text($receipt['order_ref']."\n\n");
+            }
+            $printer->setEmphasis(false);
+
+            /*$printer->text($receipt['customer'] . "\n");
+            $printer->feed(1);*/
             $printer->text($receipt['pos_user'] . "\n");
             $printer->feed(2);
             $printer->setJustification();
@@ -178,7 +186,8 @@ class Printer_lib
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
         }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
-            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']), '9100');
+            $networkPrinterIP = !empty($request['printer_ip']) ? trim($request['printer_ip']) : trim($request['LOCAL_PRINTER']['id']);
+            $connector = new NetworkPrintConnector($networkPrinterIP, '9100');
         }
         $printer = new Printer($connector);
 
