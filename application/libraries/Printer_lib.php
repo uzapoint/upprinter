@@ -940,6 +940,11 @@ class Printer_lib
         fclose($myfile);
     }
 
+    public function timsEtrTypeB($request){
+        $pdfContent = file_get_contents("http://uzapointerp.uzahost.com/".$request['receipt_path']);
+        return file_put_contents($request['local_path'].DIRECTORY_SEPARATOR.$request["filename"], $pdfContent);
+    }
+
     private function filter_array($array, $key)
     {
         foreach ($array as $array_key => $variable) {
@@ -993,17 +998,4 @@ class Printer_lib
         return $signature;
     }
 
-    public function test($request=array()){
-
-        try {
-
-            $file="C:\Users\\thukuwanjiku\Documents\Rough\label_zpl_sample.zpl";
-            copy($file, "//192.168.1.222/xp330b");
-
-            return "Success";
-
-        } catch(Exception $e) {
-            throw new \Exception($e -> getMessage());
-        }
-    }
 }
