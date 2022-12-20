@@ -73,6 +73,13 @@ class Printer_lib
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
             $printer->text($myItem . "\n");
         }
+         //add order options, if there is any
+         if (!empty($request['order_options']) && sizeof($request['order_options'])) {
+            $printer->text("------------------------------------------------\n");
+            $printer->feed();
+            $printer->text("    ORDER OPTIONS\n");
+            $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+        }
         $printer->text("------------------------------------------------\n");
 
         if(!empty($request['till_no'])){
@@ -689,7 +696,7 @@ class Printer_lib
             $printer->text($dateText . "\n");
             $printer->feed();
 
-            $printer->text("Served By   :   " . $request['pos_user'] . "\n");
+            $printer->text("Cashed By   :   " . $request['pos_user'] . "\n");
 
             $printer->setEmphasis(true);
             $printer->text($request['entity'] . " No    :   " . $request['order_ref'] . "\n");
