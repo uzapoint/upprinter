@@ -58,6 +58,9 @@ class Printer_lib
         $dateText = $request['captain_date'] . " ". $request['captain_time'];
         $printer->text($dateText . "\n");
 
+        $printer->text($request['customer'] . "\n");
+        $printer->feed(1);
+
         //add items heading
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
