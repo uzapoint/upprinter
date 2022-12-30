@@ -477,6 +477,18 @@ class Printer_lib
                 $printer->feed();
                 $printer->text($ESD_SIGNATURE . "\n");
             }
+            /*
+             * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
+             * */
+            if(!empty($request['signed_invoice_details'])){
+                //$signedInvoiceDetails = json_decode($request['signed_invoice_details'], true);
+                $signedInvoiceDetails = $request['signed_invoice_details'];
+                $printer->feed(2);
+                $printer->text("CU Invoice No.: ". $signedInvoiceDetails['invoice_number'] . "\n");
+                $printer->text("CU Serial No.: ". $signedInvoiceDetails['control_code'] . "\n");
+                $printer->selectPrintMode();
+                $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
+            }
 
             $printer->setJustification();
             $printer->feed(5);
