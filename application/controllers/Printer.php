@@ -89,4 +89,12 @@ class Printer extends CI_Controller
 
         $this->printer_lib->timsEtrTypeB($request);
     }
+    public function ecommerceSaleReceipt()
+    {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->ecommerceSaleReceipt($request);
+    }
 }
