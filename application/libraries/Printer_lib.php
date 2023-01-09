@@ -38,131 +38,188 @@ class Printer_lib
 
     public function captainMinifiedDesign($request = array())
     {
-        //design receipt for minified design
-        $printerID = "POSPRINTER";
-        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
-        $connector = new WindowsPrintConnector($printerID);
-        $printer = new Printer($connector);
-        //set header
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        if (!empty($request['business_name'])) {
-            $printer->setTextSize(1, 2);
+        /*
+         * loop through the printer data to print the captain order at several printers that may be connected
+         * */
+        foreach($request['receipts'] as $index => $receipt) {
+
+            /*
+             * Check the local adapter being used
+             * */
+
+            if (trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK') {
+                $networkPrinterIP = !empty($receipt['printer']) && !empty($receipt['printer']['ip']) ?
+                    trim($receipt['printer']['id'])
+                    : trim($request['LOCAL_PRINTER']['id']);
+                $connector = new NetworkPrintConnector($networkPrinterIP, 9100);
+            } else {
+                $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+            }
+
+            $printer = new Printer($connector);
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if (!empty($request['business_name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($request['business_name'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
+                $printer->text("------------------------------------------------\n");
+            }
+
+            $printer->text("Captain Order:  " . $receipt["order_ref"] . "\n");
+            $dateText = $request['captain_date'] . " " . $request['captain_time'];
+            $printer->text($dateText . "\n");
+
+            $printer->text($receipt['customer'] . "\n");
+            $printer->feed(1);
+
+            //add items heading
+            $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
             $printer->setEmphasis(true);
-            $printer->text($request['business_name'] . "\n");
+            $printer->text("------------------------------------------------\n");
+            $printer->text($header . "\n");
+            $printer->text("------------------------------------------------\n");
             $printer->setEmphasis(false);
-            $printer->selectPrintMode();
+            //add the items
+            foreach ($receipt['items'] as $item) {
+                $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+                $printer->text($myItem . "\n");
+            }
+            //add order options, if there is any
+            if (!empty($receipt['order_options']) && sizeof($receipt['order_options'])) {
+                $printer->text("------------------------------------------------\n");
+                $printer->feed();
+                $printer->text("    ORDER OPTIONS\n");
+                $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+            }
             $printer->text("------------------------------------------------\n");
+
+            if (!empty($request['till_no'])) {
+                $printer->text("TILL NO: " . $request["till_no"] . "\n");
+            }
+
+            //add foooter
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text("Served By: " . $request["pos_user"] . "\n");
+
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+            $printer->close();
         }
-
-        $printer->text("Captain Order:  " . $request["order_ref"] . "\n");
-        $dateText = $request['captain_date'] . " ". $request['captain_time'];
-        $printer->text($dateText . "\n");
-
-        $printer->text($request['customer'] . "\n");
-        $printer->feed(1);
-
-        //add items heading
-        $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
-        $printer->setEmphasis(true);
-        $printer->text("------------------------------------------------\n");
-        $printer->text($header . "\n");
-        $printer->text("------------------------------------------------\n");
-        $printer->setEmphasis(false);
-        //add the items
-        foreach ($request['items'] as $item) {
-            $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-            $printer->text($myItem . "\n");
-        }
-         //add order options, if there is any
-         if (!empty($request['order_options']) && sizeof($request['order_options'])) {
-            $printer->text("------------------------------------------------\n");
-            $printer->feed();
-            $printer->text("    ORDER OPTIONS\n");
-            $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
-        }
-        $printer->text("------------------------------------------------\n");
-
-        if(!empty($request['till_no'])){
-            $printer->text("TILL NO: " . $request["till_no"] . "\n");
-        }
-
-        //add foooter
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("Served By: " . $request["pos_user"] . "\n");
-
-
-        $printer->feed(5);
-        $connector->write(chr(27) . chr(109));
-        $printer->close();
-
-
     }
+
     public function captain($request = array())
     {
 
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
 
         // check if receipt design is minified design
-        if ($request['receipt_design'] == "minified_items")
+        if (trim($request['receipt_design']) == "minified_items")
             return $this->captainMinifiedDesign($request);
 
         //print standard design
-        $printerID = "POSPRINTER";
-        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+        /*
+         * loop through the printer data so as to print the captain order at several printers that may be connected
+         * */
 
-        $connector = new WindowsPrintConnector($printerID);
-        $printer = new Printer($connector);
+        foreach($request['receipts'] as $index => $receipt) {
 
-        //date and time heading
-        $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
-        $printer->text($datetimeheading . "\n");
-        $printer->feed(1);
+            /*
+             * Check the local adapter being used
+             * */
 
-        //set header
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->setEmphasis(true);
-
-        if (!empty($request['business_name'])) {
-            $printer->text($request['business_name'] . "\n");
-            $printer->setEmphasis(false);
-            $printer->feed(1);
-        }
-        $printer->setTextSize(1, 2);
-        $printer->setEmphasis(true);
-        $printer->text("Captain Order:" . " " . $request['order_ref'] . "\n");
-        $printer->selectPrintMode();
-        $printer->feed(1);
-
-        $printer->text($request['customer'] . "\n");
-        $printer->feed(1);
-        $printer->text($request['pos_user'] . "\n");
-        $printer->feed(2);
-        $printer->setJustification();
-        $printer->setEmphasis(false);
-
-        foreach ($request['items'] as $item) {
-            $printer->setTextSize(1, 2);
-            $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
-            if (!empty($item['options']) && sizeof($item['options'])) {
-                $printer->selectPrintMode();
-                $printer->text('       ->' . implode(", ", $item['options']) . "\n");
+            if ($request['LOCAL_PRINTER']['adapter'] === 'NETWORK') {
+                $networkPrinterIP = !empty($receipt['printer']) && !empty($receipt['printer']['ip'])
+                    ? trim($receipt['printer']['ip'])
+                    : trim($request['LOCAL_PRINTER']['id']);
+                $connector = new NetworkPrintConnector($networkPrinterIP, 9100);
+            } else {
+                $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
             }
+
+            $printer = new Printer($connector);
+
+            //date and time heading
+            $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
+            $printer->text($datetimeheading . "\n");
             $printer->feed(1);
+
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setEmphasis(true);
+
+            if (!empty($request['business_name'])) {
+                $printer->text($request['business_name'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->feed(1);
+            }
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text("Captain Order:" . " " . $receipt['order_ref'] . "\n");
             $printer->selectPrintMode();
+            $printer->feed(1);
+
+            $printer->text($receipt['customer'] . "\n");
+            $printer->feed(1);
+            $printer->text($receipt['pos_user'] . "\n");
+            $printer->feed(2);
+            $printer->setJustification();
+            $printer->setEmphasis(false);
+
+            if(!empty($receipt['is_fire']) || $receipt['has_courses']){
+                foreach ($receipt['items'] as $course => $courseItems) {
+                    $printer->feed(1);
+                    if($course !== 'ABC' && (int)$course > 0) {
+                        $printer->text("    --------- Course " . $course . " -------------");
+                        $printer->feed(2);
+                    }
+                    foreach ($courseItems as $item) {
+                        $printer->text('        ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                        if (sizeof($item['options'])) {
+                            $printer->feed(2);
+                            //$printer->selectPrintMode();
+                            foreach ($item['options'] as $option) {
+                                $printer->text('            -> ' . $option . "\n");
+                                $printer->feed(1);
+                            }
+                        }
+                        $printer->setTextSize(1, 2);
+                    }
+
+                    $printer->feed(1);
+                }
+            } else {
+                foreach ($receipt['items'][$receipt['last_course']] as $item) {
+                    $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                    if (sizeof($item['options'])) {
+                        $printer->feed(1);
+                        //$printer->selectPrintMode();
+                        foreach ($item['options'] as $option) {
+                            $printer->text('            -> ' . $option . "\n");
+                            $printer->feed(1);
+                        }
+                    }
+                    $printer->setTextSize(1, 2);
+                    $printer->feed(1);
+                }
+            }
+
+            //add order options, if there is any
+            if (!empty($request['order_options']) && sizeof($request['order_options'])) {
+                $printer->text("------------------------------------------------\n");
+                $printer->feed();
+                $printer->text("    ORDER OPTIONS\n");
+                $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+            }
+
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+            $printer->close();
         }
-
-        //add order options, if there is any
-        if (!empty($request['order_options']) && sizeof($request['order_options'])) {
-            $printer->text("------------------------------------------------\n");
-            $printer->feed();
-            $printer->text("    ORDER OPTIONS\n");
-            $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
-        }
-
-
-        $printer->feed(5);
-        $connector->write(chr(27) . chr(109));
-        $printer->close();
 
     }
 
@@ -231,11 +288,18 @@ class Printer_lib
 
     public function proformaMinifiedDesign($request = array())
     {
-        //print standard design
-        $printerID = "POSPRINTER";
-        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+        /*
+         * Check the local adapter being used
+         * */
 
-        $connector = new WindowsPrintConnector($printerID);
+        $localPrinter = $request['LOCAL_PRINTER'];
+        if ($localPrinter['adapter'] === 'NETWORK' && !empty($request['printer_ip'])) {
+            $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+        } elseif ($localPrinter['adapter'] === 'USB') {
+            $printerID = $localPrinter['id'];
+            $connector = new WindowsPrintConnector($printerID);
+        }
+
         $printer = new Printer($connector);
 
         $receiptCopies = 1;
@@ -362,10 +426,18 @@ class Printer_lib
         }
 
         //print standard design
-        $printerID = "POSPRINTER";
-        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+        /*
+         * Check the local adapter being used
+         * */
 
-        $connector = new WindowsPrintConnector($printerID);
+        $localPrinter = $request['LOCAL_PRINTER'];
+        if (trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK') {
+            $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+        } else if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $printerID = trim($request['LOCAL_PRINTER']['id']);
+            $connector = new WindowsPrintConnector($printerID);
+        }
+
         $printer = new Printer($connector);
 
 
@@ -544,11 +616,29 @@ class Printer_lib
 
         return true;
     }
-    public function saleMinifiedDesign($request = array()){
-        $printerID = "POSPRINTER";
-        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
 
-        $connector = new WindowsPrintConnector($printerID);
+    /**
+     * @throws Exception
+     */
+    public function saleMinifiedDesign($request = array())
+    {
+        //print standard design
+        $printerID = "POSPRINTER";
+//        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+        /*
+         * Check the local adapter being used
+         * */
+
+        if ($request['PRINT_METHOD'] === 'LOCAL_PRINTING') {
+            $localPrinter = $request['LOCAL_PRINTER'];
+            if ($localPrinter['adapter'] === 'NETWORK' && !empty($request['printer_ip'])) {
+                $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+            } elseif ($localPrinter['adapter'] === 'USB' && !empty($localPrinter['id'])) {
+                $printerID = $localPrinter['id'];
+                $connector = new WindowsPrintConnector($printerID);
+            }
+        }
+
         $printer = new Printer($connector);
 
         $receiptCopies = 1;
@@ -583,7 +673,7 @@ class Printer_lib
             $printer->setEmphasis(true);
             $printer->text($request['entity'] . " No    :   " . $request['order_ref'] . "\n");
             $printer->text("Table: " . $request['customer'] . "\n");
-            $dateText = $request['receipt_date'] . " ". $request['receipt_time'];
+            $dateText = $request['receipt_date'] . " " . $request['receipt_time'];
             $printer->text($dateText . "\n");
             $printer->setEmphasis(false);
 
@@ -597,7 +687,7 @@ class Printer_lib
             foreach ($request['items'] as $type => $items) {
                 foreach ($items as $item) {
                     $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
-                    $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty_raw'], number_format($item['total'], 2));
+                    $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty'], number_format($item['total'], 2));
                     $printer->text($myItem . "\n");
                 }
             }
@@ -651,6 +741,7 @@ class Printer_lib
 
         return true;
     }
+
     public function sale($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
@@ -659,9 +750,20 @@ class Printer_lib
 
         //print standard design
         $printerID = "POSPRINTER";
-        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+//        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+        /*
+         * Check the local adapter being used
+         * */
+        if ($request['PRINT_METHOD'] === 'LOCAL_PRINTING') {
+            $localPrinter = $request['LOCAL_PRINTER'];
+            if ($localPrinter['adapter'] === 'NETWORK' && !empty($request['printer_ip'])) {
+                $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+            } elseif ($localPrinter['adapter'] === 'USB' && !empty($localPrinter['id'])) {
+                $printerID = $localPrinter['id'];
+                $connector = new WindowsPrintConnector($printerID);
+            }
+        }
 
-        $connector = new WindowsPrintConnector($printerID);
         $printer = new Printer($connector);
 
 
@@ -692,7 +794,7 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Table    :   " . $request["customer"] . "\n");
-            $dateText = $request['receipt_date'] . " ". $request['receipt_time'];
+            $dateText = $request['receipt_date'] . " " . $request['receipt_time'];
             $printer->text($dateText . "\n");
             $printer->feed();
 
@@ -1303,7 +1405,9 @@ class Printer_lib
             "method" => $request['request_method']
         ]);
     }
-    public function userSalesReport($request = array()){
+
+    public function userSalesReport($request = array())
+    {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
 
         //print standard design
@@ -1329,7 +1433,7 @@ class Printer_lib
             $printer->text($request['heading2'] . "\n");
         }
         if (!empty($request['pin_no'])) {
-            $printer->text("PIN NO: " .$request['pin_no'] . "\n");
+            $printer->text("PIN NO: " . $request['pin_no'] . "\n");
         }
 
 
@@ -1349,7 +1453,7 @@ class Printer_lib
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
         $printer->text("------------------------------------------------\n");
-        $printer->text($header. "\n");
+        $printer->text($header . "\n");
         $printer->text("------------------------------------------------\n");
         $printer->setEmphasis(false);
 
@@ -1365,7 +1469,7 @@ class Printer_lib
         $printer->text("------------------------------------------------\n");
 
         //add discount
-        if(!empty($request['discounts'])){
+        if (!empty($request['discounts'])) {
             $discount = sprintf("%-33s %-9s", "Discounts", $request['discounts']);
             $printer->text($discount . "\n");
             $printer->text("------------------------------------------------\n");
@@ -1377,9 +1481,8 @@ class Printer_lib
         $printer->text("------------------------------------------------\n");
 
 
-
-        $printer->text("Printed By : ".$request['printed_by'] . "\n");
-        $printer->text("Printed At : ".$request['printed_at'] . "\n");
+        $printer->text("Printed By : " . $request['printed_by'] . "\n");
+        $printer->text("Printed At : " . $request['printed_at'] . "\n");
 
 
         $printer->feed(5);
@@ -1387,10 +1490,10 @@ class Printer_lib
         $printer->close();
 
 
-
     }
 
-    public function allSalesReport($request = array()){
+    public function allSalesReport($request = array())
+    {
 
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
 
@@ -1417,7 +1520,7 @@ class Printer_lib
             $printer->text($request['heading2'] . "\n");
         }
         if (!empty($request['pin_no'])) {
-            $printer->text("PIN NO: " .$request['pin_no'] . "\n");
+            $printer->text("PIN NO: " . $request['pin_no'] . "\n");
         }
 
 
@@ -1437,7 +1540,7 @@ class Printer_lib
         $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
         $printer->setEmphasis(true);
         $printer->text("------------------------------------------------\n");
-        $printer->text($header. "\n");
+        $printer->text($header . "\n");
         $printer->text("------------------------------------------------\n");
         $printer->setEmphasis(false);
 
@@ -1453,7 +1556,7 @@ class Printer_lib
         $printer->text("------------------------------------------------\n");
 
         //add discount
-        if(!empty($request['discounts'])){
+        if (!empty($request['discounts'])) {
             $discount = sprintf("%-33s %-9s", "Discounts", $request['discounts']);
             $printer->text($discount . "\n");
             $printer->text("------------------------------------------------\n");
@@ -1465,9 +1568,8 @@ class Printer_lib
         $printer->text("------------------------------------------------\n");
 
 
-
-        $printer->text("Printed By : ".$request['printed_by'] . "\n");
-        $printer->text("Printed At : ".$request['printed_at'] . "\n");
+        $printer->text("Printed By : " . $request['printed_by'] . "\n");
+        $printer->text("Printed At : " . $request['printed_at'] . "\n");
 
         $printer->feed(5);
         $connector->write(chr(27) . chr(109));
