@@ -422,6 +422,20 @@ class Printer_lib
                 $printer->setEmphasis(false);
                 $printer->selectPrintMode();
             }
+            if ($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) {
+                if($paybillBusinessNo['is_bold'] ) $printer->setTextSize(1, 2);
+                if($paybillBusinessNo['is_bold'] ) $printer->setEmphasis(true);
+                $printer->text("Paybill NO. :  " . $paybillBusinessNo['value'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
+            }
+            if ($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) {
+                if($paybillAccountNo['is_bold'] ) $printer->setTextSize(1, 2);
+                if($paybillAccountNo['is_bold'] ) $printer->setEmphasis(true);
+                $printer->text("Account NO. :  " . $paybillAccountNo['value'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
+            }
 
             if ($pinNo = $this->filter_array($variables, 'pin_no')) {
                 $printer->text("PIN NO.     :   " . $pinNo['value'] . "\n");
