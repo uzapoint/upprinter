@@ -21,6 +21,14 @@ class Printer extends CI_Controller
 
         $this->printer_lib->captain($request);
     }
+    public function payTypes(){
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->payTypes($request);
+
+    }
     public function shift()
     {
         $this->load->library('printer_lib');
