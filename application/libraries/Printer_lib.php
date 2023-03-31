@@ -1380,6 +1380,99 @@ class Printer_lib
 
     }
 
+    public function stockTransfer($request = array())
+    {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        if (trim($request['printer']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['printer']['id']));
+        } else if (trim($request['printer']['adapter']) === 'NETWORK') {
+            $connector = new NetworkPrintConnector(trim($request['printer_ip']));
+        }
+
+        $printer = new Printer($connector);
+
+        $variables = $request['data'];
+
+        try {
+            // Receipt Header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            if (!empty($variables['name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($variables['name'] . "\n");
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
+            }
+
+            if (!empty($variables['address'])) {
+                $printer->text($variables['address'] . "\n");
+            }
+
+            if (!empty($variables['physical_address'])) {
+                $printer->text($variables['physical_address'] . "\n");
+            }
+
+            if (!empty($variables['email'])) {
+                $printer->text($variables['email'] . "\n");
+            }
+
+            if (!empty($variables['phone'])) {
+                $printer->text($variables['phone'] . "\n");
+            }
+
+            $printer->feed();
+            $printer->setTextSize(1, 2);
+            $printer->text("STOCK TRANSFER NOTE \n");
+            $printer->selectPrintMode();
+            $printer->setJustification();
+            $printer->feed();
+
+            $printer->setEmphasis(true);
+            $printer->text("Reference Code: " . $variables['reference_code'] . "\n");
+            $printer->text("User: " . $variables['user'] . "\n");
+            $printer->feed();
+            $printer->setEmphasis(false);
+            $printer->text("Store From: " . $variables['store_from'] . "\n");
+            $printer->text("Store To: " . $variables['store_to'] . "\n");
+            $printer->feed();
+            $printer->text("Issue Date: " . $variables['issue_date'] . "\n");
+
+
+            $printer->feed(2);
+
+            $header = sprintf("%-10s %-18s %-8s %-10s", "Code", "Product", "Quantity", "UOM");
+            $printer->setEmphasis(true);
+            $printer->text($header . "\n");
+            $printer->setEmphasis(false);
+            /*
+             * Print the issue items
+             * */
+            foreach ($variables['items'] as $index => $item) {
+                $myItem = sprintf("%-9s %-22s %-4s %-6s", $item['product_code'], $item['product'], $item['quantity'], $item['uom_label']);
+                $printer->text($myItem . "\n");
+            }
+
+            /*
+             * Uzapoint footer
+             * */
+            $printer->feed();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('Powered by Uzapoint');
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+        } catch (\Exception $exception) {
+            $printer->feed(2);
+            $printer->text("ERROR ENCOUNTERED WHILE PRINTING....\n\n");
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+        } finally {
+            $printer->close();
+        }
+    }
+
     public function onesourceEsdSignature($request = array())
     {
         /*
