@@ -49,7 +49,7 @@ class Printer_lib
 
             if (trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK') {
                 $networkPrinterIP = !empty($receipt['printer']) && !empty($receipt['printer']['ip']) ?
-                    trim($receipt['printer']['id'])
+                    trim($receipt['printer']['ip'])
                     : trim($request['LOCAL_PRINTER']['id']);
                 $connector = new NetworkPrintConnector($networkPrinterIP, 9100);
             } else {
