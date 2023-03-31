@@ -83,9 +83,11 @@ class Printer_lib
             $printer->text("------------------------------------------------\n");
             $printer->setEmphasis(false);
             //add the items
-            foreach ($receipt['items'] as $index => $item) {
-                $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-                $printer->text($myItem . "\n");
+            foreach ($receipt['items'] as $index => $items) {
+                foreach($items as $item) {
+                    $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+                    $printer->text($myItem . "\n");
+                }
             }
             //add order options, if there is any
             if (!empty($receipt['order_options']) && sizeof($receipt['order_options'])) {
