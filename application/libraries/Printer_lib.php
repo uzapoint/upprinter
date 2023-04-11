@@ -1132,6 +1132,69 @@ class Printer_lib
 
         return true;
     }
+    public function payTypes($request = array()){
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+            $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+        }
+
+        $printer = new Printer($connector);
+
+        
+
+        try {
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setEmphasis(true);
+            $printer->setTextSize(1, 2);
+            $printer->text(strtoupper($request['BUSINESS_NAME']));
+            $printer->feed(3);
+
+            $printer->text("SHIFT PAY TYPES");
+            $printer->setEmphasis();
+            $printer->feed();
+            $printer->selectPrintMode();
+            $printer->setJustification();
+            $printer->feed();
+
+            $printer->selectPrintMode();
+            $printer->text("Opened:   ".$request["opened_by"]."\n");
+            $printer->text("          ".$request["opened_at"]."\n");
+            $printer->feed();
+   
+            foreach ($request['payments'] as $payment) {
+
+                $printer->feed();
+                $printer->setEmphasis(true);
+                $printer->text(strtoupper($payment['method']). "\n");
+                $printer->setEmphasis(false);
+
+                $printer->text("  Total Sales: ".($payment['total_unformatted'] ?? '0.00'). "\n");
+                $printer->text("  Overpayments: ".($payment['overpayments'] ?? '0.00'). "\n");
+                $printer->text("  Tips: ".($payment['tips'] ?? '0.00'). "\n");
+                $printer->text("  Customer Deposits: ".($payment['customer_deposits'] ?? '0.00'). "\n");
+                $printer->text("  Cash Refunds: ".($payment['cash_refunds'] ?? '0.00'). "\n");
+                $printer->text("  Paid Invoices: ".($payment['paid_invoices'] ?? '0.00'). "\n");
+                $printer->text("  Expenses: ".($payment['expenses'] ?? '0.00'). "\n");
+                $printer->text("  Purchases: ".($payment['purchases'] ?? '0.00'). "\n");
+                $printer->text("  Total: ".($payment['total'] ?? '0.00'). "\n");
+
+            }
+
+            $printer->feed(5);
+
+            $connector->write(chr(27) . chr(109));
+            $printer->close();   
+
+        }catch (Exception $e) {
+
+            return false;
+        }
+
+    }
+
     public function shift($request = array()){
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
