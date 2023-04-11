@@ -1183,6 +1183,14 @@ class Printer_lib
 
             $printer->feed(2);
 
+            //adding shift opening amount
+            $shiftOpeningAmountEntry = sprintf("%-18s %-8s %-8s %-8s", "Opening Amount", "", $request['opening_amount'], "");
+            $printer->feed();
+            $printer->setEmphasis(true);
+            $printer->text($shiftOpeningAmountEntry . "\n");
+            $printer->setEmphasis(false);
+            $printer->feed();
+
             $header = sprintf("%-16s %-8s %-8s %-8s", "", "Actual", "Expected", "Variance");
             $printer->setEmphasis(true);
             $printer->text($header. "\n");
@@ -1213,13 +1221,6 @@ class Printer_lib
                     $printer->text($myExpense. "\n");
                 }
             }
-
-            //adding shift opening amount
-            $shiftOpeningAmountEntry = sprintf("%-18s %-8s %-8s %-8s", "Opening Amount", "", $request['opening_amount'], "");
-            $printer->feed();
-            $printer->setEmphasis(true);
-            $printer->text($shiftOpeningAmountEntry . "\n");
-            $printer->setEmphasis(false);
 
             $printer->feed(5);
 
