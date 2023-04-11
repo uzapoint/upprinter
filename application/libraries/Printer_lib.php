@@ -1171,7 +1171,7 @@ class Printer_lib
                 $printer->text(strtoupper($payment['method']). "\n");
                 $printer->setEmphasis(false);
 
-                $printer->text("  Total Sales: ".($payment['total_unformatted'] ?? '0.00'). "\n");
+                $printer->text("  Total Sales: ".($payment['sales'] ?? '0.00'). "\n");
                 $printer->text("  Overpayments: ".($payment['overpayments'] ?? '0.00'). "\n");
                 $printer->text("  Tips: ".($payment['tips'] ?? '0.00'). "\n");
                 $printer->text("  Customer Deposits: ".($payment['customer_deposits'] ?? '0.00'). "\n");
@@ -1194,7 +1194,6 @@ class Printer_lib
         }
 
     }
-
     public function shift($request = array()){
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
