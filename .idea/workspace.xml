@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e4af3f62-5802-4821-9abf-225f1b6ca018" name="Changes" comment="">
+    <list default="true" id="279d97cf-01ca-424b-ab7d-ece79f82f693" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/controllers/Printer.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Printer.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/libraries/Printer_lib.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/libraries/Printer_lib.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -30,11 +29,11 @@
   </component>
   <component name="ProjectId" id="1SbM5BCf7O93T4NgALFXooTcHcH" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "last_opened_file_path": "C:/xampp/htdocs/upprinter/application/third_party/mpdf"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/upprinter/application/third_party/mpdf&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\xampp\htdocs\upprinter\application\third_party\mpdf" />

@@ -2,14 +2,12 @@
 defined("BASEPATH") or exit("No direct script access allowed");
 
 require APPPATH . "third_party\\escpos-php\autoload.php";
-require APPPATH . "third_party\\mpdf\autoload.php";
 require 'Carbon/Carbon.php';
 
 //use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
-use Mpdf\Mpdf;
 
 /**
  * Printer_lib
