@@ -423,6 +423,10 @@ class Printer_lib
     }
 
     public function timsEtrTypeB($request){
+        $pdfContent = file_get_contents(trim($request['receipt_path']));
+        return file_put_contents('C:\TevinFolders\In\Receipts'.DIRECTORY_SEPARATOR.trim($request["filename"]), $pdfContent);
+
+
         $pdfContent = file_get_contents("http://tgfc.test/pos_receipts/".$request['filename']);
         return file_put_contents('C:\TevinFolders\In\Receipts'.DIRECTORY_SEPARATOR.$request["filename"].'.pdf', $pdfContent);
         //return file_put_contents('C:\ETR'.DIRECTORY_SEPARATOR.$request["filename"].'.pdf', $pdfContent);
