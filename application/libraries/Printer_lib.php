@@ -1725,5 +1725,10 @@ class Printer_lib
         //RETURN SIGNATURE
         return $signature;
     }
+
+    public function timsEtrTypeB($request){
+        $pdfContent = file_get_contents(trim($request['receipt_path']));
+        return file_put_contents(trim($request['local_path']).DIRECTORY_SEPARATOR.trim($request["filename"]), $pdfContent);
+    }
 }
 
