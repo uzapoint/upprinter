@@ -37,6 +37,13 @@ class Printer extends CI_Controller
 
         $this->printer_lib->shift($request);
     }
+    public function droppayment(){
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->dropPayment($request);
+    }
     public function deliveryNote()
     {
         $this->load->library('printer_lib');
