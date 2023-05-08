@@ -1296,11 +1296,11 @@ class Printer_lib
         }
     }
     public function droppayment($request = array()){
-        $copies = 1;
-        if(isset($request['receipt_copies'])) $copies = $request['receipt_copies'];
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        $copies = intval($request['receipt_copies'] ?? '1');
 
         for($i = 0; $i<$copies; $i++){
-            $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
             if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
                 $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
             }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
@@ -1361,14 +1361,15 @@ class Printer_lib
                 $connector->write(chr(27) . chr(109));
 
                 $printer->close();
-
-                return true;
             } catch (Exception $e) {
                 // echo 'Message: ' . $e->getMessage();
                 return false;
             }
         }
+
+        return true;
     }
+
     public function onesourceEsdSignature($request = array()){
         /*
          * This method attempts to generate a signature from the OneSource ESD and send it back to the person requesting
