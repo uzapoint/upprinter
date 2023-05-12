@@ -1295,6 +1295,81 @@ class Printer_lib
             return false;
         }
     }
+    public function droppayment($request = array()){
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        $copies = intval($request['receipt_copies'] ?? '1');
+
+        for($i = 0; $i<$copies; $i++){
+            if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+                $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+            }else if(trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK'){
+                $connector = new NetworkPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+            }
+
+            $printer = new Printer($connector);
+
+            $variables = $request['variables'];
+
+            try {
+
+                //set header
+                //$printer->initialize();
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                if ($companyName = $this->filter_array($variables, 'company_name')) {
+                    $printer->setTextSize(1, 2);
+                    $printer->setEmphasis(true);
+                    $printer->text($companyName['value'] . "\n");
+                    $printer->setEmphasis(false);
+
+                    $printer->selectPrintMode();
+                }
+
+                if ($heading1 = $this->filter_array($variables, 'contact_1')) {
+                    $printer->text($heading1['value'] . "\n");
+                }
+
+                if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+                    $printer->text($heading2['value'] . "\n");
+                    $printer->feed(1);
+                }
+
+                $printer->feed();
+                $printer->setTextSize(1, 2);
+                $printer->text("DROP PAYMENT RECEIPT \n");
+                $printer->selectPrintMode();
+                $printer->setJustification();
+                $printer->feed();
+
+                $printer->selectPrintMode();
+                $printer->text("Terminal    :   " . $request["terminal"] . "\n");
+                $printer->text("Time        :   " . $request["drop_time"] . "\n");
+                $printer->text("Amount      :   " . $request["amount"] . "\n");
+                $printer->text("Reference   :   " . $request["ref"] . "\n");
+                
+                $printer->feed();
+                $printer->text("-------------------------------------------\n");
+                $printer->feed();
+
+                $printer->text("Cashier:   " . $request["pos_user"] . "\n\n");
+                $printer->text("Sign:________________________\n\n\n");
+
+                $printer->text("Dropped By:   " . $request["dropped_by"] . "\n\n");
+                $printer->text("Sign:________________________\n");
+
+                $printer->feed(5);
+                $connector->write(chr(27) . chr(109));
+
+                $printer->close();
+            } catch (Exception $e) {
+                // echo 'Message: ' . $e->getMessage();
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function onesourceEsdSignature($request = array()){
         /*
          * This method attempts to generate a signature from the OneSource ESD and send it back to the person requesting
