@@ -1412,9 +1412,9 @@ class Printer_lib
         $pdfContent = file_get_contents(trim($request['receipt_path']));
         file_put_contents(trim($request['local_path']).DIRECTORY_SEPARATOR.trim($request["filename"]), $pdfContent);
 
-        if($request['etr_driver'] == 'adva') {
-            $printCommand = '"'.$request['java_path'].'"'.'\java.exe -classpath C:\xampp\htdocs\upprinter\application\assets\pdfbox-app-1.7.1.jar org.apache.pdfbox.PrintPDF -silentPrint -printerName '
-                .$request['etr_printer'].' '
+        if(trim($request['etr_driver']) == 'adva') {
+            $printCommand = '"'.trim($request['java_path']).'"'.'\java.exe -classpath C:\xampp\htdocs\upprinter\application\assets\pdfbox-app-1.7.1.jar org.apache.pdfbox.PrintPDF -silentPrint -printerName '
+                .trim($request['etr_printer']).' '
                 . trim($request['local_path']) . DIRECTORY_SEPARATOR . trim($request["filename"]);
 
             $output = null;
