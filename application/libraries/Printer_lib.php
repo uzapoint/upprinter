@@ -1641,7 +1641,14 @@ class Printer_lib
 
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name'], 0, 26), $item['item_quantity'], $item['item_total']);
+
+            // An aggregation item
+            if(isset($item['category']) && $item['category'] == ''){
+                $printer->setEmphasis(true);
+            }
+
             $printer->text($myItem . "\n");
+            $printer->setEmphasis(false);
         }
         $printer->feed(1);
         $printer->text("------------------------------------------------\n");
