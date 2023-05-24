@@ -1364,6 +1364,13 @@ class Printer_lib
                 $printer->feed();
             }
 
+            //Print out amount due
+            if(!empty($request['total_due_amount'])){
+                $printer->feed(2);
+                $printer->text("Total Due: ".$request['total_due_amount']."\n");
+                $printer->feed();
+            }
+
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
 
