@@ -21,6 +21,14 @@ class Printer extends CI_Controller
 
         $this->printer_lib->captain($request);
     }
+    public function removedOrderItem()
+    {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->removedOrderItem($request);
+    }
     public function sale()
     {
         $this->load->library('printer_lib');

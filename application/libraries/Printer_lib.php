@@ -179,7 +179,7 @@ class Printer_lib
                         $printer->feed(2);
                     }
                     foreach ($courseItems as $item) {
-                        $printer->text('        ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                        $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
                         if (sizeof($item['options'])) {
                             $printer->feed(2);
                             //$printer->selectPrintMode();
@@ -198,7 +198,6 @@ class Printer_lib
                     $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
                     if (sizeof($item['options'])) {
                         $printer->feed(1);
-                        //$printer->selectPrintMode();
                         foreach ($item['options'] as $option) {
                             $printer->text('            -> ' . $option . "\n");
                             $printer->feed(1);
@@ -1370,6 +1369,73 @@ class Printer_lib
                 $printer->text("Total Due: ".$request['total_due_amount']."\n");
                 $printer->feed();
             }
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+
+
+        } catch (\Exception $exception) {
+            $printer->feed(2);
+            $printer->text("ERROR ENCOUNTERED WHILE PRINTING....\n\n");
+
+            $printer->feed(5);
+            $connector->write(chr(27) . chr(109));
+
+
+        } finally {
+            $printer->close();
+        }
+
+    }
+
+    public function removedOrderItem($request = array())
+    {
+
+        $localPrinter = $request['LOCAL_PRINTER'];
+        if (trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK') {
+            $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+        } else if(trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+            $printerID = trim($request['LOCAL_PRINTER']['id']);
+            $connector = new WindowsPrintConnector($printerID);
+        }
+
+        $printer = new Printer($connector);
+
+        try {
+
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if (!empty($request['business_name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($request['business_name'] . "\n");
+                $printer->setEmphasis(false);
+
+                $printer->selectPrintMode();
+            }
+
+        
+            $printer->feed();
+            $printer->setTextSize(1, 2);
+            $printer->text("Removed Order Item"."\n");
+            $printer->feed();
+            $printer->setTextSize(1, 1);
+            $printer->setEmphasis(true);
+            $printer->text("(Order Ref: ".$request['order_ref'].")"."\n");
+            $printer->setEmphasis(false);
+            $printer->selectPrintMode();
+            $printer->setJustification();
+            $printer->feed();
+
+            $printer->selectPrintMode();
+            $printer->text("Opened By   :   ".$request["opened_by"]."\n");
+            $printer->text("Removed by  :   " . $request["removed_by"] . "\n");
+            $printer->text("Reason      :   ".$request["reason"]."\n");
+            $printer->text("Customer    :   ".$request["customer"]."\n");
+
+            $printer->feed(2);
+
+            $printer->text('    ' . $request['item_quantity'] . " X " . $request['item_name'] . " - ". number_format((float)$request['item_total'],2). "\n");
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
