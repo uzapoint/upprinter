@@ -67,45 +67,61 @@ class Printer_lib
                 $printer->selectPrintMode();
                 $printer->text("------------------------------------------------\n");
             }
+            //checks to check whether the receipt data has edited qty
+            if(!isset($request['has_edited_qty'])) {
+                $printer->text("Captain Order:  " . $receipt["order_ref"] . "\n");
+                $dateText = $request['captain_date'] . " " . $request['captain_time'];
+                $printer->text($dateText . "\n");
 
-            $printer->text("Captain Order:  " . $receipt["order_ref"] . "\n");
-            $dateText = $request['captain_date'] . " " . $request['captain_time'];
-            $printer->text($dateText . "\n");
+                $printer->text($receipt['customer'] . "\n");
+                $printer->feed(1);
 
-            $printer->text($receipt['customer'] . "\n");
-            $printer->feed(1);
-
-            //add items heading
-            $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
-            $printer->setEmphasis(true);
-            $printer->text("------------------------------------------------\n");
-            $printer->text($header . "\n");
-            $printer->text("------------------------------------------------\n");
-            $printer->setEmphasis(false);
-            //add the items
-            foreach ($receipt['items'] as $index => $items) {
-                foreach($items as $item) {
-                    $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
-                    $printer->text($myItem . "\n");
-                }
-            }
-            //add order options, if there is any
-            if (!empty($receipt['order_options']) && sizeof($receipt['order_options'])) {
+                 //add items heading
+                $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
+                $printer->setEmphasis(true);
                 $printer->text("------------------------------------------------\n");
-                $printer->feed();
-                $printer->text("    ORDER OPTIONS\n");
-                $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+                $printer->text($header . "\n");
+                $printer->text("------------------------------------------------\n");
+                $printer->setEmphasis(false);
+                //add the items
+                foreach ($receipt['items'] as $index => $items) {
+                    foreach($items as $item) {
+                        $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+                        $printer->text($myItem . "\n");
+                    }
+                }
+                //add order options, if there is any
+                if (!empty($receipt['order_options']) && sizeof($receipt['order_options'])) {
+                    $printer->text("------------------------------------------------\n");
+                    $printer->feed();
+                    $printer->text("    ORDER OPTIONS\n");
+                    $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+                }
+                $printer->text("------------------------------------------------\n");
+
+                if (!empty($request['till_no'])) {
+                    $printer->text("TILL NO: " . $request["till_no"] . "\n");
+                }
+
+                //add foooter
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                $printer->text("Served By: " . $request["pos_user"] . "\n");
+
+            }else{
+                //print edit order receipt
+                $printer->text("EDIT ORDER RECEIPT". "\n");
+                $printer->feed(1);
+                $printer->selectPrintMode();
+                $printer->setJustification();
+                
+                $printer->text("Order No   :   " . $receipt["order_ref"] ." (". $receipt['customer'] .")". "\n");
+                $printer->text("Item       :   " . $receipt["item_name"] . "\n");
+                $printer->text("Desc       :   " . "Reduced Quantity from ".$receipt['initial_quantity']. " to ". $receipt['new_quantity']."\n");
+                $printer->text("Changed by :   " . $request["changed_by"] ."(". $request['edit_date']." ".$request['edit_time'].")". "\n");
+                $printer->text("Reason     :   ".$receipt["reason"]."\n");
             }
-            $printer->text("------------------------------------------------\n");
 
-            if (!empty($request['till_no'])) {
-                $printer->text("TILL NO: " . $request["till_no"] . "\n");
-            }
-
-            //add foooter
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("Served By: " . $request["pos_user"] . "\n");
-
+           
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
@@ -144,78 +160,117 @@ class Printer_lib
 
             $printer = new Printer($connector);
 
-            //date and time heading
-            $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
-            $printer->text($datetimeheading . "\n");
-            $printer->feed(1);
 
-            //set header
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->setEmphasis(true);
+            /* Checks to check if the receipt data has edited qty to provide different header information */
+            if(!isset($request['has_edited_qty'])) {
 
-            if (!empty($request['business_name'])) {
-                $printer->text($request['business_name'] . "\n");
-                $printer->setEmphasis(false);
+                //date and time heading
+                $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
+                $printer->text($datetimeheading . "\n");
                 $printer->feed(1);
-            }
-            $printer->setTextSize(1, 2);
-            $printer->setEmphasis(true);
-            $printer->text("Captain Order:" . " " . $receipt['order_ref'] . "\n");
-            $printer->selectPrintMode();
-            $printer->feed(1);
 
-            $printer->text($receipt['customer'] . "\n");
-            $printer->feed(1);
-            $printer->text($receipt['pos_user'] . "\n");
-            $printer->feed(2);
-            $printer->setJustification();
-            $printer->setEmphasis(false);
+                //set header
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                $printer->setEmphasis(true);
 
-            if(!empty($receipt['is_fire']) || $receipt['has_courses']){
-                foreach ($receipt['items'] as $course => $courseItems) {
+                if (!empty($request['business_name'])) {
+                    $printer->text($request['business_name'] . "\n");
+                    $printer->setEmphasis(false);
                     $printer->feed(1);
-                    if($course !== 'ABC' && (int)$course > 0) {
-                        $printer->text("    --------- Course " . $course . " -------------");
-                        $printer->feed(2);
+                }
+
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text("Captain Order:" . " " . $receipt['order_ref'] . "\n");
+                $printer->selectPrintMode();
+                $printer->feed(1);
+                $printer->text($receipt['customer'] . "\n");
+                $printer->feed(1);
+                $printer->text($receipt['pos_user'] . "\n");
+                $printer->feed(2);
+                $printer->setJustification();
+                $printer->setEmphasis(false);
+
+                 /* The rest of the information is the same */
+
+                if(!empty($receipt['is_fire']) || $receipt['has_courses']){
+                    foreach ($receipt['items'] as $course => $courseItems) {
+                        $printer->feed(1);
+                        if($course !== 'ABC' && (int)$course > 0) {
+                            $printer->text("    --------- Course " . $course . " -------------");
+                            $printer->feed(2);
+                        }
+                        foreach ($courseItems as $item) {
+                            $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
+                            if (sizeof($item['options'])) {
+                                $printer->feed(2);
+                                //$printer->selectPrintMode();
+                                foreach ($item['options'] as $option) {
+                                    $printer->text('            -> ' . $option . "\n");
+                                    $printer->feed(1);
+                                }
+                            }
+                            $printer->setTextSize(1, 2);
+                        }
+
+                        $printer->feed(1);
                     }
-                    foreach ($courseItems as $item) {
+                } else {
+                    foreach ($receipt['items'][$receipt['last_course']] as $item) {
                         $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
                         if (sizeof($item['options'])) {
-                            $printer->feed(2);
-                            //$printer->selectPrintMode();
+                            $printer->feed(1);
                             foreach ($item['options'] as $option) {
                                 $printer->text('            -> ' . $option . "\n");
                                 $printer->feed(1);
                             }
                         }
                         $printer->setTextSize(1, 2);
-                    }
-
-                    $printer->feed(1);
-                }
-            } else {
-                foreach ($receipt['items'][$receipt['last_course']] as $item) {
-                    $printer->text('    ' . $item['qty'] . " X " . $item['item_name'] . "\n");
-                    if (sizeof($item['options'])) {
                         $printer->feed(1);
-                        foreach ($item['options'] as $option) {
-                            $printer->text('            -> ' . $option . "\n");
-                            $printer->feed(1);
-                        }
                     }
-                    $printer->setTextSize(1, 2);
+                }
+
+                //add order options, if there is any
+                if (!empty($request['order_options']) && sizeof($request['order_options'])) {
+                    $printer->text("------------------------------------------------\n");
+                    $printer->feed();
+                    $printer->text("    ORDER OPTIONS\n");
+                    $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
+                }
+    
+            }else{
+                //print edit order receipt
+                //set header
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                $printer->setEmphasis(true);
+
+                if (!empty($request['business_name'])) {
+                    $printer->text($request['business_name'] . "\n");
+                    $printer->setEmphasis(false);
                     $printer->feed(1);
                 }
-            }
 
-            //add order options, if there is any
-            if (!empty($request['order_options']) && sizeof($request['order_options'])) {
-                $printer->text("------------------------------------------------\n");
-                $printer->feed();
-                $printer->text("    ORDER OPTIONS\n");
-                $printer->text('       ' . implode(", ", $request['order_options']) . "\n");
-            }
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text("EDIT ORDER RECEIPT". "\n");
+                $printer->feed(1);
+                $printer->selectPrintMode();
+                $printer->setJustification();
+                
+                $printer->text("Order No   :   " . $receipt["order_ref"] ." (". $receipt['customer'] .")". "\n");
+                $printer->feed(1);
 
+                $printer->text("Item       :   " . $receipt["item_name"] . "\n");
+                $printer->feed(1);
+
+                $printer->text("Desc       :   " . "Reduced Quantity from ".$receipt['initial_quantity']. " to ". $receipt['new_quantity']."\n");
+                $printer->feed(1);
+
+                $printer->text("Changed by :   " . $request["changed_by"] ."(". $request['edit_date']." ".$request['edit_time'].")". "\n");
+                $printer->feed(1);
+
+                $printer->text("Reason     :   ".$receipt["reason"]."\n");
+            }
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
@@ -1417,25 +1472,27 @@ class Printer_lib
         
             $printer->feed();
             $printer->setTextSize(1, 2);
-            $printer->text("Removed Order Item"."\n");
+            $printer->text("REMOVED ORDER ITEM RECEIPT"."\n");
             $printer->feed();
-            $printer->setTextSize(1, 1);
-            $printer->setEmphasis(true);
-            $printer->text("(Order Ref: ".$request['order_ref'].")"."\n");
-            $printer->setEmphasis(false);
             $printer->selectPrintMode();
             $printer->setJustification();
             $printer->feed();
 
             $printer->selectPrintMode();
-            $printer->text("Opened By   :   ".$request["opened_by"]."\n");
-            $printer->text("Removed by  :   " . $request["removed_by"] . "\n");
-            $printer->text("Reason      :   ".$request["reason"]."\n");
-            $printer->text("Customer    :   ".$request["customer"]."\n");
 
-            $printer->feed(2);
+            $printer->text("Order No   :   " . $request["order_ref"] ." (". $request['customer'] .")". "\n");
+            $printer->feed();
 
-            $printer->text('    ' . $request['item_quantity'] . " X " . $request['item_name'] . " - ". number_format((float)$request['item_total'],2). "\n");
+            $printer->text("Item       :   " . $request["item_name"] . "\n");
+            $printer->feed();
+
+            $printer->text("Desc       :   " . $request["description"] . "\n");
+            $printer->feed();
+
+            $printer->text("Removed by :   " . $request["removed_by"] ."(". $request['edit_date']." ".$request['edit_time'].")". "\n");
+            $printer->feed();
+
+            $printer->text("Reason     :   ".$request["reason"]."\n");
 
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
