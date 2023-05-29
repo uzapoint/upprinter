@@ -1435,8 +1435,8 @@ class Printer_lib
             $printer->text("User: " . $variables['user'] . "\n");
             $printer->feed();
             $printer->setEmphasis(false);
-            $printer->text("Store From: " . $variables['store_from'] . "\n");
-            $printer->text("Store To: " . $variables['store_to'] . "\n");
+            $printer->text("Store From: " . $variables['source_store_name'] . "\n");
+            $printer->text("Store To: " . $variables['destination_store_name'] . "\n");
             $printer->feed();
             $printer->text("Issue Date: " . $variables['issue_date'] . "\n");
 
@@ -1451,14 +1451,20 @@ class Printer_lib
              * Print the issue items
              * */
             foreach ($variables['items'] as $index => $item) {
-                $myItem = sprintf("%-9s %-22s %-4s %-6s", $item['product_code'], $item['product'], $item['quantity'], $item['uom_label']);
+                $myItem = sprintf("%-9s %-22s %-4s %-6s", $item['productCode'], $item['product_label'], $item['quantity'], $item['uom_label']);
                 $printer->text($myItem . "\n");
             }
 
             /*
+             * Signatories
+             * */
+            $printer->feed(4);
+            $printer->text('Sign: ________________________________');
+
+            /*
              * Uzapoint footer
              * */
-            $printer->feed();
+            $printer->feed(2);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->text('Powered by Uzapoint');
 
