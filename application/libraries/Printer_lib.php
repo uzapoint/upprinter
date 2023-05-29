@@ -1364,6 +1364,13 @@ class Printer_lib
                 $printer->feed();
             }
 
+            //Print out amount due
+            if(!empty($request['total_due_amount'])){
+                $printer->feed(2);
+                $printer->text("Total Due: ".$request['total_due_amount']."\n");
+                $printer->feed();
+            }
+
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
 
@@ -1647,7 +1654,14 @@ class Printer_lib
 
         foreach ($request['items'] as $item) {
             $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name'], 0, 26), $item['item_quantity'], $item['item_total']);
+
+            // An aggregation item
+            if(isset($item['category']) && $item['category'] == ''){
+                $printer->setEmphasis(true);
+            }
+
             $printer->text($myItem . "\n");
+            $printer->setEmphasis(false);
         }
         $printer->feed(1);
         $printer->text("------------------------------------------------\n");
