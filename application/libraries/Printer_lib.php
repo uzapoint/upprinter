@@ -113,11 +113,132 @@ class Printer_lib
         }
     }
 
-    public function captain($request = array())
+    public function tep300PrintCaptain($request = array())
     {
 
-        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        foreach($request['receipts'] as $index => $receipt) {
 
+            /*
+             * Check the local adapter being used
+             * */
+
+             $localPrinter = $request['LOCAL_PRINTER'];
+             if ($localPrinter['adapter'] === 'NETWORK' && !empty($request['printer_ip'])) {
+                 $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+             } elseif ($localPrinter['adapter'] === 'USB') {
+                 $printerID = $localPrinter['id'];
+                 $connector = new WindowsPrintConnector($printerID);
+             }
+     
+            $printer = new Printer($connector);
+
+            //date and time heading
+            $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
+            $printer->text($datetimeheading);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setEmphasis(true);
+
+            if (!empty($request['business_name'])) {
+                $printer->text($request['business_name']);
+                $connector->write(self::ESC . "d" . chr(1));
+                $printer->setEmphasis(false);
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text("Captain Order:" . " " . $receipt['order_ref']);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->selectPrintMode();
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->text($receipt['customer']);
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text($receipt['pos_user']);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->setJustification();
+            $printer->setEmphasis(false);
+
+            if(!empty($receipt['is_fire']) || $receipt['has_courses']){
+                foreach ($receipt['items'] as $course => $courseItems) {
+                    $connector->write(self::ESC . "d" . chr(1));
+                    if($course !== 'ABC' && (int)$course > 0) {
+                        $printer->text("    --------- Course " . $course . " -------------");
+                        $connector->write(self::ESC . "d" . chr(1));
+                    }
+                    foreach ($courseItems as $item) {
+                        $printer->text('        ' . $item['qty'] . " X " . $item['item_name']);
+                        $connector->write(self::ESC . "d" . chr(1));
+
+                        if (sizeof($item['options'])) {
+                            $connector->write(self::ESC . "d" . chr(2));
+                            //$printer->selectPrintMode();
+                            foreach ($item['options'] as $option) {
+                                $printer->text('            -> ' . $option);
+                                $connector->write(self::ESC . "d" . chr(1));
+
+                            }
+                        }
+                        $printer->setTextSize(1, 2);
+                    }
+
+                    $connector->write(self::ESC . "d" . chr(1));
+                }
+            } else {
+                foreach ($receipt['items'][$receipt['last_course']] as $item) {
+                    $printer->text('    ' . $item['qty'] . " X " . $item['item_name']);
+                    $connector->write(self::ESC . "d" . chr(1));
+
+                    if (sizeof($item['options'])) {
+                        $connector->write(self::ESC . "d" . chr(1));
+                        //$printer->selectPrintMode();
+                        foreach ($item['options'] as $option) {
+                            $printer->text('            -> ' . $option);
+                            $connector->write(self::ESC . "d" . chr(1));
+
+                        }
+                    }
+                    $printer->setTextSize(1, 2);
+                    $connector->write(self::ESC . "d" . chr(1));
+                }
+            }
+
+            //add order options, if there is any
+            if (!empty($request['order_options']) && sizeof($request['order_options'])) {
+                $printer->text("------------------------------------------------");
+                $connector->write(self::ESC . "d" . chr(1));
+
+                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text("    ORDER OPTIONS");
+                $connector->write(self::ESC . "d" . chr(1));
+
+                $printer->text('       ' . implode(", ", $request['order_options']));
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+
+
+            $connector->write(self::ESC . "d" . chr(1));
+            $connector->write(chr(27) . chr(109));
+            $printer->close();
+        }
+
+      
+
+    }
+
+    public function captain($request = array())
+    {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        //check if the model being used is TEP-300
+        if ($request['LOCAL_PRINTER']['model'] === 'TEP-300') {
+            return $this->tep300PrintCaptain($request);
+        }
         // check if receipt design is minified design
         if (trim($request['receipt_design']) == "minified_items")
             return $this->captainMinifiedDesign($request);
@@ -419,10 +540,260 @@ class Printer_lib
         return true;
 
     }
+    
+    public function tep300PrintProforma($request = array())
+    {
+       
+        $localPrinter = $request['LOCAL_PRINTER'];
+        if ($localPrinter['adapter'] === 'NETWORK' && !empty($request['printer_ip'])) {
+            $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+        } elseif ($localPrinter['adapter'] === 'USB') {
+            $printerID = $localPrinter['id'];
+            $connector = new WindowsPrintConnector($printerID);
+        }
+
+
+        $printer = new Printer($connector);
+
+        $receiptCopies = 1;
+        if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
+        for ($copy = 1; $copy <= $receiptCopies; $copy++) {
+            //set header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if (!empty($request['company_name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($request['company_name']);
+                $connector->write(self::ESC . "d" . chr(1));
+                $printer->setEmphasis(false);
+
+                $printer->selectPrintMode();
+            }
+
+            if (!empty($request['contact_1'])) {
+                $printer->text($request['contact_1']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+
+            if (!empty($request['contact_2'])) {
+                $printer->text($request['contact_2']);
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+
+            $printer->setJustification();
+
+            $printer->selectPrintMode();
+            $printer->text("Table    :   " . $request["customer"]);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $date = !empty($request['receipt_date']) ? $request['receipt_date'] : Carbon::now()->toDayDateTimeString();
+            $printer->text($date);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->text("Served By   :   " . $request['pos_user']);
+            $connector->write(self::ESC . "d" . chr(1));
+
+
+            $printer->setEmphasis(true);
+            $printer->text($request['entity'] . " No    :   " . $request['order_ref']);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->setEmphasis(false);
+
+            $connector->write(self::ESC . "d" . chr(1));
+            //$header = sprintf("%-3s %-29s %-7s", "Qty", "Item", "Total");
+            $header = sprintf("%-30s %-7s", "Item", "Total");
+            $printer->setEmphasis(true);
+            $printer->text($header);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->setEmphasis(false);
+
+            foreach ($request['items'] as $type => $items) {
+                foreach ($items as $item) {
+                    $printer->text($item['item_name']);
+                    $connector->write(self::ESC . "d" . chr(1));
+
+                    $printer->text(
+                        sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
+                    );
+                    $connector->write(self::ESC . "d" . chr(1));
+
+                }
+                $printer->setEmphasis(true);
+                $typeTotal = sprintf("%-30s %-7s", $type . " Total", number_format($request['type_totals'][$type], 2));
+                $printer->text($typeTotal);
+                $connector->write(self::ESC . "d" . chr(1));
+
+                $printer->setEmphasis(false);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+            $printer->text("-------------------------------------");
+            $connector->write(self::ESC . "d" . chr(1));
+
+            /*$orderDueText = sprintf("%-5s %20s %15s", " ", "TOTAL : KES.", number_format((float)$request['grand_total']));
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($orderDueText . "\n");
+            $printer->selectPrintMode();
+            $printer->text("------------------------------------------------\n");*/
+
+            $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total']));
+            $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount']));
+            $printer->text($grandTotal);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->text($discount);
+            $connector->write(self::ESC . "d" . chr(1));
+
+
+            //add sale taxes
+            if (!empty($request['sale_tax_breakdown'])) {
+                $printer->text("-------------------------------------");
+                $connector->write(self::ESC . "d" . chr(1));
+
+                $connector->write(self::ESC . "d" . chr(1));
+                foreach ($request['sale_tax_breakdown'] as $tax) {
+                    $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
+                    $printer->text($taxEntry);
+                    $connector->write(self::ESC . "d" . chr(1));
+
+                }
+            }
+
+            //total indicator
+            $printer->text("-------------------------------------");
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($orderDueText);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->selectPrintMode();
+
+            if (!empty($request['amount_given'])) {
+                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text("-------------------------------------");
+                $connector->write(self::ESC . "d" . chr(1));
+
+                $amountToPay = sprintf("%-30s %-7s", "Total Amount to pay", number_format((float)$request['amount_payable']));
+                $printer->text($amountToPay);
+                $connector->write(self::ESC . "d" . chr(1));
+
+
+                $amountGiven = sprintf("%-30s %-7s", "Total Amount given", number_format((float)$request['amount_given']));
+                $printer->text($amountGiven);
+                $connector->write(self::ESC . "d" . chr(1));
+
+
+                if ((float)$request['balance'] > 0) {
+                    $change = sprintf("%-30s %-7s", $request['balance_name'], number_format($request['balance']));
+                    $printer->text($change);
+                    $connector->write(self::ESC . "d" . chr(1));
+
+                }
+                if (!empty($request['overpayments'])) {
+                    foreach ($request['overpayments'] as $overpayment) {
+                        $change = sprintf("%-30s %-7s", $overpayment['balance_name'], number_format($overpayment['balance']));
+                        $printer->text($change);
+                        $connector->write(self::ESC . "d" . chr(1));
+
+                    }
+                }
+
+                if (!empty($request['tip'])) {
+                    $tip = sprintf("%-30s %-7s", "Gratuity", number_format($request['tip']));
+                    $printer->text($tip);
+                    $connector->write(self::ESC . "d" . chr(1));
+
+                }
+            }
+
+            $printer->text("-------------------------------------");
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $connector->write(self::ESC . "d" . chr(1));
+            /*$totalVat = 0.16 * (float)$request['grand_total'];
+            $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%\n");
+            $printer->feed(1);
+            $printer->text("------------------------------------------------\n");*/
+
+            if (!empty($request['till_no'])) {
+                $printer->text("TILL NO : " . $request['till_no']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+
+            if (!empty($request['pin_no'])) {
+                $printer->text("PIN NO : " . $request['pin_no']);
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+            if (!empty($request['telephone'])) {
+                $printer->text("TEL NO : " . $request['telephone']);
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+            if (!empty($request['email'])) {
+                $printer->text("Email : " . $request['email']);
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+            if (!empty($request['website'])) {
+                $printer->text("Website : " . $request['website']);
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+
+            $printer->text("----------------------------------");
+            $connector->write(self::ESC . "d" . chr(1));
+
+
+            //uzapoint footer
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            if (!empty($request['line_1'])) {
+                $printer->text($request['line_1'] );
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+            if (!empty($request['line_2'])) {
+                $printer->text($request['line_2']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+            if (!empty($request['line_3'])) {
+                $printer->text($request['line_3']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+            if (!empty($request['line_4'])) {
+                $printer->text($request['line_4']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+            $printer->setJustification();
+            $connector->write(self::ESC . "d" . chr(2));
+            $connector->write(chr(27) . chr(109));
+        }
+
+        $printer->pulse();
+        $printer->close();
+
+        return true;
+    }
 
     public function proforma($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        //check if the model being used is TEP-300
+        if (trim($request['LOCAL_PRINTER']['model']) === 'TEP-300') {
+            return $this->tep300PrintProforma($request);
+        }
+
         if ($request['receipt_design'] == "minified_items") {
             return $this->proformaMinifiedDesign($request);
         }
@@ -1388,10 +1759,135 @@ class Printer_lib
         }
 
     }
+    public function tep300PrintStockTransfer($request = array()){
+
+        if (trim($request['printer']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['printer']['id']));
+        } else if (trim($request['printer']['adapter']) === 'NETWORK') {
+            $connector = new NetworkPrintConnector(trim($request['printer_ip']));
+        }
+
+        $printer = new Printer($connector);
+
+        $variables = $request['data'];
+
+        try {
+            // Receipt Header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            if (!empty($variables['name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($variables['name']);
+                $connector->write(self::ESC . "d" . chr(1));
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
+            }
+
+            if (!empty($variables['address'])) {
+                $printer->text($variables['address']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+
+            if (!empty($variables['physical_address'])) {
+                $printer->text($variables['physical_address']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+
+            if (!empty($variables['email'])) {
+                $printer->text($variables['email']);
+                $printer->feed();
+
+            }
+
+            if (!empty($variables['phone'])) {
+                $printer->text($variables['phone']);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+            $printer->feed();
+            $printer->setTextSize(1, 2);
+            $printer->text("STOCK TRANSFER NOTE");
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->selectPrintMode();
+            $printer->setJustification();
+            $connector->write(self::ESC . "d" . chr(1));
+
+
+            $printer->setEmphasis(true);
+            $printer->text("Reference Code: " . $variables['reference_code']);
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("User: " . $variables['user']);
+            $connector->write(self::ESC . "d" . chr(2));
+            $printer->setEmphasis(false);
+            $printer->text("Store From: " . $variables['source_store_name']);
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("Store To: " . $variables['destination_store_name']);
+            $connector->write(self::ESC . "d" . chr(2));
+
+
+            $printer->text("Issue Date: " . $variables['issue_date']);
+            $connector->write(self::ESC . "d" . chr(2));
+
+            $header = sprintf("%-10s %-18s %-8s %-10s", "Code", "Product", "Quantity", "UOM");
+            $printer->setEmphasis(true);
+            $printer->text($header);
+            $connector->write(self::ESC . "d" . chr(1));
+
+            $printer->setEmphasis(false);
+            /*
+             * Print the issue items
+             * */
+            foreach ($variables['items'] as $index => $item) {
+                $myItem = sprintf("%-9s %-22s %-4s %-6s", $item['productCode'], $item['product_label'], $item['quantity'], $item['uom_label']);
+                $printer->text($myItem);
+                $connector->write(self::ESC . "d" . chr(1));
+
+            }
+
+           /*
+             * Signatories
+             * */
+            $connector->write(self::ESC . "d" . chr(4));
+            $printer->text('Sign: ________________________________');
+
+            /*
+             * Uzapoint footer
+             * */
+            $connector->write(self::ESC . "d" . chr(1));
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('Powered by Uzapoint');
+
+            $connector->write(self::ESC . "d" . chr(3));
+            $connector->write(chr(27) . chr(109));
+        } catch (\Exception $exception) {
+            $connector->write(self::ESC . "d" . chr(2));
+            $printer->text("ERROR ENCOUNTERED WHILE PRINTING....");
+            $connector->write(self::ESC . "d" . chr(2));
+
+
+            $connector->write(self::ESC . "d" . chr(5));
+            $connector->write(chr(27) . chr(109));
+        } finally {
+            $printer->close();
+        }
+
+
+    }
 
     public function stockTransfer($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+
+        //check if the model being used is TEP-300
+        if (trim($request['printer']['model']) === 'TEP-300') {
+            return $this->tep300PrintStockTransfer($request);
+
+        }
+
         if (trim($request['printer']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['printer']['id']));
         } else if (trim($request['printer']['adapter']) === 'NETWORK') {
