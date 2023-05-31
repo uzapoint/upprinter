@@ -1462,11 +1462,15 @@ class Printer_lib
                 $printer->text($myItem . "\n");
             }
 
-            /*
-             * Signatories
-             * */
+        
+            //  /*
+            //  * Signatories
+            //  * */
             $printer->feed(4);
-            $printer->text('Sign: ________________________________');
+            $printer->text('Name:_________________' ." ". 'Sign: _________________'. "\n");
+            $printer->feed(2);
+            $printer->text('Name:_________________' ." ". 'Sign: _________________'. "\n");
+
 
             /*
              * Uzapoint footer
