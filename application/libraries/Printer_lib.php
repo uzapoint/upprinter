@@ -332,7 +332,7 @@ class Printer_lib
                 $printer->text($deliveryCostText . "\n\n");
             }
 
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (" . $request['business_currency_code'] . ")", number_format((float)$request['amount_payable'], 2));
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (" . ($request['business_currency_code'] ?? 'KES') . ")", number_format((float)$request['amount_payable'], 2));
 
             //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
