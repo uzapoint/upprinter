@@ -1227,35 +1227,42 @@ class Printer_lib
             $printer->setEmphasis(false);
             $printer->feed();
 
-            $header = sprintf("%-16s %-8s %-8s %-8s", "", "Actual", "Expected", "Variance");
-            $printer->setEmphasis(true);
-            $printer->text($header. "\n");
-            $printer->setEmphasis(false);
 
-            foreach ($request['collections'] as $index => $collection) {
-                $myItem = sprintf("%-18s %-8s %-8s %-8s", $collection, $request['actual'][$index], $request['expected'][$index], $request['variance'][$index]);
-                if($index === (sizeof($request['collections']) -1)){
+            if (!$request['has_breakdown']){
+                foreach ($request['collections'] as $index => $collection) {
+                    $myItem = sprintf("%-18s %-8s %-8s %-8s", $collection, $request['actual'][$index], $request['expected'][$index], $request['variance'][$index]);
+                    if ($index === (sizeof($request['collections']) - 1)) {
+                        $printer->setEmphasis(true);
+                    }
+                    $printer->text($myItem . "\n");
+                    //$printer->feed();
+                    $printer->setEmphasis(false);
+
+                }
+            } else {
+                foreach ($request['payments'] as $payment) {
+
+                    $printer->feed();
                     $printer->setEmphasis(true);
-                }
-                $printer->text($myItem . "\n");
-                //$printer->feed();
-                $printer->setEmphasis(false);
+                    $printer->text(strtoupper($payment['method']) . "\n");
+                    $printer->setEmphasis(false);
 
-            }
-            /*
-             *  Display Expenses Incurred
-             */
-            $shiftExpenseEntry = sprintf("%-18s", "Expenses Incurred");
-            $printer->feed();
-            $printer->setEmphasis(true);
-            $printer->text($shiftExpenseEntry);
-            $printer->feed();
-            $printer->setEmphasis(false);
-            if(!empty($request['expenses'])) {
-                foreach ($request['expenses'] as $type => $amount) {
-                    $myExpense = sprintf("%-18s %-8s", $type, $amount);
-                    $printer->text($myExpense. "\n");
+                    $printer->text("  Sales: " . ($payment['sales'] ?? '0.00') . "\n");
+                    $printer->text("  Overpayments: " . ($payment['overpayments'] ?? '0.00') . "\n");
+                    $printer->text("  Tips: " . ($payment['tips'] ?? '0.00') . "\n");
+                    $printer->text("  Customer Deposits: " . ($payment['customer_deposits'] ?? '0.00') . "\n");
+                    $printer->text("  Cash Refunds: " . ($payment['cash_refunds'] ?? '0.00') . "\n");
+                    $printer->text("  Paid Invoices: " . ($payment['paid_invoices'] ?? '0.00') . "\n");
+                    $printer->text("  Expenses: " . ($payment['expenses'] ?? '0.00') . "\n");
+                    $printer->text("  Purchases: " . ($payment['purchases'] ?? '0.00') . "\n");
+                    if (strtoupper($payment['method']) == 'TOTAL') $printer->setEmphasis(true);
+                    $printer->text("  Total Expected: " . ($payment['expected'] ?? '0.00') . "\n");
+                    $printer->text("  Total Actual: " . ($payment['actual'] ?? '0.00') . "\n");
+                    $printer->text("  Total Variance: " . ($payment['variance'] ?? '0.00') . "\n");
                 }
+
+                $printer->feed();
+                $printer->setEmphasis(false);
             }
 
             $printer->feed(5);
@@ -1374,11 +1381,11 @@ class Printer_lib
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         $path = $request['receipt_path'];
         $textFileName = $request['receipt_filename'];
-        $data = $request['receipt_contents'];
+        $request = $request['receipt_contents'];
 
         $receiptName = $path.'/'.$textFileName;
         $myfile = fopen($receiptName, "x+") or die("Unable to open file!");
-        fwrite($myfile, $data);
+        fwrite($myfile, $request);
         fclose($myfile);
     }
 
