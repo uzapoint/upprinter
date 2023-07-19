@@ -1228,7 +1228,7 @@ class Printer_lib
             $printer->feed();
 
 
-            if (!$request['has_breakdown']){
+            if ($request['has_breakdown'] != "true"){
                 foreach ($request['collections'] as $index => $collection) {
                     $myItem = sprintf("%-18s %-8s %-8s %-8s", $collection, $request['actual'][$index], $request['expected'][$index], $request['variance'][$index]);
                     if ($index === (sizeof($request['collections']) - 1)) {
