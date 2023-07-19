@@ -333,7 +333,7 @@ class Printer_lib
                 $printer->text($deliveryCostText . "\n\n");
             }
 
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (" . $request['business_currency_code'] . ")", number_format((float)$request['amount_payable'], 2));
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (" . ($request['business_currency_code'] ?? 'KES') . ")", number_format((float)$request['amount_payable'], 2));
 
             //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
@@ -1007,88 +1007,67 @@ class Printer_lib
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
-            $printer->text("CREDIT NOTE");
-            $connector->write(self::ESC . "d" . chr(1));
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("CREDIT NOTE\n");
 
             //set header
             if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->text($companyName['value']);
-                $connector->write(self::ESC . "d" . chr(1));
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->feed();
             }
             $printer->setEmphasis(false);
             $printer->selectPrintMode();
 
             if ($heading1 = $this->filter_array($variables, 'contact_1')) {
-                $printer->text($heading1['value']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($heading1['value']."\n");
             }
 
             if ($heading2 = $this->filter_array($variables, 'contact_2')) {
-                $printer->text($heading2['value']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($heading2['value']."\n");
             }
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->feed(2);
             $printer->setJustification();
 
             $printer->setEmphasis(true);
-            $printer->text($request['entity'] . " No    :   " . $request['order_ref']);
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text($request['entity'] . " No    :   " . $request['order_ref']."\n");
             $printer->setEmphasis(false);
 
-            $printer->text("Served By   :   " . $request['pos_user']);
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("Served By   :   " . $request['pos_user']."\n");
 
             $printer->selectPrintMode();
-            $printer->text("Customer    :   " . $request["customer"]);
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("Customer    :   " . $request["customer"]."\n");
 
-            $printer->text($request['receipt_date']);
-            $connector->write(self::ESC . "d" . chr(1));
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text($request['receipt_date']."\n\n");
 
 
             $header = sprintf("%-30s %-7s", "Item", "Total");
             $printer->setEmphasis(true);
-            $printer->text($header);
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text($header."\n");
             $printer->setEmphasis(false);
 
             foreach ($request['items'] as $key => $item) {
-                $printer->text($item['item_name']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($item['item_name']."\n");
                 $printer->text(
                     sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2)) . "\n"
                 );
-                $connector->write(self::ESC . "d" . chr(1));
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->feed();
             }
-            $connector->write(self::ESC . "d" . chr(1));
-            $printer->text("------------------------------------------------");
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("------------------------------------------------\n");
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total'], 2));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount'], 2));
-            $printer->text($grandTotal);
-            $connector->write(self::ESC . "d" . chr(1));
-            $printer->text($discount);
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text($grandTotal."\n");
+            $printer->text($discount."\n");
 
             //total indicator
-            $printer->text("------------------------------------------------");
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("------------------------------------------------.\n");
 
             $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
             //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
-            $printer->text($orderDueText);
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text($orderDueText."\n");
             //$printer->selectPrintMode();
 
-            $printer->text("------------------------------------------------");
-            $connector->write(self::ESC . "d" . chr(1));
-            $connector->write(self::ESC . "d" . chr(1));
+            $printer->text("------------------------------------------------\n\n");
             //$printer->feed(1);
 
             //check if has receipt footer notes
@@ -1098,38 +1077,32 @@ class Printer_lib
                     $printer->setJustification(Printer::JUSTIFY_CENTER);
                 }
                 foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
-                    $printer->text($footer_note);
-                    $connector->write(self::ESC . "d" . chr(1));
+                    $printer->text($footer_note."\n");
                 }
                 if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
                     $printer->setJustification();
                 }
-                $printer->text("------------------------------------------------");
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text("------------------------------------------------\n");
             }
 
             //uzapoint footer
             $printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             if ($line1 = $this->filter_array($variables, 'line_1')) {
-                $printer->text($line1['value']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($line1['value']."\n");
             }
             if ($line2 = $this->filter_array($variables, 'line_2')) {
-                $printer->text($line2['value']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($line2['value']."\n");
             }
             if ($line3 = $this->filter_array($variables, 'line_3')) {
-                $printer->text($line3['value']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($line3['value']."\n");
             }
             if ($line4 = $this->filter_array($variables, 'line_4')) {
-                $printer->text($line4['value']);
-                $connector->write(self::ESC . "d" . chr(1));
+                $printer->text($line4['value']."\n");
             }
             $printer->setJustification();
-            $printer->feed(5);
-            $connector->write(chr(27) . chr(109));
+            $printer->feed(3);
+            $printer->cut();
         }
 
         $printer->pulse();
@@ -1262,7 +1235,7 @@ class Printer_lib
             $printer->feed();
 
 
-            if (!$request['has_breakdown']) {
+            if ($request['has_breakdown'] != "true") {
                 foreach ($request['collections'] as $index => $collection) {
                     $myItem = sprintf("%-18s %-8s %-8s %-8s", $collection, $request['actual'][$index], $request['expected'][$index], $request['variance'][$index]);
                     if ($index === (sizeof($request['collections']) - 1)) {
