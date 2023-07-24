@@ -1236,6 +1236,12 @@ class Printer_lib
 
 
             if ($request['has_breakdown'] != "true") {
+
+                $header = sprintf("%-16s %-8s %-8s %-8s", "", "Actual", "Expected", "Variance");
+                $printer->setEmphasis(true);
+                $printer->text($header. "\n");
+                $printer->setEmphasis(false);
+
                 foreach ($request['collections'] as $index => $collection) {
                     $myItem = sprintf("%-18s %-8s %-8s %-8s", $collection, $request['actual'][$index], $request['expected'][$index], $request['variance'][$index]);
                     if ($index === (sizeof($request['collections']) - 1)) {
