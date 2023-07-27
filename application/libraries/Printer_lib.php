@@ -305,30 +305,44 @@ class Printer_lib
 
         $printer = new Printer($connector);
 
+        $variables = $request['variables'];
+
         $receiptCopies = 1;
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
-            if (!empty($request['company_name'])) {
+            if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
-                $printer->text($request['company_name'] . "\n");
+                $printer->text($companyName['value'] . "\n");
                 $printer->setEmphasis(false);
 
                 $printer->selectPrintMode();
             }
 
-            if (!empty($request['contact_1'])) {
-                $printer->text($request['contact_1'] . "\n");
+            $printer->setEmphasis(false);
+            $printer->selectPrintMode();
+
+            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
+                $printer->text($heading1['value'] . "\n");
             }
 
-            if (!empty($request['contact_2'])) {
-                $printer->text($request['contact_2'] . "\n");
+            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+                $printer->text($heading2['value'] . "\n");
             }
-            if (!empty($request['pin_no'])) {
-                $printer->text("PIN NO : " . $request['pin_no'] . "\n");
+
+            if ($pin = $this->filter_array($variables, 'pin no')) {
+                $printer->text("PIN NO : " . $pin['value'] . "\n");
             }
+
+            if ($telephone = $this->filter_array($variables, 'telephone')) {
+                $printer->text("TEL NO : " . $telephone['value'] . "\n");
+            }
+
+            $printer->text("\n");
+            $printer->setJustification();
+
             if (!empty($request['telephone'])) {
                 $printer->text("TEL NO : " . $request['telephone'] . "\n");
             }
@@ -443,28 +457,46 @@ class Printer_lib
 
         $printer = new Printer($connector);
 
+        $variables = $request['variables'];
 
         $receiptCopies = 1;
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if (!empty($request['company_name'])) {
+            if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
-                $printer->text($request['company_name'] . "\n");
+                $printer->text($companyName['value'] . "\n");
                 $printer->setEmphasis(false);
 
                 $printer->selectPrintMode();
             }
 
-            if (!empty($request['contact_1'])) {
-                $printer->text($request['contact_1'] . "\n");
+            $printer->setEmphasis(false);
+            $printer->selectPrintMode();
+
+            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
+                $printer->text($heading1['value'] . "\n");
             }
 
-            if (!empty($request['contact_2'])) {
-                $printer->text($request['contact_2'] . "\n");
-                $printer->feed(1);
+            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+                $printer->text($heading2['value'] . "\n");
+            }
+
+            if ($pin = $this->filter_array($variables, 'pin no')) {
+                $printer->text("PIN NO : " . $pin['value'] . "\n");
+            }
+
+            if ($telephone = $this->filter_array($variables, 'telephone')) {
+                $printer->text("TEL NO : " . $telephone['value'] . "\n");
+            }
+
+            $printer->text("\n");
+            $printer->setJustification();
+
+            if (!empty($request['telephone'])) {
+                $printer->text("TEL NO : " . $request['telephone'] . "\n");
             }
 
             $printer->setJustification();
