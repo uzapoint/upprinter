@@ -164,9 +164,10 @@ class Printer_lib
             $printer->selectPrintMode();
             $printer->feed(1);
 
-            $printer->text($receipt['customer'] . "\n");
-            $printer->feed(1);
+            $printer->setTextSize(1, 2);
             $printer->text($receipt['pos_user'] . "\n");
+            $printer->feed(1);
+            $printer->text($receipt['customer'] . "\n");
             $printer->feed(2);
             $printer->setJustification();
             $printer->setEmphasis(false);
