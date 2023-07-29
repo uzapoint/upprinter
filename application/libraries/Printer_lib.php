@@ -601,25 +601,25 @@ class Printer_lib
             $printer->feed(1);
             $printer->text("------------------------------------------------\n");*/
 
-            if (!empty($request['till_no'])) {
-                $printer->text("TILL NO : " . $request['till_no'] . "\n");
+            if (($tillNo = $this->filter_array($variables, 'till_no')) && $tillNo != null) {
+                $printer->text("TILL NO : " . $tillNo['value'] . "\n");
                 $printer->feed(1);
             }
 
-            if (!empty($request['pin_no'])) {
-                $printer->text("PIN NO : " . $request['pin_no'] . "\n");
+            if (($pinNo = $this->filter_array($variables, 'pin_no')) && $telephone != null) {
+                $printer->text("PIN NO : " . $pinNo['value'] . "\n");
                 $printer->feed(1);
             }
-            if (!empty($request['telephone'])) {
-                $printer->text("TEL NO : " . $request['telephone'] . "\n");
+            if (($telephone = $this->filter_array($variables, 'telephone')) && $telephone != null) {
+                $printer->text("TEL NO : " . $telephone['value'] . "\n");
                 $printer->feed(1);
             }
-            if (!empty($request['email'])) {
-                $printer->text("Email : " . $request['email'] . "\n");
+            if (($email = $this->filter_array($variables, 'email')) && $email != null) {
+                $printer->text("Email : " . $email['value'] . "\n");
                 $printer->feed(1);
             }
-            if (!empty($request['website'])) {
-                $printer->text("Website : " . $request['website'] . "\n");
+            if (($website = $this->filter_array($variables, 'website')) && $website != null) {
+                $printer->text("Website : " . $website['value'] . "\n");
                 $printer->feed(1);
             }
 
@@ -629,17 +629,17 @@ class Printer_lib
             $printer->feed(1);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
-            if (!empty($request['line_1'])) {
-                $printer->text($request['line_1'] . "\n");
+            if (($line_1 = $this->filter_array($variables, 'line_1')) && $line_1 != null) {
+                $printer->text($line_1['value'] . "\n");
             }
-            if (!empty($request['line_2'])) {
-                $printer->text($request['line_2'] . "\n");
+            if (($line_2 = $this->filter_array($variables, 'line_2')) && $line_2 != null) {
+                $printer->text($line_2['value'] . "\n");
             }
-            if (!empty($request['line_3'])) {
-                $printer->text($request['line_3'] . "\n");
+            if (($line_3 = $this->filter_array($variables, 'line_3')) && $line_3 != null) {
+                $printer->text($line_3['value'] . "\n");
             }
-            if (!empty($request['line_4'])) {
-                $printer->text($request['line_4'] . "\n");
+            if (($line_4 = $this->filter_array($variables, 'line_4')) && $line_4 != null) {
+                $printer->text($line_4['value'] . "\n");
             }
             $printer->setJustification();
             $printer->feed(5);
