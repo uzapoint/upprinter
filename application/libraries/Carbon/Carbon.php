@@ -5246,6 +5246,7 @@ class Carbon extends DateTime implements JsonSerializable
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public static function __set_state($array)
     {
         return static::instance(parent::__set_state($array));
