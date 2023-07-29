@@ -934,6 +934,7 @@ class Carbon extends DateTime implements JsonSerializable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public static function getLastErrors()
     {
         return static::$lastErrors;
@@ -1310,6 +1311,7 @@ class Carbon extends DateTime implements JsonSerializable
      * @see https://github.com/briannesbitt/Carbon/issues/539
      * @see https://bugs.php.net/bug.php?id=63863
      */
+    #[\ReturnTypeWillChange]
     public function setDate($year, $month, $day)
     {
         $this->modify('+0 day');
@@ -1393,6 +1395,7 @@ class Carbon extends DateTime implements JsonSerializable
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setTimezone($value)
     {
         parent::setTimezone(static::safeCreateDateTimeZone($value));
@@ -5258,6 +5261,7 @@ class Carbon extends DateTime implements JsonSerializable
      *
      * @return array|string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         if (static::$serializer) {
