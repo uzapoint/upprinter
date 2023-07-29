@@ -484,7 +484,7 @@ class Printer_lib
                 $printer->text($heading2['value'] . "\n");
             }
 
-            if ($pin = $this->filter_array($variables, 'pin no')) {
+            if ($pin = $this->filter_array($variables, 'pin_no')) {
                 $printer->text("PIN NO : " . $pin['value'] . "\n");
             }
 
