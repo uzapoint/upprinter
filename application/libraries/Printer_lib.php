@@ -464,7 +464,7 @@ class Printer_lib
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            if ($companyName = $this->filter_array($variables, 'company_name')) {
+            if (($companyName = $this->filter_array($variables, 'company_name')) && $companyName != null) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
                 $printer->text($companyName['value'] . "\n");
@@ -476,19 +476,19 @@ class Printer_lib
             $printer->setEmphasis(false);
             $printer->selectPrintMode();
 
-            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
+            if (($heading1 = $this->filter_array($variables, 'contact_1')) && $heading1 != null) {
                 $printer->text($heading1['value'] . "\n");
             }
 
-            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+            if (($heading2 = $this->filter_array($variables, 'contact_2')) && $heading2 != null) {
                 $printer->text($heading2['value'] . "\n");
             }
 
-            if ($pin = $this->filter_array($variables, 'pin_no')) {
+            if (($pin = $this->filter_array($variables, 'pin_no')) && $pin != null) {
                 $printer->text("PIN NO : " . $pin['value'] . "\n");
             }
 
-            if ($telephone = $this->filter_array($variables, 'telephone')) {
+            if (($telephone = $this->filter_array($variables, 'telephone')) && $telephone != null) {
                 $printer->text("TEL NO : " . $telephone['value'] . "\n");
             }
 
