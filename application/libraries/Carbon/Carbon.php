@@ -881,6 +881,7 @@ class Carbon extends DateTime implements JsonSerializable
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public static function createFromFormat($format, $time, $tz = null)
     {
         // First attempt to create an instance, so that error messages are based on the unmodified format.
