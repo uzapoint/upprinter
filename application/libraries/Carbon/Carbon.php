@@ -61,7 +61,7 @@ use Symfony\Component\Translation\TranslatorInterface;
  * @property-read string $localeMonth the month in current locale LC_TIME
  * @property-read string $shortLocaleMonth the abbreviated month in current locale LC_TIME
  */
-#[\ReturnTypeWillChange]
+
 class Carbon extends DateTime implements JsonSerializable
 {
     const NO_ZERO_DIFF = 01;
