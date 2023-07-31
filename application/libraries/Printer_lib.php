@@ -158,7 +158,7 @@ class Printer_lib
                     }
                     foreach ($courseItems as $item) {
                         $printer->text('        ' . $item['qty'] . " X " . $item['item_name'] . "\n");
-                        if (sizeof($item['options'])) {
+                        if (isset($item['options']) && sizeof($item['options'])) {
                             $printer->feed(2);
                             //$printer->selectPrintMode();
                             foreach ($item['options'] as $option) {
