@@ -338,8 +338,10 @@ class Printer_lib
     public function proforma($request = array())
     {
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
-        if ($request['receipt_design'] == "minified_items") {
-            return $this->proformaMinifiedDesign($request);
+        if (isset($request['receipt_design'])) {
+            if ($request['receipt_design'] == "minified_items") {
+                return $this->proformaMinifiedDesign($request);
+            }
         }
 
         //print standard design
