@@ -1421,7 +1421,7 @@ class Printer_lib
         file_put_contents(trim($request['local_path']) . DIRECTORY_SEPARATOR . trim($request["filename"]), $pdfContent);
 
 
-        if (trim($request['etr_driver']) == 'adva') {
+        if (!empty($request['etr_driver']) && trim($request['etr_driver']) == 'adva') {
             $printCommand = '"' . trim($request['java_path']) . '"' . '\java.exe -classpath ' . getcwd() . '\application\assets\pdfbox-app-1.7.1.jar org.apache.pdfbox.PrintPDF -silentPrint -printerName '
                 . trim($request['etr_printer']) . ' '
                 . trim($request['local_path']) . DIRECTORY_SEPARATOR . trim($request["filename"]);
