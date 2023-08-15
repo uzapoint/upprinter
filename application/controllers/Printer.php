@@ -27,8 +27,9 @@ class Printer extends CI_Controller
         }
 
         $this->load->library('printer_lib');
-        $request = $this->input->post();
-        $this->printer_lib->bill($request);
+//        $request = $this->input->post();
+        $data = json_decode($this->input->raw_input_stream, true);
+        $this->printer_lib->bill(/*$request*/$data);
 
         set_status_header(200);
         header('Access-Control-Allow-Origin: *');
@@ -39,7 +40,7 @@ class Printer extends CI_Controller
         ]));
     }
 
-    public function receipt()
+    /*public function receipt()
     {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
@@ -57,15 +58,35 @@ class Printer extends CI_Controller
         header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
         header('Content-Type: application/json;charset=UTF-8');
         exit(json_encode($output));
-    }
+    }*/
 
     public function captain()
     {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ($method == "OPTIONS") {
+            die();
+        }
+
         $this->load->library('printer_lib');
+//        $request = $this->input->post();
+        $data = json_decode($this->input->raw_input_stream, true);
+        $this->printer_lib->captain(/*$request*/$data);
+
+        set_status_header(200);
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
+        header('Content-Type: application/json;charset=UTF-8');
+        exit(json_encode([
+            "message" => "Successfully printed receipt"
+        ]));
+        /*$this->load->library('printer_lib');
 
         $request = $this->input->post();
 
-        $this->printer_lib->captain($request);
+        $this->printer_lib->captain($request);*/
     }
     public function payTypes(){
         $this->load->library('printer_lib');
