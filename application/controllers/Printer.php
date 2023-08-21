@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Printer extends CI_Controller
 {
 
-    public function __construct()
+    /*public function __construct()
     {
         parent::__construct();
         header('Access-Control-Allow-Origin: *');
@@ -14,11 +14,11 @@ class Printer extends CI_Controller
         if ($method == "OPTIONS") {
             die();
         }
-    }
+    }*/
 
     public function proforma()
     {
-        header('Access-Control-Allow-Origin: *');
+        /*header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         $method = $_SERVER['REQUEST_METHOD'];
@@ -29,7 +29,7 @@ class Printer extends CI_Controller
         $this->load->library('printer_lib');
 //        $request = $this->input->post();
         $data = json_decode($this->input->raw_input_stream, true);
-        $this->printer_lib->bill(/*$request*/$data);
+        $this->printer_lib->bill($data);
 
         set_status_header(200);
         header('Access-Control-Allow-Origin: *');
@@ -37,7 +37,12 @@ class Printer extends CI_Controller
         header('Content-Type: application/json;charset=UTF-8');
         exit(json_encode([
             "message" => "Successfully printed receipt"
-        ]));
+        ]));*/
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->bill($request);
     }
 
     /*public function receipt()
@@ -62,7 +67,7 @@ class Printer extends CI_Controller
 
     public function captain()
     {
-        header('Access-Control-Allow-Origin: *');
+        /*header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         $method = $_SERVER['REQUEST_METHOD'];
@@ -73,7 +78,7 @@ class Printer extends CI_Controller
         $this->load->library('printer_lib');
 //        $request = $this->input->post();
         $data = json_decode($this->input->raw_input_stream, true);
-        $this->printer_lib->captain(/*$request*/$data);
+        $this->printer_lib->captain($data);
 
         set_status_header(200);
         header('Access-Control-Allow-Origin: *');
@@ -81,12 +86,17 @@ class Printer extends CI_Controller
         header('Content-Type: application/json;charset=UTF-8');
         exit(json_encode([
             "message" => "Successfully printed receipt"
-        ]));
+        ]));*/
         /*$this->load->library('printer_lib');
 
         $request = $this->input->post();
 
         $this->printer_lib->captain($request);*/
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->captain($request);
     }
     public function payTypes(){
         $this->load->library('printer_lib');
