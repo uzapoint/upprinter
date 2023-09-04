@@ -442,7 +442,7 @@ class Printer_lib
                 $printer->text("-------------------------------------");
                 $printer->feed();
 
-                $nonTaxable = isset($request['non_taxable_amount']) ? number_format((float)$request['non_taxable_amount'], 2) : '';
+                $nonTaxable = isset($request['non_taxable_amount']) ? number_format((float)$request['non_taxable_amount'], 2) : '0';
 
                 if(!empty($nonTaxable)) {
                     $printer->text(sprintf("%-27s %-10s", "Total Non-Taxable", $nonTaxable));
