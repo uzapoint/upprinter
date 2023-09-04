@@ -429,11 +429,35 @@ class Printer_lib
 
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
-                $printer->text("-------------------------------------\n");
+                $printer->text("-------------------------------------");
+                $printer->feed(2);
+
+                $printer->setEmphasis(true);
+                $printer->text("TAX INFO");
                 $printer->feed();
+                $printer->setEmphasis(false);
+
+                $printer->text("-------------------------------------");
+                $printer->feed();
+
+                $nonTaxable = isset($request['non_taxable_amount']) ? number_format((float)$request['non_taxable_amount'], 2) : '';
+
+                if(!empty($nonTaxable)) {
+                    $printer->text(sprintf("%-27s %-10s", "Total Non-Taxable", $nonTaxable));
+                    $printer->feed(2);
+                }
+
+                $taxHeader = sprintf("%-7s %-7s %-12s %-15s", "Code", "Rate", "Taxable", "Tax Amt");
+                $printer->setEmphasis(true);
+                $printer->text($taxHeader);
+                $printer->feed();
+                $printer->setEmphasis(false);
+
                 foreach ($request['sale_tax_breakdown'] as $tax) {
-                    $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
-                    $printer->text($taxEntry . "\n");
+                    //$taxEntry = sprintf("%-34s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
+                    $taxEntry = sprintf("%-7s %-7s %-12s %-15s", $tax['tax_name_only'], number_format((float)$tax["tax_percentage"], 1), number_format((!empty($request['amount_before_tax']) ? $request['amount_before_tax'] : 0), 2), $tax['tax_value_formatted']);
+                    $printer->text($taxEntry);
+                    $printer->feed();
                 }
             }
 
