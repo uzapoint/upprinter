@@ -1219,6 +1219,11 @@ class Printer_lib
             $printer->feed();
 
             $printer->selectPrintMode();
+            if(!empty($request["terminal_name"])){
+                $printer->text("Terminal:   " . $request["terminal_name"] . "\n");
+                $printer->feed();
+            }
+
             $printer->text("Opened:   " . $request["opened_by"] . "\n");
             $printer->text("          " . $request["opened_at"] . "\n");
             $printer->feed();
