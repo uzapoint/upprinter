@@ -876,6 +876,21 @@ class Printer_lib
                 $printer->text($request['line_1']);
                 $printer->feed();
             }
+
+            /*
+             * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
+             * */
+            if (!empty($request['signed_invoice_details'])) {
+                //$signedInvoiceDetails = json_decode($request['signed_invoice_details'], true);
+                $signedInvoiceDetails = $request['signed_invoice_details'];
+                $printer->feed(2);
+                $printer->text("CU Invoice No.: " . $signedInvoiceDetails['invoice_number'] . "\n");
+                $printer->text("CU Serial No.: " . $signedInvoiceDetails['control_code'] . "\n");
+                $printer->feed();
+                $printer->selectPrintMode();
+                $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
+            }
+
             $printer->setJustification();
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
@@ -1116,6 +1131,20 @@ class Printer_lib
             $printer->setJustification();
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
+
+            /*
+             * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
+             * */
+            if (!empty($request['signed_invoice_details'])) {
+                //$signedInvoiceDetails = json_decode($request['signed_invoice_details'], true);
+                $signedInvoiceDetails = $request['signed_invoice_details'];
+                $printer->feed(2);
+                $printer->text("CU Invoice No.: " . $signedInvoiceDetails['invoice_number'] . "\n");
+                $printer->text("CU Serial No.: " . $signedInvoiceDetails['control_code'] . "\n");
+                $printer->feed();
+                $printer->selectPrintMode();
+                $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
+            }
         }
 
         $printer->pulse();
