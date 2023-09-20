@@ -95,6 +95,14 @@ class Printer extends CI_Controller
         $this->printer_lib->stockTransfer($request);
     }
 
+    public function stockRequisition() {
+        $this->load->library('printer_lib');
+
+        $request = $this->input->post();
+
+        $this->printer_lib->stockRequisition($request);
+    }
+
     public function timsEtrTypeB()
     {
         $this->load->library('printer_lib');

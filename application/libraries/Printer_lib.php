@@ -1747,6 +1747,132 @@ class Printer_lib
         }
     }
 
+    public function stockRequisition($request = array())
+    {
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        if (trim($request['printer']['adapter']) === 'USB') {
+            $connector = new WindowsPrintConnector(trim($request['printer']['id']));
+        } else if (trim($request['printer']['adapter']) === 'NETWORK') {
+            $connector = new NetworkPrintConnector(trim($request['printer_ip']));
+        }
+
+        $printer = new Printer($connector);
+
+        $variables = $request['data'];
+
+        try {
+            /*
+             * Design the receipt
+             * */
+            // Receipt Header
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            if (!empty($variables['name'])) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($variables['name']);
+                $this->newLine($printer, $connector);
+                $printer->setEmphasis(false);
+                $printer->selectPrintMode();
+            }
+
+            if (!empty($variables['address'])) {
+                $printer->text($variables['address']);
+                $this->newLine($printer, $connector);
+            }
+
+            if (!empty($variables['physical_address'])) {
+                $printer->text($variables['physical_address']);
+                $this->newLine($printer, $connector);
+            }
+
+            if (!empty($variables['email'])) {
+                $printer->text($variables['email']);
+                $this->newLine($printer, $connector);
+            }
+
+            if (!empty($variables['phone'])) {
+                $printer->text($variables['phone']);
+                $this->newLine($printer, $connector);
+            }
+
+            $this->newLine($printer, $connector);
+            $printer->setTextSize(1, 2);
+            $printer->text("STOCK REQUISITION NOTE");
+            $this->newLine($printer, $connector);
+
+            $printer->selectPrintMode();
+            $printer->setJustification();
+            $this->newLine($printer, $connector);
+
+            $printer->setEmphasis(true);
+            $printer->text("Reference Code: " . $variables['reference_code']);
+            $this->newLine($printer, $connector);
+
+            $printer->text("User: " . $variables['user']);
+            $this->newLine($printer, $connector, 2);
+
+            $printer->setEmphasis(false);
+            $printer->text("Store From: " . $variables['source_store_name']);
+            $this->newLine($printer, $connector);
+
+            $printer->text("Store To: " . $variables['destination_store_name']);
+            $this->newLine($printer, $connector, 2);
+
+            $printer->text("Requisition Date: " . $variables['requisition_date']);
+            $this->newLine($printer, $connector);
+
+
+            $this->newLine($printer, $connector, 2);
+
+            $header = sprintf("%-24s %-7s %-7s", "Product", "Quantity", "UOM");
+            $printer->setEmphasis(true);
+            $printer->text($header);
+
+            $this->newLine($printer, $connector);
+            $printer->setEmphasis(false);
+            /*
+             * Print the issue items
+             * */
+            foreach ($variables['items'] as $index => $item) {
+                $myItem = sprintf("%-24s %-7s %-7s", $item['product_label'], $item['quantity'], $item['uom_label']);
+                $printer->text($myItem);
+                $this->newLine($printer, $connector);
+            }
+
+
+            //  /*
+            //  * Signatories
+            //  * */
+            $this->newLine($printer, $connector, 4);
+            $printer->text('Name:_________________' ." ". 'Sign: _________________');
+            $this->newLine($printer, $connector, 3);
+            $printer->text('Name:_________________' ." ". 'Sign: _________________');
+            $this->newLine($printer, $connector);
+
+            /*
+            * Uzapoint footer
+            * */
+            $this->newLine($printer, $connector, 2);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('Powered by Uzapoint');
+
+            $this->newLine($printer, $connector, 5);
+            $connector->write(chr(27) . chr(109));
+        } catch (\Exception $exception) {
+            $this->newLine($printer, $connector, 2);
+            $printer->text("ERROR ENCOUNTERED WHILE PRINTING....");
+            $this->newLine($printer, $connector, 2);
+            $printer->text($exception->getMessage());
+
+            $this->newLine($printer, $connector, 5);
+            $connector->write(chr(27) . chr(109));
+        } finally {
+            $printer->close();
+        }
+
+    }
+
     public function onesourceEsdSignature($request = array())
     {
         /*
