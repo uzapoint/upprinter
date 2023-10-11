@@ -1101,6 +1101,20 @@ class Printer_lib
             if ($line4 = $this->filter_array($variables, 'line_4')) {
                 $printer->text($line4['value']."\n");
             }
+
+            /*
+             * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
+             * */
+            if (!empty($request['signed_credit_note_details'])) {
+                $signedCreditNoteDetails = $request['signed_credit_note_details'];
+                $printer->feed(2);
+                $printer->text("CU Invoice No.: " . $signedCreditNoteDetails['invoice_number'] . "\n");
+                $printer->text("CU Serial No.: " . $signedCreditNoteDetails['control_code'] . "\n");
+                $printer->selectPrintMode();
+                $printer->feed();
+                $printer->qrCode($signedCreditNoteDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
+            }
+
             $printer->setJustification();
             $printer->feed(3);
             $printer->cut();
