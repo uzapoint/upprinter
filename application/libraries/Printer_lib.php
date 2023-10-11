@@ -1072,13 +1072,27 @@ class Printer_lib
                     $printer->text($change);
                     $this->newLine($printer, $connector);
                 }
-                // if (!empty($request['overpayments'])) {
-                //     foreach ($request['overpayments'] as $overpayment) {
-                //         $change = sprintf("%-30s %-7s", $overpayment['balance_name'], number_format($overpayment['balance']));
-                //         $printer->text($change);
-                //         $this->$this->newLine($printer, $connector;
-                //     }
-                // }
+
+                if (!empty($request['payments'])) {
+                    foreach ($request['payments'] as $payment) {
+                        $paymentName = $payment['payment'];
+                        if(isset($payment['ref_code']) && !empty($payment['ref_code'])){
+                            $paymentName .= ' ('.$payment['ref_code'].')';
+                        }
+
+                        $paymentEntry = sprintf("%-30s %-7s", $paymentName, $payment['total_formatted']);
+                        $printer->text($paymentEntry);
+                        $this->newLine($printer, $connector);
+                    }
+                }
+
+                 if (!empty($request['overpayments'])) {
+                     foreach ($request['overpayments'] as $overpayment) {
+                         $change = sprintf("%-30s %-7s",  $overpayment['balance_name'], number_format($overpayment['balance']));
+                         $printer->text($change);
+                         $this->newLine($printer, $connector);
+                     }
+                 }
 
                 if (!empty($request['tip'])) {
                     $tip = sprintf("%-30s %-7s", "Gratuity", number_format($request['tip']));
