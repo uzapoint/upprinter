@@ -540,6 +540,16 @@ class Printer_lib
                 $printer->text($line4['value'] . "\n");
             }*/
 
+            // Signing details
+            if (!empty($request['signing_details'])) {
+                $signedInvoiceDetails = $request['signing_details'];
+                $printer->feed(2);
+                $printer->text("CU Invoice No.: " . $signedInvoiceDetails['invoice_number'] . "\n");
+                $printer->text("CU Serial No.: " . $signedInvoiceDetails['control_code'] . "\n");
+                $printer->selectPrintMode();
+                $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
+            }
+
             $printer->setJustification();
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
