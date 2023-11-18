@@ -1158,7 +1158,6 @@ class Printer_lib
             }
             $printer->setJustification();
             $this->newLine($printer, $connector, 5);
-            $connector->write(chr(27) . chr(109));
 
             /*
              * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
@@ -1175,6 +1174,8 @@ class Printer_lib
                 $printer->selectPrintMode();
                 $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
             }
+
+            $connector->write(chr(27) . chr(109));
         }
 
         $printer->pulse();
