@@ -1174,7 +1174,9 @@ class Printer_lib
                 $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
             }
 
+            $printer->setJustification();
             $this->newLine($printer, $connector, 5);
+            $connector->write(chr(27) . chr(109));
         }
 
         $printer->pulse();
