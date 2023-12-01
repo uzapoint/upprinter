@@ -1460,6 +1460,21 @@ class Printer_lib
         return "Successfully saved ETR receipt";
     }
 
+    public function sendToCustomerDisplay($request){
+        $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+        $displayText = trim($request['display_text']);
+        if(empty($displayText)) return;
+        $comPort = trim($request['com_port']);
+        $baudRate = trim($request['baud_rate']) ?? '9600';
+
+        $clearScreenCommand = getcwd().'/application/assets/SerialSend.exe /baudrate '.$baudRate.' /hex "\x0C" /devnum '.$comPort;
+        $displayTextCommand = getcwd().'/application/assets/SerialSend.exe /baudrate '.$baudRate.' /hex '.$displayText.' /devnum '.$comPort;
+        exec($clearScreenCommand);
+        exec($displayTextCommand);
+
+        return;
+    }
+
     private function filter_array($array, $key)
     {
         foreach ($array as $array_key => $variable) {
