@@ -1432,7 +1432,9 @@ class Printer_lib
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         $path = $request['receipt_path'];
         $textFileName = $request['receipt_filename'];
-        $request = $request['receipt_contents'];
+        $request = (isset($request['enc']) && $request['enc']) ? urldecode($request['receipt_contents']) : $request['receipt_contents'];
+        /*echo urldecode($request);
+        die();*/
 
         $receiptName = $path . '/' . $textFileName;
         $myfile = fopen($receiptName, "x+") or die("Unable to open file!");
