@@ -358,10 +358,10 @@ class Printer_lib
             if (!empty($request['payments'])) {
                 foreach ($request['payments'] as $payment) {
                     $paymentEntry = $amountGiven = sprintf("%-5s %-24s %-7s", "", $payment['payment'], $payment['total_formatted']);
-                    if ($payment['payment'] != 'Mpesa' || $payment['transaction_code'] == 'mpesa') {
+                    if ($payment['payment'] != 'Mpesa' || $payment['transaction_code'] == 'mpesa' || $payment['transaction_code'] == '') {
                         $printer->text($paymentEntry . "\n");
                     }
-                    if (($payment['payment'] == 'Mpesa') && $payment['transaction_code'] != 'mpesa') {
+                    if (($payment['payment'] == 'Mpesa') && $payment['transaction_code'] != 'mpesa' && $payment['transaction_code'] != '') {
                         $transactionCode = $payment['transaction_code'];
                         $mpesaPayment = $payment['payment'] . ' (' . $transactionCode . ')';
                         $mpesaPaymentEntry = $amountGiven = sprintf("%-5s %-24s %-7s", "", $mpesaPayment, $payment['total_formatted']);
