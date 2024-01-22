@@ -417,6 +417,20 @@ class Printer_lib
                 $printer->text("------------------------------------------\n");
                 //$printer->feed();
             }
+            
+            //show delivery location, customer name and address on sales receipt
+            if (!empty($request['order_delivery_method'])) {
+                $printer->feed();
+                $printer->setEmphasis(true);
+                $printer->text("DELIVERY DETAILS\n\n");
+                $printer->setEmphasis(false);
+                if ($request['order_delivery_method'] == 'delivery') $printer->text("Customer    :   " . $request["customer"] . "\n");
+                if ($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_location'])) $printer->text('Location    :   ' . $request['order_delivery_location'] . "\n");
+                if ($request['order_delivery_method'] == 'delivery' && !empty($request['order_delivery_address'])) $printer->text('Address     :   ' . $request['order_delivery_address'] . "\n");
+                if(!empty($request['order_delivery_cost'])) $printer->text('Delivery Cost   :   ' . $request['order_delivery_cost'] . "\n");
+                $printer->text("------------------------------------------------\n");
+            }                
+
             // Added A Setting to display Bold on Till No
             if ($tillNo = $this->filter_array($variables, 'till_no')) {
                 if ($tillNo['is_bold']) $printer->setTextSize(1, 2);
