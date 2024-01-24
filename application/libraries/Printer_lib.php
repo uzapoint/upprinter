@@ -358,24 +358,36 @@ class Printer_lib
             if (!empty($request['payments'])) {
                 foreach ($request['payments'] as $payment) {
 
-                    $defaultTransactionCodes = ['mpesa', 'cash', 'credit_card', 'voucher', 'cheque', 'bank_transfer', 'customer_account'];
+                    $defaultTransactionCodes = ['mpesa', 'cash', 'credit_card', 'voucher', 'cheque', 'bank_transfer', 'customer_account', 'credit'];
 
-                    if ((in_array($payment['transaction_code'], $defaultTransactionCodes) || $payment['transaction_code'] == '') && empty($payment['transactions'])) {
-                        $paymentEntry = $amountGiven = sprintf("%-5s %-24s %-7s", "", $payment['payment'], $payment['total_formatted']);
+                    // If the transaction code is not provided, or the transaction code is among those defaulted to
+                    // when one does not add the transaction code
+                    if (
+                        isset($payment['transaction_code']) &&
+                        (
+                            in_array($payment['transaction_code'], $defaultTransactionCodes) ||
+                            $payment['transaction_code'] == ''
+                        ) && empty($payment['transactions'])) {
+                        $paymentEntry = sprintf("%-5s %-24s %-7s", "", $payment['payment'], $payment['total_formatted']);
                         $printer->text($paymentEntry . "\n");
                     }
 
                     // if transaction code is provided
-                    if (!in_array($payment['transaction_code'], $defaultTransactionCodes) && $payment['transaction_code'] != '' && empty($payment['transactions'])) {
+                    if (
+                        isset($payment['transaction_code']) &&
+                        (
+                            !in_array($payment['transaction_code'], $defaultTransactionCodes) &&
+                            $payment['transaction_code'] != ''
+                        ) && empty($payment['transactions'])) {
                         $transactionCode = $payment['transaction_code'];
                         $paymentMethodWithCode = $payment['payment'] . ' (' . $transactionCode . ')';
-                        $paymentEntry = $amountGiven = sprintf("%-5s %-24s %-7s", "", $paymentMethodWithCode, $payment['total_formatted']);
+                        $paymentEntry = sprintf("%-5s %-24s %-7s", "", $paymentMethodWithCode, $payment['total_formatted']);
                         $printer->text($paymentEntry . "\n");
                     }
 
                     // check if has transactions(multiple transactions for one payment method) for reprinting receipt
                     if (!empty($payment['transactions'])) {
-                        foreach ($payment['transactions'][0] as $transaction) {
+                        foreach ($payment['transactions'] as $transaction) {
                             $transactionCode = $transaction['transaction_code'];
 
                             if (in_array($transactionCode, $defaultTransactionCodes) || $transactionCode == '') {
