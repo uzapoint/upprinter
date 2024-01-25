@@ -969,7 +969,13 @@ class Printer_lib
             $printer->setJustification();
 
             $printer->selectPrintMode();
-            $printer->text("Table    :   " . $request["customer"]);
+            if (!empty($request['customer_pin'])) {
+                $printer->text("Customer    :   " . $request["customer"]);
+                $this->newLine($printer, $connector);
+                $printer->text("PIN NO.     :   " . $request["customer_pin"] . "\n");
+            }else {
+                $printer->text("Table    :   " . $request["customer"]);
+            }
             $this->newLine($printer, $connector);
             $dateText = $request['receipt_date'] . " " . $request['receipt_time'];
             $printer->text($dateText);
