@@ -111,8 +111,6 @@ class Printer_lib
                 if ($request['order_delivery_method'] == 'pickup' && !empty($request['order_pickup_details'])) $printer->text('Other Details: ' . $request['order_pickup_details'] . "\n");
             }
 
-            
-
             $printer->feed(5);
             $connector->write(chr(27) . chr(109));
             $printer->close();
@@ -383,7 +381,6 @@ class Printer_lib
 
             $printer->selectPrintMode();
             //check if has details about loyalty points that has to be displayed
-            
             if ($request['has_loyalty_program']) {
                 if (!empty($request['loyalty_points_before'])) {
                     $pointsBeforeText = sprintf("%-30s %-7s", "Loyalty points before", $request['loyalty_points_before']);
