@@ -349,7 +349,6 @@ class Printer_lib
                 $printer->feed();
             }
 
-
             //$amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
             $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
             $balance = sprintf("%-5s %-24s %-7s", "", $request['balance_name'], $request['balance']);
@@ -422,12 +421,9 @@ class Printer_lib
                 $printer->text("------------------------------------------\n");
             }
 
+            $printer->selectPrintMode();
             //check if has details about loyalty points that has to be displayed
-            $hasLoyaltyPointsDetails = !empty($request['loyalty_points_balance'])
-                || !empty($request['loyalty_points_before'])
-                || !empty($request['gained_loyalty_points'])
-                || !empty($request['redeemed_loyalty_points']);
-            if ($hasLoyaltyPointsDetails) {
+            if ($request['has_loyalty_program']) {
                 if (!empty($request['loyalty_points_before'])) {
                     $pointsBeforeText = sprintf("%-30s %-7s", "Loyalty points before", $request['loyalty_points_before']);
                     $printer->text($pointsBeforeText . "\n");
@@ -445,10 +441,8 @@ class Printer_lib
                     $printer->text($pointsBalanceText . "\n");
                 }
             }
-
-            $printer->selectPrintMode();
-            if ($hasLoyaltyPointsDetails) $printer->text("------------------------------------------\n");
-
+            if ($request['has_loyalty_program']) $printer->text("------------------------------------------\n");
+            
             if (!empty($request['sale_notes'])) {
                 //$printer->feed();
 
