@@ -1119,24 +1119,24 @@ class Printer_lib
 
             if (!empty($request['till_no'])) {
                 $printer->text("TILL NO : " . $request['till_no']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
 
             if (!empty($request['pin_no'])) {
                 $printer->text("PIN NO : " . $request['pin_no']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
             if (!empty($request['telephone'])) {
                 $printer->text("TEL NO : " . $request['telephone']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
             if (!empty($request['email'])) {
                 $printer->text("Email : " . $request['email']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
             if (!empty($request['website'])) {
                 $printer->text("Website : " . $request['website']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
 
             $printer->text("----------------------------------");
