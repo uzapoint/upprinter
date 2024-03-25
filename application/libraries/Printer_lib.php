@@ -382,6 +382,14 @@ class Printer_lib
 
             $printer->selectPrintMode();
             $printer->text("Table    :   " . $request["customer"] . "\n");
+
+            if (!empty($request['customer_pin'])) {
+                $printer->text("Customer    :   " . $request["customer"]."\n");
+                $printer->text("PIN NO.     :   " . $request["customer_pin"] . "\n");
+            }else {
+                $printer->text("Table    :   " . $request["customer"]);
+            }
+
             $date = !empty($request['receipt_date']) ? $request['receipt_date'] : Carbon::now()->toDayDateTimeString();
             $printer->text($date . "\n");
             $printer->feed();
