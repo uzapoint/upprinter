@@ -495,10 +495,26 @@ class Printer_lib
                 $this->newLine($printer, $connector);
             }
             $printer->setJustification();
+
+            //print order barcode if setting is enabled
+            if($request['print_order_barcode']){
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+                $this->newLine($printer, $connector);
+                $printer->setBarcodeWidth(2);
+                $printer->barcode($request['barcode'], Printer::BARCODE_CODE39);
+                $this->newLine($printer, $connector);
+
+                $printer->setJustification();
+            }
+            
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
 
         }
+
         $printer->pulse();
         $printer->close();
 
@@ -618,7 +634,7 @@ class Printer_lib
                 $this->newLine($printer, $connector);
 
             }
-            $printer->text("-------------------------------------");
+            $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
 
@@ -640,7 +656,7 @@ class Printer_lib
 
             //add sale taxes
             if (!empty($request['sale_tax_breakdown'])) {
-                $printer->text("-------------------------------------");
+                $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector, 2);
                 foreach ($request['sale_tax_breakdown'] as $tax) {
                     $taxEntry = sprintf("%-30s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
@@ -650,7 +666,7 @@ class Printer_lib
             }
 
             //total indicator
-            $printer->text("-------------------------------------");
+            $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
             $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
             $printer->setTextSize(1, 2);
@@ -661,7 +677,7 @@ class Printer_lib
 
             if (!empty($request['amount_given'])) {
                 $this->newLine($printer, $connector);
-                $printer->text("-------------------------------------");
+                $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector);
                 $amountToPay = sprintf("%-30s %-7s", "Total Amount to pay", number_format((float)$request['amount_payable']));
                 $printer->text($amountToPay);
@@ -691,7 +707,7 @@ class Printer_lib
                 }
             }
 
-            $printer->text("-------------------------------------");
+            $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector, 2);
             /*$totalVat = 0.16 * (float)$request['grand_total'];
             $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%");
@@ -721,7 +737,7 @@ class Printer_lib
                 $this->newLine($printer, $connector, 2);
             }
 
-            $printer->text("----------------------------------");
+            $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
             //uzapoint footer
@@ -745,8 +761,24 @@ class Printer_lib
                 $this->newLine($printer, $connector);
             }
             $printer->setJustification();
+
+            //print order barcode if setting is enabled
+            if($request['print_order_barcode']){
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+                $this->newLine($printer, $connector);
+                $printer->setBarcodeWidth(2);
+                $printer->barcode($request['barcode'], Printer::BARCODE_CODE39);
+                $this->newLine($printer, $connector);
+
+                $printer->setJustification();
+            }
+            
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
+
         }
 
         $printer->pulse();
