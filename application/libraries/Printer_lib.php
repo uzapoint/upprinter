@@ -497,7 +497,7 @@ class Printer_lib
             $printer->setJustification();
 
             //print order barcode if setting is enabled
-            if($request['print_order_barcode']){
+            if($request['can_print_order_barcode']){
                 $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector);
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -528,7 +528,6 @@ class Printer_lib
         if ($request['receipt_design'] == "minified_items") {
             return $this->proformaMinifiedDesign($request);
         }
-
         //print standard design
         /*
          * Check the local adapter being used
@@ -737,6 +736,21 @@ class Printer_lib
                 $this->newLine($printer, $connector, 2);
             }
 
+            //print order barcode if setting is enabled
+            if($request['can_print_order_barcode']){
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+                $this->newLine($printer, $connector);
+                $printer->setBarcodeWidth(2);
+                $printer->barcode($request['barcode'], Printer::BARCODE_CODE39);
+                $printer->text($request['barcode']);
+                $this->newLine($printer, $connector);
+
+                $printer->setJustification();
+            }
+
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
@@ -761,20 +775,6 @@ class Printer_lib
                 $this->newLine($printer, $connector);
             }
             $printer->setJustification();
-
-            //print order barcode if setting is enabled
-            if($request['print_order_barcode']){
-                $printer->text("------------------------------------------------");
-                $this->newLine($printer, $connector);
-                $printer->setJustification(Printer::JUSTIFY_CENTER);
-
-                $this->newLine($printer, $connector);
-                $printer->setBarcodeWidth(2);
-                $printer->barcode($request['barcode'], Printer::BARCODE_CODE39);
-                $this->newLine($printer, $connector);
-
-                $printer->setJustification();
-            }
             
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
