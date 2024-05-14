@@ -423,7 +423,7 @@ class Printer_lib
 
             $printer->selectPrintMode();
             //check if has details about loyalty points that has to be displayed
-            if ($request['has_loyalty_program']) {
+            if (!empty($request['has_loyalty_program']) && $request['has_loyalty_program']) {
                 if (!empty($request['loyalty_points_before'])) {
                     $pointsBeforeText = sprintf("%-30s %-7s", "Loyalty points before", $request['loyalty_points_before']);
                     $printer->text($pointsBeforeText . "\n");
@@ -441,7 +441,7 @@ class Printer_lib
                     $printer->text($pointsBalanceText . "\n");
                 }
             }
-            if ($request['has_loyalty_program']) $printer->text("------------------------------------------\n");
+            if (!empty($request['has_loyalty_program']) && $request['has_loyalty_program']) $printer->text("------------------------------------------\n");
             
             if (!empty($request['sale_notes'])) {
                 //$printer->feed();
