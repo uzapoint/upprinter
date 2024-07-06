@@ -41,6 +41,7 @@ class Printer extends CI_Controller
         $this->load->library('printer_lib');
 
         $request = $this->input->post();
+        
 
         $this->printer_lib->bill($request);
     }

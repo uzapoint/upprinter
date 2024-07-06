@@ -263,6 +263,7 @@ class Printer_lib
             $printer->selectPrintMode();
             if (empty($request['receipt_other_details']) || $request['receipt_other_details']['CUSTOMER_NAME'] == "true") {
                 $printer->text("Customer    :   " . $request["customer"] . "\n");
+                if (!empty($request['customer_phone'])) $printer->text("PHONE NO.     :   " . $request["customer_phone"] . "\n");
                 if (!empty($request['customer_pin'])) $printer->text("PIN NO.     :   " . $request["customer_pin"] . "\n");
             }
 
