@@ -701,24 +701,24 @@ class Printer_lib
 
             if (($tillNo = $this->filter_array($variables, 'till_no')) && $tillNo != null) {
                 $printer->text("TILL NO : " . $tillNo['value']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
 
             if (($pinNo = $this->filter_array($variables, 'pin_no')) && $telephone != null) {
                 $printer->text("PIN NO : " . $pinNo['value']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
             if (($telephone = $this->filter_array($variables, 'telephone')) && $telephone != null) {
                 $printer->text("TEL NO : " . $telephone['value']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
             if (($email = $this->filter_array($variables, 'email')) && $email != null) {
                 $printer->text("Email : " . $email['value']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
             if (($website = $this->filter_array($variables, 'website')) && $website != null) {
                 $printer->text("Website : " . $website['value']);
-                $this->newLine($printer, $connector, 2);
+                $this->newLine($printer, $connector);
             }
 
             $printer->text("----------------------------------");
