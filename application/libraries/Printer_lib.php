@@ -90,7 +90,6 @@ class Printer_lib
 
             $printer->text($receipt['customer']);
             $this->newLine($printer, $connector);
-            $this->newLine($printer, $connector);
 
             //add items heading
             $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
@@ -136,7 +135,7 @@ class Printer_lib
 
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
-            $printer->cut();
+            $printer->pulse();
             $printer->close();
         }
     }
@@ -512,7 +511,6 @@ class Printer_lib
             
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
-
         }
 
         $printer->pulse();
