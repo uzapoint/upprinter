@@ -496,7 +496,7 @@ class Printer_lib
             $printer->setJustification();
 
             //print order barcode if setting is enabled
-            if($request['can_print_order_barcode']){
+            if(($request['can_print_order_barcode'] == "true") || ($request['can_print_order_barcode'])){
                 $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector);
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
