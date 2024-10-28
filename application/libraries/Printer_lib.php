@@ -257,8 +257,7 @@ class Printer_lib
                 $printer->text($request['entity'] . " No     :   " . $request['order_ref'] . "\n");
                 $printer->setEmphasis(false);
             }
-
-            if (empty($request['receipt_other_details']) || $request['receipt_other_details']['SERVED_BY'] == "true") $printer->text("Served By   :   " . $request['pos_user'] . "\n");
+            //removed served by here for royalty electronics
 
             $printer->selectPrintMode();
             if (empty($request['receipt_other_details']) || $request['receipt_other_details']['CUSTOMER_NAME'] == "true") {
@@ -525,6 +524,7 @@ class Printer_lib
             //uzapoint footer
             $printer->text("------------------------------------------\n");
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if (empty($request['receipt_other_details']) || $request['receipt_other_details']['SERVED_BY'] == "true") $printer->text("Served By   :   " . $request['pos_user'] . "\n");
             if ($line1 = $this->filter_array($variables, 'line_1')) {
                 $printer->text($line1['value'] . "\n");
             }
