@@ -106,8 +106,22 @@ class Printer_lib
                 foreach($items as $item) {
                     $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
                     $printer->text($myItem);
+                 
                     $this->newLine($printer, $connector);
                 }
+                if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+                    $printer->text("Compliments\n"); // Print header
+                    $this->newLine($printer, $connector);
+                
+                    foreach ($receipt['compliments'] as $compliment) {
+                        $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+                        $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+                        $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+                
+                        $myCompliment = "$label$quantity$price";
+                        $printer->text($myCompliment . "\n");
+                    }
+                }                
             }
             //add order options, if there is any
             if (!empty($receipt['order_options']) && sizeof($receipt['order_options'])) {
@@ -222,7 +236,20 @@ class Printer_lib
                         }
                         $printer->setTextSize(1, 2);
                     }
-
+                    if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+                        $printer->text("Compliments\n"); // Print header
+                        $this->newLine($printer, $connector);
+                    
+                        foreach ($receipt['compliments'] as $compliment) {
+                            $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+                            $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+                            $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+                    
+                            $myCompliment = "$label$quantity$price";
+                            $printer->text($myCompliment . "\n");
+                        }
+                    }
+                      
                     $this->newLine($printer, $connector);
                 }
             } else {
@@ -238,8 +265,21 @@ class Printer_lib
                         }
                     }
                     $printer->setTextSize(1, 2);
+                 
                     $this->newLine($printer, $connector);
                 }
+                if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+    $printer->setJustification(Printer::JUSTIFY_LEFT); // Ensure left alignment
+    $printer->text("Compliments\n"); // Print header at the beginning
+    $this->newLine($printer, $connector);
+
+    foreach ($receipt['compliments'] as $compliment) {
+        $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+        $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+        $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+
+        $myCompliment = "$label$quantity$price";
+        $printer->text($myComplimePRINT                
             }
 
             //add order options, if there is any
@@ -422,9 +462,25 @@ class Printer_lib
                     $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
                     $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty_raw'], number_format($item['total'], 2));
                     $printer->text($myItem);
+                
                     $this->newLine($printer, $connector);
                 }
             }
+            if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT); // Ensure left alignment
+                $printer->text("Compliments\n"); // Print header at the beginning
+                $this->newLine($printer, $connector);
+            
+                foreach ($receipt['compliments'] as $compliment) {
+                    $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+                    $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+                    $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+            
+                    $myCompliment = "$label$quantity$price";
+                    $printer->text($myCompliment . "\n");
+                }
+            }
+                          
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
@@ -621,6 +677,7 @@ class Printer_lib
                     $printer->text(
                         sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2))
                     );
+                 
                     $this->newLine($printer, $connector, 2);
                 }
                 $printer->setEmphasis(true);
@@ -631,6 +688,21 @@ class Printer_lib
                 $this->newLine($printer, $connector);
 
             }
+            if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT); // Ensure left alignment
+                $printer->text("Compliments\n"); // Print header at the beginning
+                $this->newLine($printer, $connector);
+            
+                foreach ($receipt['compliments'] as $compliment) {
+                    $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+                    $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+                    $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+            
+                    $myCompliment = "$label$quantity$price";
+                    $printer->text($myCompliment . "\n");
+                }
+            }            
+            
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
@@ -866,9 +938,24 @@ class Printer_lib
                     $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
                     $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty'], number_format($item['total'], 2));
                     $printer->text($myItem);
+                
                     $this->newLine($printer, $connector);
                 }
             }
+            if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+                $printer->text("Compliments\n"); // Print header
+                $this->newLine($printer, $connector);
+            
+                foreach ($receipt['compliments'] as $compliment) {
+                    $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+                    $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+                    $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+            
+                    $myCompliment = "$label$quantity$price";
+                    $printer->text($myCompliment . "\n");
+                }
+            }
+            
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
@@ -1033,7 +1120,7 @@ class Printer_lib
                     $this->newLine($printer, $connector);
                     $printer->text(
                         sprintf("%-30s %-7s", ($item['qty'] . ' x ' . $item['item_price']), number_format((float)$item['total'], 2))
-                    );
+                    ); 
                     $this->newLine($printer, $connector, 2);
                 }
                 $printer->setEmphasis(true);
@@ -1044,6 +1131,20 @@ class Printer_lib
                 $this->newLine($printer, $connector);
 
             }
+            if (isset($receipt['compliments']) && count($receipt['compliments'])) {
+                $printer->text("Compliments\n"); // Print header
+                $this->newLine($printer, $connector);
+            
+                foreach ($receipt['compliments'] as $compliment) {
+                    $label = str_pad(substr($compliment['label'], 0, 27), 28); // Ensure fixed width
+                    $quantity = str_pad("1", 5, " ", STR_PAD_RIGHT);
+                    $price = str_pad(number_format((float)$compliment['price'], 2), 9, " ", STR_PAD_LEFT);
+            
+                    $myCompliment = "$label$quantity$price";
+                    $printer->text($myCompliment . "\n");
+                }
+            }
+            
             $printer->text("-------------------------------------");
             $this->newLine($printer, $connector);
 
