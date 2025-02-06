@@ -1,8 +1,8 @@
 <?php
 defined("BASEPATH") or exit("No direct script access allowed");
 
-require APPPATH . "third_party\\escpos-php\autoload.php";
-require 'Carbon\Carbon.php';
+require APPPATH . "third_party/escpos-php/autoload.php";
+require 'Carbon/Carbon.php';
 
 //use Carbon\Carbon;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
