@@ -935,6 +935,18 @@ class Printer_lib
                 $printer->qrCode($signedInvoiceDetails['qr_code_url'], Printer::QR_ECLEVEL_L, 6);
             }
 
+            /*
+             * CHECK IF DIGITAX ETIMS DETAILS ARE PROVIDED, PRINT QR Code
+             * */
+            if (!empty($request['digitax_etims_details'])) {
+                $digitaxEtimsDetails = $request['digitax_etims_details'];
+                $printer->feed(2);
+                $printer->text("Serial No: " . $digitaxEtimsDetails['serial_number'] . "\n");
+                $printer->text("Signature: " . $digitaxEtimsDetails['signature'] . "\n");
+                $printer->selectPrintMode();
+                $printer->qrCode($digitaxEtimsDetails['etims_url'], Printer::QR_ECLEVEL_L, 6);
+            }
+
             $printer->setJustification();
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
