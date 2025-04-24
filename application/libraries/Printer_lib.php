@@ -1527,8 +1527,8 @@ class Printer_lib
         $comPort = trim($request['com_port']);
         $baudRate = trim($request['baud_rate']) ?? '9600';
 
-        $clearScreenCommand = getcwd() . '/application/assets/SerialSend.exe /baudrate ' . $baudRate . ' /hex "\x0C" /devnum ' . $comPort;
-        $displayTextCommand = getcwd() . '/application/assets/SerialSend.exe /baudrate ' . $baudRate . ' /hex ' . $displayText . ' /devnum ' . $comPort;
+        $clearScreenCommand = getcwd() . '/application/assets/SerialSend.exe ' . 'COM' . $comPort . ' /baudrate ' . $baudRate . ' /hex "\x0C"';
+        $displayTextCommand = getcwd() . '/application/assets/SerialSend.exe ' . 'COM' . $comPort . ' /baudrate ' . $baudRate . ' /hex ' . $displayText;
         exec($clearScreenCommand);
         exec($displayTextCommand);
 
