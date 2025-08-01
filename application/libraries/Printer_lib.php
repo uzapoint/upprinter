@@ -48,7 +48,7 @@ class Printer_lib
         }
     }
 
-    public function captainMinifiedDesign($request = array())
+    public function captainMinifiedDesign($request = array(), $showTotals = true)
     {
         /*
          * loop through the printer data to print the captain order at several printers that may be connected
@@ -92,7 +92,7 @@ class Printer_lib
             $this->newLine($printer, $connector);
 
             //add items heading
-            $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
+            $header = sprintf("%-33s %-9s", "Item", "Qty");
             $printer->setEmphasis(true);
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
@@ -104,7 +104,7 @@ class Printer_lib
             //add the items
             foreach ($receipt['items'] as $index => $items) {
                 foreach($items as $item) {
-                    $myItem = sprintf("%-28s %-5s %-9s", substr($item['item_name_only'], 0, 27), $item['qty'], number_format((float)$item['total'], 2));
+                    $myItem = sprintf("%-33s %-9s", substr($item['item_name'], 0, 32), $item['qty']);
                     $printer->text($myItem);
                     $this->newLine($printer, $connector);
                 }
@@ -122,14 +122,8 @@ class Printer_lib
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
-            if (!empty($request['till_no'])) {
-                $printer->text("TILL NO: " . $request["till_no"]);
-                $this->newLine($printer, $connector);
-            }
-
-            //add foooter
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("Served By: " . $request["pos_user"]);
+            $datetimeheading = sprintf("%-15s %-5s %-15s", "DATE: " . $request['captain_date'], ' ', "TIME: " . $request['captain_time']);
+            $printer->text($datetimeheading);
             $this->newLine($printer, $connector);
 
 
