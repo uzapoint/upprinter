@@ -433,7 +433,7 @@ class Printer_lib
             //total indicator
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-34s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-34s %-7s","TOTAL (" . $request['currency_code'] . ")",number_format((float) $request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -629,7 +629,7 @@ class Printer_lib
             $this->newLine($printer, $connector);
 
 
-            /*$orderDueText = sprintf("%-5s %20s %15s", " ", "TOTAL : KES.", number_format((float)$request['grand_total']));
+            /*$orderDueText = sprintf("%-5s %20s %15s"," ","TOTAL : " . $request['currency_code'] . ".",number_format((float) $request['grand_total']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -659,7 +659,7 @@ class Printer_lib
             //total indicator
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-30s %-7s","TOTAL " . $request['currency_code'] . " ,",number_format((float) $request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -877,7 +877,7 @@ class Printer_lib
             //total indicator
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-34s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-34s %-7s","TOTAL (" . $request['currency_code'] . ") ,",number_format((float) $request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -1054,7 +1054,7 @@ class Printer_lib
             $this->newLine($printer, $connector);
 
 
-            /*$orderDueText = sprintf("%-5s %20s %15s", " ", "TOTAL : KES.", number_format((float)$request['grand_total']));
+            /*$orderDueText = sprintf("%-5s %20s %15s"," ","TOTAL : " . $request['currency_code'] . ".",number_format((float) $request['grand_total']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -1092,7 +1092,8 @@ class Printer_lib
             //total indicator
             $printer->text("-------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable']));
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (".$request['currency_code'].")". number_format((float)$request['amount_payable']));
+
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -1330,7 +1331,7 @@ class Printer_lib
                 $this->newLine($printer, $connector);
             }
 
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (" . $request['currency_code'] . ")", number_format((float) $request['amount_payable'], 2));
             //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -1536,7 +1537,7 @@ class Printer_lib
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (KES)", number_format((float)$request['amount_payable'], 2));
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (" . $request['currency_code'] . ")", number_format((float) $request['amount_payable'], 2));
             //$printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
