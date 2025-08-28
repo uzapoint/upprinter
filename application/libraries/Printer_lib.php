@@ -5,11 +5,12 @@ require APPPATH . "third_party/escpos-php/autoload.php";
 require 'Carbon/Carbon.php';
 
 //use Carbon\Carbon;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Carbon\Carbon;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 /**
  * Printer_lib
@@ -33,6 +34,18 @@ class Printer_lib
     public function __construct()
     {
         $this->CI = &get_instance();
+    }
+
+    public function newLine($printer, $connector, $noOfLines = 1){
+        if(file_exists(__DIR__.'/../assets/TEP300.txt')){
+            for($i = 0; $i < $noOfLines; $i++){
+                $connector->write(self::ESC . "d" . chr(1));
+            }
+        }else{
+            for($i = 0; $i < $noOfLines; $i++) {
+                $printer->text("\n");
+            }
+        }
     }
 
     public function captain($request = array())
@@ -117,6 +130,172 @@ class Printer_lib
         }
     }
 
+    public function proformaMinifiedDesign($request = array())
+    {
+        /*
+         * Check the local adapter being used
+         * */
+
+        $localPrinter = $request['LOCAL_PRINTER'];
+        if ($localPrinter['adapter'] === 'NETWORK' && !empty($request['printer_ip'])) {
+            $connector = new NetworkPrintConnector($request['printer_ip'], 9100);
+        } elseif ($localPrinter['adapter'] === 'USB') {
+            $printerID = $localPrinter['id'];
+            $connector = new WindowsPrintConnector($printerID);
+        }
+
+        $printer = new Printer($connector);
+
+        $variables = $request['variables'];
+
+        $receiptCopies = 1;
+        if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
+        for ($copy = 1; $copy <= $receiptCopies; $copy++) {
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            if ($companyName = $this->filter_array($variables, 'company_name')) {
+                $printer->setTextSize(1, 2);
+                $printer->setEmphasis(true);
+                $printer->text($companyName['value']);
+                $this->newLine($printer, $connector);
+                $printer->setEmphasis(false);
+
+                $printer->selectPrintMode();
+            }
+
+            $printer->setEmphasis(false);
+            $printer->selectPrintMode();
+
+            if ($heading1 = $this->filter_array($variables, 'contact_1')) {
+                $printer->text($heading1['value']);
+                $this->newLine($printer, $connector);
+            }
+
+            if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+                $printer->text($heading2['value']);
+                $this->newLine($printer, $connector);
+            }
+
+            if ($pin = $this->filter_array($variables, 'pin no')) {
+                $printer->text("PIN NO : " . $pin['value']);
+                $this->newLine($printer, $connector);
+            }
+
+            if ($telephone = $this->filter_array($variables, 'telephone')) {
+                $printer->text("TEL NO : " . $telephone['value']);
+                $this->newLine($printer, $connector);
+            }
+
+            $this->newLine($printer, $connector);
+            $printer->setJustification();
+
+            if (!empty($request['telephone'])) {
+                $printer->text("TEL NO : " . $request['telephone']);
+                $this->newLine($printer, $connector);
+            }
+            $printer->setJustification();
+
+            $printer->setEmphasis(true);
+            $printer->text("Customer Bill #" . $request['order_ref']);
+            $this->newLine($printer, $connector);
+            $printer->text("Customer: " . $request['customer']);
+            $this->newLine($printer, $connector);
+            $date = !empty($request['receipt_date']) ? $request['receipt_date'] : Carbon::now()->toDayDateTimeString();
+            $printer->text($date);
+            $this->newLine($printer, $connector);
+            $printer->setEmphasis(false);
+
+            $this->newLine($printer, $connector);
+
+            $header = sprintf("%-28s %-5s %-9s", "Item", "Qty", "Total");
+            $printer->setEmphasis(true);
+            $printer->text($header);
+            $this->newLine($printer, $connector);
+            $printer->setEmphasis(false);
+
+            foreach ($request['items'] as $type => $items) {
+                foreach ($items as $item) {
+                    $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
+                    $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty_raw'], number_format($item['total'], 2));
+                    $printer->text($myItem);
+                    $this->newLine($printer, $connector);
+                }
+            }
+            $printer->text("------------------------------------------------");
+            $this->newLine($printer, $connector);
+
+
+            $grandTotal = sprintf("%-34s %-7s", "Total", number_format((float)$request['grand_total']));
+            $discount = sprintf("%-34s %-7s", "Discount", number_format((float)$request['discount']));
+            $printer->text($grandTotal);
+            $this->newLine($printer, $connector);
+            $printer->text($discount);
+            $this->newLine($printer, $connector);
+
+            //total indicator
+            $printer->text("------------------------------------------------");
+            $this->newLine($printer, $connector);
+            $orderDueText = sprintf("%-34s %-7s","TOTAL (" . $request['currency_code'] . ")",number_format((float) $request['amount_payable']));
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($orderDueText);
+            $this->newLine($printer, $connector);
+            $printer->selectPrintMode();
+
+            $printer->text("------------------------------------------------");
+            $this->newLine($printer, $connector);
+
+            $showBodySection = true;
+            if (isset($request['hide_receipt_body'])) {
+                $showBodySection = !$request['hide_receipt_body'];
+            }
+
+            if (!empty($request['till_no'])) {
+                $printer->text("TILL NO : " . $request['till_no']);
+                $this->newLine($printer, $connector, 2);
+            }
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $this->newLine($printer, $connector);
+            $printer->text("Served By  " . explode(" ", $request['pos_user'])[0]);
+            $this->newLine($printer, $connector);
+
+            //uzapoint footer
+            $this->newLine($printer, $connector);
+            if (!empty($request['line_1'])) {
+                $printer->text($request['line_1']);
+                $this->newLine($printer, $connector);
+            }
+            if (!empty($request['line_3'])) {
+                $printer->text($request['line_1']);
+                $this->newLine($printer, $connector);
+            }
+            $printer->setJustification();
+
+            //print order barcode if setting is enabled
+            if(($request['can_print_order_barcode'] == "true")){
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+                $this->newLine($printer, $connector);
+                $printer->setBarcodeWidth(2);
+                $printer->barcode($request['barcode'], Printer::BARCODE_CODE39);
+                $this->newLine($printer, $connector);
+
+                $printer->setJustification();
+            }
+            
+            $this->newLine($printer, $connector, 5);
+            $connector->write(chr(27) . chr(109));
+        }
+
+        $printer->pulse();
+        $printer->close();
+
+        return true;
+
+    }
+
     public function ecommerceCaptain($request = array())
     {
 
@@ -195,7 +374,7 @@ class Printer_lib
 
         /*
          * FOR BUSINESSES WHICH USE ONE-SOURCE ESD, GENERATE THE ESD SIGNATURE
-         * */
+        */
         $ESD_SIGNATURE = null;
         if (!empty($request['CAN_ESD_SIGN']) && $this->generateOneSourceESDSignature($request['items'])) {
             sleep(2);
