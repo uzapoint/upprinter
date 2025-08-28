@@ -130,7 +130,7 @@ class Printer_lib
         }
     }
 
-    public function proformaMinifiedDesign($request = array())
+    public function bill($request = array())
     {
         /*
          * Check the local adapter being used
@@ -223,7 +223,6 @@ class Printer_lib
             }
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
-
 
             $grandTotal = sprintf("%-34s %-7s", "Total", number_format((float)$request['grand_total']));
             $discount = sprintf("%-34s %-7s", "Discount", number_format((float)$request['discount']));
@@ -359,7 +358,7 @@ class Printer_lib
         $printer->close();
     }
 
-    public function bill($request = array())
+    public function billOriginal($request = array())
     {
         /*var_dump($request);
         die();*/
