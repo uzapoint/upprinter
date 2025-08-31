@@ -1083,7 +1083,7 @@ class Printer_lib
 
                 foreach ($request['sale_tax_breakdown'] as $tax) {
                     //$taxEntry = sprintf("%-34s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
-                    $taxEntry = sprintf("%-7s %-8s %-15s %-15s", $tax['tax_name_only'], number_format((float)$tax["tax_percentage"], 1), number_format((!empty($data['amount_before_tax']) ? $data['amount_before_tax'] : 0), 2), $tax['tax_value_formatted']);
+                    $taxEntry = sprintf("%-7s %-8s %-15s %-15s", $tax['tax_name_only'], number_format((float)$tax["tax_percentage"], 1), number_format((!empty($request['amount_before_tax']) ? $request['amount_before_tax'] : 0), 2), $tax['tax_value_formatted']);
                     $printer->text($taxEntry);
                     $this->newLine($printer, $connector);
                 }
@@ -1092,8 +1092,8 @@ class Printer_lib
             //total indicator
             $printer->text("-------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-30s %-7s", "TOTAL (".$request['currency_code'].")". number_format((float)$request['amount_payable']));
-
+            $orderDueText = sprintf("%-30s %-7s", "TOTAL (".$request['currency_code'].")", number_format((float)$request['amount_payable']));
+            
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
