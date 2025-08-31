@@ -139,8 +139,6 @@ class Printer_lib
 		$request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
 
         $localPrinter = $request['LOCAL_PRINTER'];
-		
-		//var_dump(trim($localPrinter['adapter'])); die;
 
         if (trim($localPrinter['adapter']) === 'NETWORK' && !empty(trim($localPrinter['id']))) {
             $connector = new NetworkPrintConnector(trim($localPrinter['id']), 9100);
@@ -217,14 +215,25 @@ class Printer_lib
             $printer->text($header);
             $this->newLine($printer, $connector);
             $printer->setEmphasis(false);
-
+            
+			//var_dump($request['items']); die;
+			
                 foreach ($request['items'] as $item) {
-					//var_dump($item); die;
-                    $itemName = $item['item_name'] . (!empty($item['uom_label']) ? (" (" . $item['uom_label'] . ")") : "");
-                    $myItem = sprintf("%-28s %-5s %-9s", substr($itemName, 0, 27), $item['qty'], number_format($item['total'], 2));
-                    $printer->text($myItem);
-                    $this->newLine($printer, $connector);
-                }
+					$itemName = $item['item_name'];
+					
+					// if qty is like "1 Piece", extract just the number
+					$qty = preg_replace('/[^0-9.]/', '', $item['qty']); 
+					
+					$myItem = sprintf(
+						"%-28s %-5s %-9s",
+						substr($itemName, 0, 27),
+						$qty,
+						number_format((float) $item['total'], 2)
+					);
+					
+					$printer->text($myItem);
+					$this->newLine($printer, $connector);
+				}
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
@@ -253,8 +262,8 @@ class Printer_lib
                 $showBodySection = !$request['hide_receipt_body'];
             }
 
-            if (!empty($request['till_no'])) {
-                $printer->text("TILL NO : " . $request['till_no']);
+			if ($till_no = $this->filter_array($variables, 'till_no')) {
+                $printer->text("TILL NO : " . $till_no['value']);
                 $this->newLine($printer, $connector, 2);
             }
             $printer->setJustification(Printer::JUSTIFY_CENTER);
