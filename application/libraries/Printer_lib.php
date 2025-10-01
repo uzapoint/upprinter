@@ -150,6 +150,14 @@ class Printer_lib
         if(!empty($request['sale_receipt_copies'])) $receiptCopies = (int)$request['sale_receipt_copies'];
         for($copy = 1; $copy <= $receiptCopies; $copy++) {
 
+            //check if a logo for this installation has been put in assets directory
+            $logoPath = getcwd() . "/application/assets/receipt_logo.png";
+            if (file_exists($logoPath) && is_readable($logoPath)) {
+                $img = \Mike42\Escpos\EscposImage::load($logoPath);
+                $printer->bitImage($img);
+                $printer->text("\n");
+            }
+
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             if ($companyName = $this->filter_array($variables, 'company_name')) {
