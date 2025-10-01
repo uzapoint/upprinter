@@ -155,7 +155,7 @@ class Printer_lib
             if (file_exists($logoPath) && is_readable($logoPath)) {
                 $img = \Mike42\Escpos\EscposImage::load($logoPath);
                 $printer->bitImage($img);
-                $printer->text("\n");
+                $connector->write(self::ESC . "d" . chr(1));
             }
 
             //set header
