@@ -153,6 +153,7 @@ class Printer_lib
             //check if a logo for this installation has been put in assets directory
             $logoPath = getcwd() . "/application/assets/receipt_logo.png";
             if (file_exists($logoPath) && is_readable($logoPath)) {
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
                 $img = \Mike42\Escpos\EscposImage::load($logoPath);
                 $printer->bitImage($img);
                 $connector->write(self::ESC . "d" . chr(1));
