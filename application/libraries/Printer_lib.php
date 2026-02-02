@@ -580,6 +580,125 @@ class Printer_lib
         return true;
     }
 
+	public function dlight($request = array())
+	{
+		$request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
+		if (trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
+			$connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
+		} else if (trim($request['LOCAL_PRINTER']['adapter']) === 'NETWORK') {
+			$networkPrinterIP = !empty($request['printer_ip']) ? trim($request['printer_ip']) : trim($request['LOCAL_PRINTER']['id']);
+			$connector = new NetworkPrintConnector($networkPrinterIP, '9100');
+		}
+		$printer = new Printer($connector);
+
+		$variables = $request['variables'];
+		$receiptCopies = !empty($request['sale_receipt_copies']) ? (int)$request['sale_receipt_copies'] : 1;
+
+		for ($copy = 1; $copy <= $receiptCopies; $copy++) {
+			$printer->setJustification(Printer::JUSTIFY_CENTER);
+
+			$logoPath = getcwd() . "/application/assets/receipt_logo.png";
+			if (file_exists($logoPath) && is_readable($logoPath)) {
+				$img = \Mike42\Escpos\EscposImage::load($logoPath);
+				$printer->bitImage($img);
+				$printer->text("\n");
+			}
+
+			if ($companyName = $this->filter_array($variables, 'company_name')) {
+				$printer->setTextSize(1, 2);
+				$printer->setEmphasis(true);
+				$printer->text($companyName['value'] . "\n");
+				$printer->setEmphasis(false);
+				$printer->selectPrintMode();
+			}
+
+			if ($heading1 = $this->filter_array($variables, 'contact_1')) $printer->text($heading1['value'] . "\n");
+			if ($heading2 = $this->filter_array($variables, 'contact_2')) {
+				$printer->text($heading2['value'] . "\n");
+				$printer->feed(1);
+			}
+			
+			if (!empty($request['receipt_name'])) {
+				$printer->setTextSize(1, 2);
+				$printer->text($request['receipt_name'] . "\n");
+				$printer->selectPrintMode();
+			}
+
+			//Added receipt status
+            if (!empty($request['receipt_type'])) {
+                $printer->text($request['receipt_type'] . "\n");
+                //$printer->feed();
+            }
+
+			$printer->feed();
+
+			$printer->setJustification();
+
+			if (empty($request['receipt_other_details']) || $request['receipt_other_details']['SALE_NO'] == "true") {
+                $printer->setEmphasis(true);
+                $printer->text($request['entity'] . " No     :   " . $request['order_ref'] . "\n");
+                $printer->setEmphasis(false);
+            }
+
+			if (!empty($request['order_ref'])) {
+				$printer->text($request['entity'] . " No     :   " . $request['order_ref'] . "\n");
+			}
+			if (!empty($request['pos_user'])) {
+				$printer->text("Served By   :   " . $request['pos_user'] . "\n");
+			}
+			if (!empty($request['customer'])) {
+				$printer->text("Customer    :   " . $request["customer"] . "\n");
+			}
+			if (!empty($request['receipt_date'])) {
+				$printer->text($request['receipt_date'] . "\n");
+			}
+			$printer->feed();
+
+			$printer->setEmphasis(true);
+			$printer->text("Item\n");
+			$printer->setEmphasis(false);
+
+			foreach ($request['items'] as $item) {
+				$printer->text($item['qty'] . " Piece x " . $item['item_name'] . "\n");
+				if (!empty($item['serial_number'])) {
+					$printer->text($item['serial_number'] . "\n");
+				}
+				$printer->text("\n");
+			}
+
+			$printer->text("------------------------------------------\n");
+
+			if (!empty($request['payments'])) {
+				foreach ($request['payments'] as $payment) {
+					$printer->setEmphasis(true);
+					$printer->text($payment['payment'] . "\n");
+					$printer->setEmphasis(false);
+				}
+				$printer->text("------------------------------------------\n");
+			}
+
+			if ($telephone = $this->filter_array($variables, 'telephone')) $printer->text("Telephone   :   " . $telephone['value'] . "\n");
+			if ($email = $this->filter_array($variables, 'email')) $printer->text("Email       :   " . $email['value'] . "\n");
+			if ($website = $this->filter_array($variables, 'website')) $printer->text("Website     :   " . $website['value'] . "\n");
+
+			$printer->text("------------------------------------------\n");
+			$printer->setJustification(Printer::JUSTIFY_CENTER);
+			for ($i = 1; $i <= 4; $i++) {
+				if ($line = $this->filter_array($variables, 'line_' . $i)) {
+					$printer->text($line['value'] . "\n");
+				}
+			}
+
+			$printer->setJustification();
+			$printer->feed(5);
+			$connector->write(chr(27) . chr(109));
+		}
+
+		$printer->pulse();
+		$printer->close();
+		return true;
+	}
+
     public function ecommerceSaleReceipt($request = array())
     {
 

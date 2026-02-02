@@ -6,12 +6,15 @@ class Printer extends CI_Controller
     public function proforma()
     {
         $this->load->library('printer_lib');
-
         $request = $this->input->post();
-        
+
+		//check if payment method is dlight
+		if(isset($request->payment_method) && in_array('d-light', $request->payment_method)) {
+			$this->printer_lib->dlight($request);
+		}
 
         $this->printer_lib->bill($request);
-    }
+    }	
 
     public function captain()
     {
