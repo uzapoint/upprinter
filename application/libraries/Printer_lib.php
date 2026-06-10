@@ -363,7 +363,6 @@ class Printer_lib
             }
 
             //$amountGiven = sprintf("%-30s %-7s", "Amount Given (" . $request['payment_methods_string'] . ")", $request['amount_given']);
-            $amountToPay = sprintf("%-30s %-7s", "Amount to pay", $request['amount_to_pay']);
             $balance = sprintf("%-5s %-24s %-7s", "", $request['balance_name'] ?? '', $request['balance'] ?? '');
 
             if (isset($request['amount_to_pay'])) {
