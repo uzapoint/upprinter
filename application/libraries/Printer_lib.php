@@ -193,8 +193,8 @@ class Printer_lib
         file_put_contents($logFile, "\n\n========== [{$ts}] bill() START ==========\n", FILE_APPEND);
         file_put_contents($logFile, "RAW REQUEST:\n" . print_r($request, true) . "\n", FILE_APPEND);
 
-        var_dump($request);
-        die();
+//        var_dump($request);
+//        die();
 
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         file_put_contents($logFile, "AFTER FILTER_VAR\n", FILE_APPEND);
