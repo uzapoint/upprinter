@@ -188,8 +188,8 @@ class Printer_lib
 
     public function bill($request = array())
     {
-        /*var_dump($request);
-        die();*/
+        var_dump($request);
+        die();
         $request = filter_var($request, \FILTER_CALLBACK, ['options' => 'trim']);
         if (trim($request['LOCAL_PRINTER']['adapter']) === 'USB') {
             $connector = new WindowsPrintConnector(trim($request['LOCAL_PRINTER']['id']));
