@@ -447,7 +447,7 @@ class Printer_lib
                 $showBodySection = !$request['hide_receipt_body'];
             }
 
-            if ($tillNo = $this->filter_array($variables, 'till_no')) {
+            if (($tillNo = $this->filter_array($variables, 'till_no')) && !empty(trim($tillNo['value']))) {
                 if (!empty($tillNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -461,7 +461,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) {
+            if (($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) && !empty(trim($paybillBusinessNo['value']))) {
                 if (!empty($paybillBusinessNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -475,7 +475,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) {
+            if (($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) && !empty(trim($paybillAccountNo['value']))) {
                 if (!empty($paybillAccountNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -488,6 +488,7 @@ class Printer_lib
                     $printer->selectPrintMode();
                 }
             }
+
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $this->newLine($printer, $connector);
             $printer->text("Served By  " . explode(" ", $request['pos_user'])[0]);
@@ -742,7 +743,7 @@ class Printer_lib
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector, 2);
 
-            if ($tillNo = $this->filter_array($variables, 'till_no')) {
+            if (($tillNo = $this->filter_array($variables, 'till_no')) && !empty(trim($tillNo['value']))) {
                 if (!empty($tillNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -756,7 +757,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) {
+            if (($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) && !empty(trim($paybillBusinessNo['value']))) {
                 if (!empty($paybillBusinessNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -770,7 +771,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) {
+            if (($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) && !empty(trim($paybillAccountNo['value']))) {
                 if (!empty($paybillAccountNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -985,7 +986,7 @@ class Printer_lib
                 $showBodySection = !$request['hide_receipt_body'];
             }
 
-            if ($tillNo = $this->filter_array($variables, 'till_no')) {
+            if (($tillNo = $this->filter_array($variables, 'till_no')) && !empty(trim($tillNo['value']))) {
                 if (!empty($tillNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -999,7 +1000,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) {
+            if (($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) && !empty(trim($paybillBusinessNo['value']))) {
                 if (!empty($paybillBusinessNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1013,7 +1014,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) {
+            if (($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) && !empty(trim($paybillAccountNo['value']))) {
                 if (!empty($paybillAccountNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1293,7 +1294,7 @@ class Printer_lib
             $printer->text("-------------------------------------");
             $this->newLine($printer, $connector, 2);
 
-            if ($tillNo = $this->filter_array($variables, 'till_no')) {
+            if (($tillNo = $this->filter_array($variables, 'till_no')) && !empty(trim($tillNo['value']))) {
                 if (!empty($tillNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1307,7 +1308,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) {
+            if (($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) && !empty(trim($paybillBusinessNo['value']))) {
                 if (!empty($paybillBusinessNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1321,7 +1322,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) {
+            if (($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) && !empty(trim($paybillAccountNo['value']))) {
                 if (!empty($paybillAccountNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1575,7 +1576,7 @@ class Printer_lib
             }
 
 
-            if ($tillNo = $this->filter_array($variables, 'till_no')) {
+            if (($tillNo = $this->filter_array($variables, 'till_no')) && !empty(trim($tillNo['value']))) {
                 if (!empty($tillNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1589,7 +1590,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) {
+            if (($paybillBusinessNo = $this->filter_array($variables, 'paybill_no')) && !empty(trim($paybillBusinessNo['value']))) {
                 if (!empty($paybillBusinessNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
@@ -1603,7 +1604,7 @@ class Printer_lib
                 }
             }
 
-            if ($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) {
+            if (($paybillAccountNo = $this->filter_array($variables, 'paybill_account_no')) && !empty(trim($paybillAccountNo['value']))) {
                 if (!empty($paybillAccountNo['is_bold'])) {
                     $printer->setTextSize(1, 2);
                     $printer->setEmphasis(true);
