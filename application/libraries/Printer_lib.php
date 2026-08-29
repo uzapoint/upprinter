@@ -5,8 +5,6 @@ require APPPATH . "third_party\\escpos-php\autoload.php";
 require 'Carbon\Carbon.php';
 
 use Carbon\Carbon;
-
-//use App\DB\Pos\PosReceiptVariable;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
@@ -44,6 +42,38 @@ class Printer_lib
         }else{
             for($i = 0; $i < $noOfLines; $i++) {
                 $printer->text("\n");
+            }
+        }
+    }
+
+    /**
+     * Dynamically prints the logo from the provided variables path
+     */
+    private function printLogo($printer, $connector, $variables)
+    {
+        if (!empty($variables) && is_array($variables)) {
+            $logoVar = $this->filter_array($variables, 'company_logo');
+            if ($logoVar && !empty($logoVar['value'])) {
+                $path = $logoVar['value'];
+                
+                // Assuming XAMPP structure based on payload
+                $localPath = "C:/xampp/htdocs/uzapoint/public/" . ltrim($path, '/');
+                
+                if (!file_exists($localPath)) {
+                    $localPath = FCPATH . "../../uzapoint/public/" . ltrim($path, '/');
+                }
+
+                if (file_exists($localPath)) {
+                    try {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                        $logo = EscposImage::load($localPath, false);
+                        $printer->bitImage($logo);
+                        $this->newLine($printer, $connector);
+                        $printer->setJustification(); // reset alignment
+                    } catch (\Exception $e) {
+                        // Suppress exception if image is too large/unsupported
+                    }
+                }
             }
         }
     }
@@ -116,7 +146,7 @@ class Printer_lib
                 $this->newLine($printer, $connector);
                 $printer->text("    ORDER OPTIONS");
                 $this->newLine($printer, $connector);
-                $printer->text('       ' . implode(", ", $request['order_options']));
+                $printer->text('        ' . implode(", ", $request['order_options']));
                 $this->newLine($printer, $connector);
             }
             $printer->text("------------------------------------------------");
@@ -344,12 +374,15 @@ class Printer_lib
 
         $printer = new Printer($connector);
 
-        $variables = $request['variables'];
+        $variables = $request['variables'] ?? [];
 
         $receiptCopies = 1;
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            // Dynamic Logo Implementation
+            $this->printLogo($printer, $connector, $variables);
 
             if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
@@ -443,25 +476,6 @@ class Printer_lib
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
-            // if (!empty($request['order_payment_details']) && $request['order_payment_details']['has_partial_payments']) {
-            //     $printer->setEmphasis(true);
-            //     $printer->text("Order Payments");
-            //     $this->$this->newLine($printer, $connector;
-            //     $printer->selectPrintMode();
-
-            //     foreach ($request['order_payment_details']['payments'] as $payment) {
-            //         $printer->text($payment['payment_method'] . ": " . $payment['amount_display'] . " (" . $payment['paid_at'] . ")");
-            //         $this->$this->newLine($printer, $connector;
-            //     }
-            //     $this->$this->newLine($printer, $connector;
-            //     $printer->text("Amount Paid: " . $request['order_payment_details']['amount_paid_display']);
-            //     $this->$this->newLine($printer, $connector;
-            //     $printer->text("Balance: " . $request['order_payment_details']['amount_due_display']);
-            //     $this->$this->newLine($printer, $connector;
-            //     $printer->text("------------------------------------------------");
-            //     $this->$this->newLine($printer, $connector;
-            // }
-
 
             $showBodySection = true;
             if (isset($request['hide_receipt_body'])) {
@@ -477,6 +491,30 @@ class Printer_lib
             $printer->text("Served By  " . explode(" ", $request['pos_user'])[0]);
             $this->newLine($printer, $connector);
 
+            // Check if has receipt footer notes & enforce alignment
+            if (!empty($request['footer_notes']) && !empty($request['footer_notes']['footer_notes'])) {
+                $this->newLine($printer, $connector, 1);
+                
+                if (isset($request['footer_notes']['footer_notes_alignment'])) {
+                    if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    } elseif ($request['footer_notes']['footer_notes_alignment'] == 'right') {
+                        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                    } else {
+                        $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    }
+                }
+
+                foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
+                    $printer->text($footer_note);
+                    $this->newLine($printer, $connector);
+                }
+                
+                $printer->setJustification(); // reset alignment
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+            }
+
             //uzapoint footer
             $this->newLine($printer, $connector);
             if (!empty($request['line_1'])) {
@@ -490,7 +528,7 @@ class Printer_lib
             $printer->setJustification();
 
             //print order barcode if setting is enabled
-            if(($request['can_print_order_barcode'] == "true")){
+            if(isset($request['can_print_order_barcode']) && $request['can_print_order_barcode'] == "true"){
                 $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector);
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -535,13 +573,17 @@ class Printer_lib
 
         $printer = new Printer($connector);
 
-        $variables = $request['variables'];
+        $variables = $request['variables'] ?? [];
 
         $receiptCopies = 1;
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            // Dynamic Logo Implementation
+            $this->printLogo($printer, $connector, $variables);
+
             if (($companyName = $this->filter_array($variables, 'company_name')) && $companyName != null) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
@@ -628,16 +670,6 @@ class Printer_lib
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
 
-
-            /*$orderDueText = sprintf("%-5s %20s %15s"," ","TOTAL : " . $request['currency_code'] . ".",number_format((float) $request['grand_total']));
-            $printer->setTextSize(1, 2);
-            $printer->setEmphasis(true);
-            $printer->text($orderDueText);
-            $this->$this->newLine($printer, $connector;
-            $printer->selectPrintMode();
-            $printer->text("------------------------------------------------");
-            $this->$this->newLine($printer, $connector;*/
-
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total']));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount']));
             $printer->text($grandTotal);
@@ -700,11 +732,6 @@ class Printer_lib
 
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector, 2);
-            /*$totalVat = 0.16 * (float)$request['grand_total'];
-            $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%");
-            $this->$this->newLine($printer, $connector);
-            $printer->text("------------------------------------------------");
-            $this->$this->newLine($printer, $connector;*/
 
             if (($tillNo = $this->filter_array($variables, 'till_no')) && $tillNo != null) {
                 $printer->text("TILL NO : " . $tillNo['value']);
@@ -729,7 +756,7 @@ class Printer_lib
             }
 
             //print order barcode if setting is enabled
-            if($request['can_print_order_barcode']){
+            if(isset($request['can_print_order_barcode']) && $request['can_print_order_barcode']){
                 $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector);
                 $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -745,6 +772,30 @@ class Printer_lib
 
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
+
+            // Check if has receipt footer notes & enforce alignment
+            if (!empty($request['footer_notes']) && !empty($request['footer_notes']['footer_notes'])) {
+                $this->newLine($printer, $connector, 1);
+                
+                if (isset($request['footer_notes']['footer_notes_alignment'])) {
+                    if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    } elseif ($request['footer_notes']['footer_notes_alignment'] == 'right') {
+                        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                    } else {
+                        $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    }
+                }
+
+                foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
+                    $printer->text($footer_note);
+                    $this->newLine($printer, $connector);
+                }
+                
+                $printer->setJustification(); // reset alignment
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+            }
 
             //uzapoint footer
             $this->newLine($printer, $connector);
@@ -763,7 +814,7 @@ class Printer_lib
                 $this->newLine($printer, $connector);
             }
             if (($line_4 = $this->filter_array($variables, 'line_4')) && $line_4 != null) {
-                $printer->text($line_4['value']);
+                $printer->text($line4['value']);
                 $this->newLine($printer, $connector);
             }
             $printer->setJustification();
@@ -779,17 +830,10 @@ class Printer_lib
         return true;
     }
 
-    /**
-     * @throws Exception
-     */
     public function saleMinifiedDesign($request = array())
     {
         //print standard design
         $printerID = "POSPRINTER";
-//        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
-        /*
-         * Check the local adapter being used
-         * */
 
         if ($request['PRINT_METHOD'] === 'LOCAL_PRINTING') {
             $localPrinter = $request['LOCAL_PRINTER'];
@@ -803,10 +847,15 @@ class Printer_lib
 
         $printer = new Printer($connector);
 
+        $variables = $request['variables'] ?? [];
+
         $receiptCopies = 1;
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            // Dynamic Logo Implementation
+            $this->printLogo($printer, $connector, $variables);
 
             if (!empty($request['company_name'])) {
                 $printer->setTextSize(1, 2);
@@ -902,6 +951,30 @@ class Printer_lib
             $printer->text("Served By  " . explode(" ", $request['pos_user'])[0]);
             $this->newLine($printer, $connector);
 
+            // Check if has receipt footer notes & enforce alignment
+            if (!empty($request['footer_notes']) && !empty($request['footer_notes']['footer_notes'])) {
+                $this->newLine($printer, $connector, 1);
+                
+                if (isset($request['footer_notes']['footer_notes_alignment'])) {
+                    if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    } elseif ($request['footer_notes']['footer_notes_alignment'] == 'right') {
+                        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                    } else {
+                        $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    }
+                }
+
+                foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
+                    $printer->text($footer_note);
+                    $this->newLine($printer, $connector);
+                }
+                
+                $printer->setJustification(); // reset alignment
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+            }
+
             //uzapoint footer
             $this->newLine($printer, $connector);
             if (!empty($request['line_1'])) {
@@ -915,9 +988,8 @@ class Printer_lib
 
             /*
              * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
-             * */
+             */
             if (!empty($request['signed_invoice_details'])) {
-                //$signedInvoiceDetails = json_decode($request['signed_invoice_details'], true);
                 $signedInvoiceDetails = $request['signed_invoice_details'];
                 $this->newLine($printer, $connector, 2);
                 $printer->text("CU Invoice No.: " . $signedInvoiceDetails['invoice_number']);
@@ -931,7 +1003,7 @@ class Printer_lib
 
             /*
              * CHECK IF DIGITAX ETIMS DETAILS ARE PROVIDED, PRINT QR Code
-             * */
+             */
             if (!empty($request['digitax_etims_details'])) {
                 $digitaxEtimsDetails = $request['digitax_etims_details'];
                 $printer->feed(2);
@@ -944,8 +1016,8 @@ class Printer_lib
             $printer->setJustification();
             $this->newLine($printer, $connector, 5);
             $connector->write(chr(27) . chr(109));
-
         }
+
         $printer->pulse();
         $printer->close();
 
@@ -960,7 +1032,7 @@ class Printer_lib
 
         //print standard design
         $printerID = "POSPRINTER";
-//        if (!empty($request['LOCAL_PRINTER_ID'])) $printerID = $request['LOCAL_PRINTER_ID'];
+
         /*
          * Check the local adapter being used
          * */
@@ -975,13 +1047,17 @@ class Printer_lib
         }
 
         $printer = new Printer($connector);
-
+        $variables = $request['variables'] ?? [];
 
         $receiptCopies = 1;
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+
+            // Dynamic Logo Implementation
+            $this->printLogo($printer, $connector, $variables);
+
             if (!empty($request['company_name'])) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
@@ -1054,15 +1130,6 @@ class Printer_lib
             $this->newLine($printer, $connector);
 
 
-            /*$orderDueText = sprintf("%-5s %20s %15s"," ","TOTAL : " . $request['currency_code'] . ".",number_format((float) $request['grand_total']));
-            $printer->setTextSize(1, 2);
-            $printer->setEmphasis(true);
-            $printer->text($orderDueText);
-            $this->$this->newLine($printer, $connector;
-            $printer->selectPrintMode();
-            $printer->text("------------------------------------------------");
-            $this->$this->newLine($printer, $connector;*/
-
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total']));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount']));
             $printer->text($grandTotal);
@@ -1082,7 +1149,6 @@ class Printer_lib
                 $printer->setEmphasis(false);
 
                 foreach ($request['sale_tax_breakdown'] as $tax) {
-                    //$taxEntry = sprintf("%-34s %-7s", $tax['tax_name'], $tax['tax_value_formatted']);
                     $taxEntry = sprintf("%-7s %-8s %-15s %-15s", $tax['tax_name_only'], number_format((float)$tax["tax_percentage"], 1), number_format((!empty($request['amount_before_tax']) ? $request['amount_before_tax'] : 0), 2), $tax['tax_value_formatted']);
                     $printer->text($taxEntry);
                     $this->newLine($printer, $connector);
@@ -1148,11 +1214,6 @@ class Printer_lib
 
             $printer->text("-------------------------------------");
             $this->newLine($printer, $connector, 2);
-            /*$totalVat = 0.16 * (float)$request['grand_total'];
-            $printer->text("KSHS.   ".number_format($totalVat)."    VAT 16%");
-            $this->$this->newLine($printer, $connector);
-            $printer->text("------------------------------------------------");
-            $this->$this->newLine($printer, $connector;*/
 
             if (!empty($request['till_no'])) {
                 $printer->text("TILL NO : " . $request['till_no']);
@@ -1179,6 +1240,30 @@ class Printer_lib
             $printer->text("----------------------------------");
             $this->newLine($printer, $connector);
 
+            // Check if has receipt footer notes & enforce alignment
+            if (!empty($request['footer_notes']) && !empty($request['footer_notes']['footer_notes'])) {
+                $this->newLine($printer, $connector, 1);
+                
+                if (isset($request['footer_notes']['footer_notes_alignment'])) {
+                    if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    } elseif ($request['footer_notes']['footer_notes_alignment'] == 'right') {
+                        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                    } else {
+                        $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    }
+                }
+
+                foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
+                    $printer->text($footer_note);
+                    $this->newLine($printer, $connector);
+                }
+                
+                $printer->setJustification(); // reset alignment
+                $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
+            }
+
             //uzapoint footer
             $this->newLine($printer, $connector);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -1203,9 +1288,8 @@ class Printer_lib
 
             /*
              * CHECK IF NEW TIMS ETR SIGNATURE DETAILS EXIST, PRINT QR Code
-             * */
+             */
             if (!empty($request['signed_invoice_details'])) {
-                //$signedInvoiceDetails = json_decode($request['signed_invoice_details'], true);
                 $signedInvoiceDetails = $request['signed_invoice_details'];
                 $this->newLine($printer, $connector, 2);
                 $printer->text("CU Invoice No.: " . $signedInvoiceDetails['invoice_number']);
@@ -1219,7 +1303,7 @@ class Printer_lib
 
             /*
              * CHECK IF DIGITAX ETIMS DETAILS ARE PROVIDED, PRINT QR Code
-             * */
+             */
             if (!empty($request['digitax_etims_details'])) {
                 $digitaxEtimsDetails = $request['digitax_etims_details'];
                 $printer->feed(2);
@@ -1250,7 +1334,7 @@ class Printer_lib
         }
         $printer = new Printer($connector);
 
-        $variables = $request['variables'];
+        $variables = $request['variables'] ?? [];
 
         $receiptCopies = 1;
         if (!empty($request['sale_receipt_copies'])) $receiptCopies = (int)$request['sale_receipt_copies'];
@@ -1403,20 +1487,28 @@ class Printer_lib
 
             $printer->text("------------------------------------------------");
 
-            //check if has receipt footer notes
-            if (!empty($request['footer_notes'])) {
-                $this->newLine($printer, $connector, 2);
-                if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
-                    $printer->setJustification(Printer::JUSTIFY_CENTER);
+            // Check if has receipt footer notes & enforce alignment
+            if (!empty($request['footer_notes']) && !empty($request['footer_notes']['footer_notes'])) {
+                $this->newLine($printer, $connector, 1);
+                
+                if (isset($request['footer_notes']['footer_notes_alignment'])) {
+                    if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    } elseif ($request['footer_notes']['footer_notes_alignment'] == 'right') {
+                        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                    } else {
+                        $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    }
                 }
+
                 foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
                     $printer->text($footer_note);
                     $this->newLine($printer, $connector);
                 }
-                if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
-                    $printer->setJustification();
-                }
+                
+                $printer->setJustification(); // reset alignment
                 $printer->text("------------------------------------------------");
+                $this->newLine($printer, $connector);
             }
 
             //uzapoint footer
@@ -1458,7 +1550,7 @@ class Printer_lib
         }
         $printer = new Printer($connector);
 
-        $variables = $request['variables'];
+        $variables = $request['variables'] ?? [];
 
         $receiptCopies = 1;
         if (!empty($request['sale_receipt_copies'])) $receiptCopies = (int)$request['sale_receipt_copies'];
@@ -1542,24 +1634,30 @@ class Printer_lib
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
             $this->newLine($printer, $connector);
-            //$printer->selectPrintMode();
 
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector, 2);
 
-            //check if has receipt footer notes
-            if (!empty($request['footer_notes'])) {
-                $this->newLine($printer, $connector, 2);
-                if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
-                    $printer->setJustification(Printer::JUSTIFY_CENTER);
+            // Check if has receipt footer notes & enforce alignment
+            if (!empty($request['footer_notes']) && !empty($request['footer_notes']['footer_notes'])) {
+                $this->newLine($printer, $connector, 1);
+                
+                if (isset($request['footer_notes']['footer_notes_alignment'])) {
+                    if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    } elseif ($request['footer_notes']['footer_notes_alignment'] == 'right') {
+                        $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                    } else {
+                        $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    }
                 }
+
                 foreach ($request['footer_notes']['footer_notes'] as $footer_note) {
                     $printer->text($footer_note);
                     $this->newLine($printer, $connector);
                 }
-                if ($request['footer_notes']['footer_notes_alignment'] == 'center') {
-                    $printer->setJustification();
-                }
+                
+                $printer->setJustification(); // reset alignment
                 $printer->text("------------------------------------------------");
                 $this->newLine($printer, $connector);
             }
@@ -1603,7 +1701,6 @@ class Printer_lib
 
         $connector = new WindowsPrintConnector($printerID);
         $printer = new Printer($connector);
-
 
         try {
 
@@ -1786,7 +1883,7 @@ class Printer_lib
             $printer->setEmphasis(false);
             /*
              * Print the issue items
-             * */
+             */
             foreach ($variables['items'] as $index => $item) {
                 $myItem = sprintf("%-9s %-22s %-4s %-6s", $item['productCode'], $item['product_label'], $item['quantity'], $item['uom_label']);
                 $printer->text($myItem);
@@ -1795,13 +1892,13 @@ class Printer_lib
 
             /*
              * Signatories
-             * */
+             */
             $this->newLine($printer, $connector, 4);
             $printer->text('Sign: ________________________________');
 
             /*
              * Uzapoint footer
-             * */
+             */
             $this->newLine($printer, $connector, 2);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->text('Powered by Uzapoint');
@@ -1836,7 +1933,7 @@ class Printer_lib
         try {
             /*
              * Design the receipt
-             * */
+             */
             // Receipt Header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
@@ -1906,7 +2003,7 @@ class Printer_lib
             $printer->setEmphasis(false);
             /*
              * Print the issue items
-             * */
+             */
             foreach ($variables['items'] as $index => $item) {
                 $myItem = sprintf("%-24s %-7s %-7s", $item['product_label'], $item['quantity'], $item['uom_label']);
                 $printer->text($myItem);
@@ -1925,7 +2022,7 @@ class Printer_lib
 
             /*
             * Uzapoint footer
-            * */
+            */
             $this->newLine($printer, $connector, 2);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->text('Powered by Uzapoint');
@@ -2249,4 +2346,3 @@ class Printer_lib
         return file_put_contents(trim($request['local_path']).DIRECTORY_SEPARATOR.trim($request["filename"]), $pdfContent);
     }
 }
-
