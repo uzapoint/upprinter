@@ -46,38 +46,6 @@ class Printer_lib
         }
     }
 
-    /**
-     * Dynamically prints the logo from the provided variables path
-     */
-    private function printLogo($printer, $connector, $variables)
-    {
-        if (!empty($variables) && is_array($variables)) {
-            $logoVar = $this->filter_array($variables, 'company_logo');
-            if ($logoVar && !empty($logoVar['value'])) {
-                $path = $logoVar['value'];
-                
-                // Assuming XAMPP structure based on payload
-                $localPath = "C:/xampp/htdocs/uzapoint/public/" . ltrim($path, '/');
-                
-                if (!file_exists($localPath)) {
-                    $localPath = FCPATH . "../../uzapoint/public/" . ltrim($path, '/');
-                }
-
-                if (file_exists($localPath)) {
-                    try {
-                        $printer->setJustification(Printer::JUSTIFY_CENTER);
-                        $logo = EscposImage::load($localPath, false);
-                        $printer->bitImage($logo);
-                        $this->newLine($printer, $connector);
-                        $printer->setJustification(); // reset alignment
-                    } catch (\Exception $e) {
-                        // Suppress exception if image is too large/unsupported
-                    }
-                }
-            }
-        }
-    }
-
     public function captainMinifiedDesign($request = array(), $showTotals = true)
     {
         /*
@@ -381,9 +349,6 @@ class Printer_lib
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
-            // Dynamic Logo Implementation
-            $this->printLogo($printer, $connector, $variables);
-
             if ($companyName = $this->filter_array($variables, 'company_name')) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
@@ -581,9 +546,6 @@ class Printer_lib
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
-            // Dynamic Logo Implementation
-            $this->printLogo($printer, $connector, $variables);
-
             if (($companyName = $this->filter_array($variables, 'company_name')) && $companyName != null) {
                 $printer->setTextSize(1, 2);
                 $printer->setEmphasis(true);
@@ -669,6 +631,16 @@ class Printer_lib
             }
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
+
+
+            /*$orderDueText = sprintf("%-5s %20s %15s"," ","TOTAL : " . $request['currency_code'] . ".",number_format((float) $request['grand_total']));
+            $printer->setTextSize(1, 2);
+            $printer->setEmphasis(true);
+            $printer->text($orderDueText);
+            $this->$this->newLine($printer, $connector;
+            $printer->selectPrintMode();
+            $printer->text("------------------------------------------------");
+            $this->$this->newLine($printer, $connector;*/
 
             $grandTotal = sprintf("%-30s %-7s", "Total", number_format((float)$request['grand_total']));
             $discount = sprintf("%-30s %-7s", "Discount", number_format((float)$request['discount']));
@@ -814,7 +786,7 @@ class Printer_lib
                 $this->newLine($printer, $connector);
             }
             if (($line_4 = $this->filter_array($variables, 'line_4')) && $line_4 != null) {
-                $printer->text($line4['value']);
+                $printer->text($line_4['value']);
                 $this->newLine($printer, $connector);
             }
             $printer->setJustification();
@@ -853,9 +825,6 @@ class Printer_lib
         if (!empty($request['proforma_copies'])) $receiptCopies = (int)$request['proforma_copies'];
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-
-            // Dynamic Logo Implementation
-            $this->printLogo($printer, $connector, $variables);
 
             if (!empty($request['company_name'])) {
                 $printer->setTextSize(1, 2);
@@ -1054,9 +1023,6 @@ class Printer_lib
         for ($copy = 1; $copy <= $receiptCopies; $copy++) {
             //set header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-
-            // Dynamic Logo Implementation
-            $this->printLogo($printer, $connector, $variables);
 
             if (!empty($request['company_name'])) {
                 $printer->setTextSize(1, 2);
