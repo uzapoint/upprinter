@@ -431,7 +431,8 @@ class Printer_lib
             //total indicator
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-34s %-7s","TOTAL (" . $request['currency_code'] . ")",number_format((float) $request['amount_payable']));
+            $currency = !empty($request['currency_code']) ? $request['currency_code'] : '';
+            $orderDueText = sprintf("%-34s %-7s","TOTAL (" . $currency . ")",number_format((float) $request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -701,7 +702,8 @@ class Printer_lib
             //total indicator
             $printer->text("------------------------------------------------");
             $this->newLine($printer, $connector);
-            $orderDueText = sprintf("%-30s %-7s","TOTAL " . $request['currency_code'] . " ,",number_format((float) $request['amount_payable']));
+            $currency = !empty($request['currency_code']) ? $request['currency_code'] : '';
+            $orderDueText = sprintf("%-30s %-7s","TOTAL " . $currency, number_format((float) $request['amount_payable']));
             $printer->setTextSize(1, 2);
             $printer->setEmphasis(true);
             $printer->text($orderDueText);
@@ -2498,4 +2500,5 @@ class Printer_lib
         $pdfContent = file_get_contents(trim($request['receipt_path']));
         return file_put_contents(trim($request['local_path']).DIRECTORY_SEPARATOR.trim($request["filename"]), $pdfContent);
     }
+    
 }
